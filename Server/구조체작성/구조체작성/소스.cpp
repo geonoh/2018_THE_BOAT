@@ -3,10 +3,22 @@
 
 int main() 
 {
-	BYTE test;
+	/*BYTE test;
+	UINT test2;
 
+	test2 = 0xffffffff;
 	test = 0xff;
-	printf("%x \n", test);
+	UINT test3 = test2 >> 28;
 
-	printf("%d\n", test);
+
+	printf("%x\n", test3);*/
+
+
+	CtsPacket test1;
+	test1.keyboard_click = 0x00010101;
+	test1.PushArrowKeyUp();
+	printf("%x \n", test1.keyboard_click);
+	test1.ReleaseArrowKeyUp();
+	printf("%x \n", test1.keyboard_click);
+	printf("%d\n", sizeof(test1));
 }
