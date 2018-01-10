@@ -1,2 +1,4 @@
 ﻿  소스.cpp
-  구조체작성.vcxproj -> D:\졸작\서버\구조체작성\Debug\구조체작성.exe
+d:\졸작\2018_the_boat\server\구조체작성\구조체작성\소스.cpp(8): warning C4305: '=': '__int64'에서 'BYTE'(으)로 잘립니다.
+d:\졸작\2018_the_boat\server\구조체작성\구조체작성\소스.cpp(8): warning C4309: '=': 상수 값이 잘립니다.
+  구조체작성.vcxproj -> D:\졸작\2018_THE_BOAT\Server\구조체작성\Debug\구조체작성.exe

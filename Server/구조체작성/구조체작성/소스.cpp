@@ -1,9 +1,12 @@
-#include <iostream>
-
-using namespace std;
+#include <WinSock2.h>
+#include "stdafx.h"
 
 int main() 
 {
-	cout << "TesT" << endl;
+	BYTE test;
 
+	test = 0xff;
+	printf("%x \n", test);
+
+	printf("%d\n", test);
 }
