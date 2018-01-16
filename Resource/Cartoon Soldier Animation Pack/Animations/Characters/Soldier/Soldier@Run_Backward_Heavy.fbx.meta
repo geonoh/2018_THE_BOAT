@@ -1,0 +1,343 @@
+fileFormatVersion: 2
+guid: 3987589e2bbafc64f92871486ce423b6
+ModelImporter:
+  serializedVersion: 19
+  fileIDToRecycleName:
+    100000: B_L_Foot
+    100002: B_L_Calf
+    100004: PositionLocator
+    100006: Mesh_Soldier_A
+    100008: Bip01 Prop1
+    100010: //RootNode
+    100012: Bip01 R Finger1Nub
+    100014: Bip01 R Finger11
+    100016: Bip01 R Finger0Nub
+    100018: Bip01 R Finger01
+    100020: Bip01 R UpperArm
+    100022: Bip01 R Clavicle
+    100024: Bip01 L Finger1Nub
+    100026: Bip01 L Finger11
+    100028: Bip01 L Finger0Nub
+    100030: Bip01 L Finger01
+    100032: Bip01 L UpperArm
+    100034: Bip01 L Clavicle
+    100036: B_R_Calf
+    100038: B_R_Thigh
+    100040: Bip01 Spine
+    100042: Bip01 Pelvis
+    100044: Bip01 Footsteps
+    100046: Bip01
+    100048: Bip01 R Thigh
+    100050: Bip01 L Toe0Nub
+    100052: Bip01 L Toe0
+    100054: Bip01 R Toe0Nub
+    100056: Bip01 R Toe0
+    100058: Bip01 R Foot
+    100060: Bip01 R Calf
+    100062: Bip01 R Finger1
+    100064: B_L_Finger0
+    100066: B_L_Hand
+    100068: B_L_Forearm
+    100070: Bip01 L Foot
+    100072: Bip01 L Calf
+    100074: Bip01 L Thigh
+    100076: B_L_UpperArm
+    100078: B_Spine1
+    100080: B_Spine
+    100082: B_Pelvis
+    100084: Bip01 L Finger1
+    100086: B_L_Thigh
+    100088: B_Head
+    100090: B_R_Finger11
+    100092: B_R_Forearm
+    100094: B_R_UpperArm
+    100096: B_L_Finger11
+    100098: Chaingun
+    100100: AK47
+    100102: MissileLauncher
+    100104: B_R_Finger1
+    100106: B_R_Finger01
+    100108: B_R_Finger0
+    100110: Bip01 L Finger0
+    100112: Bip01 R Finger0
+    100114: Bip01 R Hand
+    100116: Bip01 R Forearm
+    100118: B_L_Finger1
+    100120: B_L_Finger01
+    100122: Bip01 L Hand
+    100124: Bip01 L Forearm
+    100126: B_R_Hand
+    100128: B_Prop1
+    100130: B_R_Foot
+    100132: Bip01 HeadNub
+    100134: Bip01 Head
+    100136: Bip01 Neck
+    100138: Bip01 Spine1
+    100140: USP
+    100142: B_L_Clavicle
+    100144: B_L_Toe
+    100146: B_Neck
+    100148: B_R_Clavicle
+    100150: B_R_Toe
+    100152: Soldier_Mesh
+    400000: B_L_Foot
+    400002: B_L_Calf
+    400004: PositionLocator
+    400006: Mesh_Soldier_A
+    400008: Bip01 Prop1
+    400010: //RootNode
+    400012: Bip01 R Finger1Nub
+    400014: Bip01 R Finger11
+    400016: Bip01 R Finger0Nub
+    400018: Bip01 R Finger01
+    400020: Bip01 R UpperArm
+    400022: Bip01 R Clavicle
+    400024: Bip01 L Finger1Nub
+    400026: Bip01 L Finger11
+    400028: Bip01 L Finger0Nub
+    400030: Bip01 L Finger01
+    400032: Bip01 L UpperArm
+    400034: Bip01 L Clavicle
+    400036: B_R_Calf
+    400038: B_R_Thigh
+    400040: Bip01 Spine
+    400042: Bip01 Pelvis
+    400044: Bip01 Footsteps
+    400046: Bip01
+    400048: Bip01 R Thigh
+    400050: Bip01 L Toe0Nub
+    400052: Bip01 L Toe0
+    400054: Bip01 R Toe0Nub
+    400056: Bip01 R Toe0
+    400058: Bip01 R Foot
+    400060: Bip01 R Calf
+    400062: Bip01 R Finger1
+    400064: B_L_Finger0
+    400066: B_L_Hand
+    400068: B_L_Forearm
+    400070: Bip01 L Foot
+    400072: Bip01 L Calf
+    400074: Bip01 L Thigh
+    400076: B_L_UpperArm
+    400078: B_Spine1
+    400080: B_Spine
+    400082: B_Pelvis
+    400084: Bip01 L Finger1
+    400086: B_L_Thigh
+    400088: B_Head
+    400090: B_R_Finger11
+    400092: B_R_Forearm
+    400094: B_R_UpperArm
+    400096: B_L_Finger11
+    400098: Chaingun
+    400100: AK47
+    400102: MissileLauncher
+    400104: B_R_Finger1
+    400106: B_R_Finger01
+    400108: B_R_Finger0
+    400110: Bip01 L Finger0
+    400112: Bip01 R Finger0
+    400114: Bip01 R Hand
+    400116: Bip01 R Forearm
+    400118: B_L_Finger1
+    400120: B_L_Finger01
+    400122: Bip01 L Hand
+    400124: Bip01 L Forearm
+    400126: B_R_Hand
+    400128: B_Prop1
+    400130: B_R_Foot
+    400132: Bip01 HeadNub
+    400134: Bip01 Head
+    400136: Bip01 Neck
+    400138: Bip01 Spine1
+    400140: USP
+    400142: B_L_Clavicle
+    400144: B_L_Toe
+    400146: B_Neck
+    400148: B_R_Clavicle
+    400150: B_R_Toe
+    400152: Soldier_Mesh
+    2300000: Chaingun
+    2300002: AK47
+    2300004: MissileLauncher
+    2300006: USP
+    3300000: Chaingun
+    3300002: AK47
+    3300004: MissileLauncher
+    3300006: USP
+    4300000: Mesh_Soldier_A
+    4300002: AK47
+    4300004: MissileLauncher
+    4300006: USP
+    4300008: Chaingun
+    4300010: Soldier_Mesh
+    7400000: Run_Backward_Heavy
+    9500000: //RootNode
+    11100000: //RootNode
+    13700000: Mesh_Soldier_A
+    13700002: Soldier_Mesh
+  materials:
+    importMaterials: 0
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 3
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations:
+    - serializedVersion: 16
+      name: Run_Backward_Heavy
+      takeName: Take 001
+      firstFrame: 0
+      lastFrame: 16
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 1
+      loopBlend: 1
+      loopBlendOrientation: 1
+      loopBlendPositionY: 1
+      loopBlendPositionXZ: 1
+      keepOriginalOrientation: 1
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 1
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: PositionLocator
+        weight: 1
+      - path: PositionLocator/B_Pelvis
+        weight: 1
+      - path: PositionLocator/B_Pelvis/B_Spine
+        weight: 1
+      - path: PositionLocator/B_Pelvis/B_Spine/B_Spine1
+        weight: 1
+      - path: PositionLocator/B_Pelvis/B_Spine/B_Spine1/B_L_Clavicle
+        weight: 1
+      - path: PositionLocator/B_Pelvis/B_Spine/B_Spine1/B_L_Clavicle/B_L_UpperArm
+        weight: 1
+      - path: PositionLocator/B_Pelvis/B_Spine/B_Spine1/B_L_Clavicle/B_L_UpperArm/B_L_Forearm
+        weight: 1
+      - path: PositionLocator/B_Pelvis/B_Spine/B_Spine1/B_L_Clavicle/B_L_UpperArm/B_L_Forearm/B_L_Hand
+        weight: 1
+      - path: PositionLocator/B_Pelvis/B_Spine/B_Spine1/B_L_Clavicle/B_L_UpperArm/B_L_Forearm/B_L_Hand/B_L_Finger0
+        weight: 1
+      - path: PositionLocator/B_Pelvis/B_Spine/B_Spine1/B_L_Clavicle/B_L_UpperArm/B_L_Forearm/B_L_Hand/B_L_Finger0/B_L_Finger01
+        weight: 1
+      - path: PositionLocator/B_Pelvis/B_Spine/B_Spine1/B_L_Clavicle/B_L_UpperArm/B_L_Forearm/B_L_Hand/B_L_Finger1
+        weight: 1
+      - path: PositionLocator/B_Pelvis/B_Spine/B_Spine1/B_L_Clavicle/B_L_UpperArm/B_L_Forearm/B_L_Hand/B_L_Finger1/B_L_Finger11
+        weight: 1
+      - path: PositionLocator/B_Pelvis/B_Spine/B_Spine1/B_R_Clavicle
+        weight: 1
+      - path: PositionLocator/B_Pelvis/B_Spine/B_Spine1/B_R_Clavicle/B_R_UpperArm
+        weight: 1
+      - path: PositionLocator/B_Pelvis/B_Spine/B_Spine1/B_R_Clavicle/B_R_UpperArm/B_R_Forearm
+        weight: 1
+      - path: PositionLocator/B_Pelvis/B_Spine/B_Spine1/B_R_Clavicle/B_R_UpperArm/B_R_Forearm/B_R_Hand
+        weight: 1
+      - path: PositionLocator/B_Pelvis/B_Spine/B_Spine1/B_R_Clavicle/B_R_UpperArm/B_R_Forearm/B_R_Hand/B_R_Finger0
+        weight: 1
+      - path: PositionLocator/B_Pelvis/B_Spine/B_Spine1/B_R_Clavicle/B_R_UpperArm/B_R_Forearm/B_R_Hand/B_R_Finger0/B_R_Finger01
+        weight: 1
+      - path: PositionLocator/B_Pelvis/B_Spine/B_Spine1/B_R_Clavicle/B_R_UpperArm/B_R_Forearm/B_R_Hand/B_R_Finger1
+        weight: 1
+      - path: PositionLocator/B_Pelvis/B_Spine/B_Spine1/B_R_Clavicle/B_R_UpperArm/B_R_Forearm/B_R_Hand/B_R_Finger1/B_R_Finger11
+        weight: 1
+      - path: PositionLocator/B_Pelvis/B_Spine/B_Spine1/B_R_Clavicle/B_R_UpperArm/B_R_Forearm/B_R_Hand/B_Prop1
+        weight: 1
+      - path: PositionLocator/B_Pelvis/B_Spine/B_Spine1/B_Neck
+        weight: 1
+      - path: PositionLocator/B_Pelvis/B_Spine/B_Spine1/B_Neck/B_Head
+        weight: 1
+      - path: PositionLocator/B_Pelvis/B_L_Thigh
+        weight: 1
+      - path: PositionLocator/B_Pelvis/B_L_Thigh/B_L_Calf
+        weight: 1
+      - path: PositionLocator/B_Pelvis/B_L_Thigh/B_L_Calf/B_L_Foot
+        weight: 1
+      - path: PositionLocator/B_Pelvis/B_L_Thigh/B_L_Calf/B_L_Foot/B_L_Toe
+        weight: 1
+      - path: PositionLocator/B_Pelvis/B_R_Thigh
+        weight: 1
+      - path: PositionLocator/B_Pelvis/B_R_Thigh/B_R_Calf
+        weight: 1
+      - path: PositionLocator/B_Pelvis/B_R_Thigh/B_R_Calf/B_R_Foot
+        weight: 1
+      - path: PositionLocator/B_Pelvis/B_R_Thigh/B_R_Calf/B_R_Foot/B_R_Toe
+        weight: 1
+      - path: Soldier_Mesh
+        weight: 1
+      maskType: 1
+      maskSource: {fileID: 101100000, guid: 4ebc95c8618479f4d8251c7dafa10029, type: 2}
+      additiveReferencePoseFrame: 0
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 0.01
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 0
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 2
+    tangentImportMode: 2
+  importAnimation: 1
+  copyAvatar: 1
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 1
+    foreArmTwist: 1
+    upperLegTwist: 1
+    legTwist: 1
+    armStretch: 1
+    legStretch: 0
+    feetSpacing: 0
+    rootMotionBoneName: PositionLocator
+    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 0
+  lastHumanDescriptionAvatarSource: {fileID: 9000000, guid: e42d9259129992a4d95e0b320ca2a43d,
+    type: 3}
+  animationType: 2
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

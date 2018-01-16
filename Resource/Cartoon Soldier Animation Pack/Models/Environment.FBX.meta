@@ -1,0 +1,250 @@
+fileFormatVersion: 2
+guid: 8d248bbd336e5bd4e80fae52b41d2e0b
+ModelImporter:
+  serializedVersion: 19
+  fileIDToRecycleName:
+    100000: //RootNode
+    100002: AK47
+    100004: B_Head
+    100006: B_L_Calf
+    100008: B_L_Clavicle
+    100010: B_L_Finger0
+    100012: B_L_Finger01
+    100014: B_L_Finger1
+    100016: B_L_Finger11
+    100018: B_L_Foot
+    100020: B_L_Forearm
+    100022: B_L_Hand
+    100024: B_L_Thigh
+    100026: B_L_Toe
+    100028: B_L_UpperArm
+    100030: B_Neck
+    100032: B_Pelvis
+    100034: B_Prop1
+    100036: B_R_Calf
+    100038: B_R_Clavicle
+    100040: B_R_Finger0
+    100042: B_R_Finger01
+    100044: B_R_Finger1
+    100046: B_R_Finger11
+    100048: B_R_Foot
+    100050: B_R_Forearm
+    100052: B_R_Hand
+    100054: B_R_Thigh
+    100056: B_R_Toe
+    100058: B_R_UpperArm
+    100060: B_Spine
+    100062: B_Spine1
+    100064: Bip01
+    100066: Bip01 Footsteps
+    100068: Bip01 Head
+    100070: Bip01 HeadNub
+    100072: Bip01 L Calf
+    100074: Bip01 L Clavicle
+    100076: Bip01 L Finger0
+    100078: Bip01 L Finger01
+    100080: Bip01 L Finger0Nub
+    100082: Bip01 L Finger1
+    100084: Bip01 L Finger11
+    100086: Bip01 L Finger1Nub
+    100088: Bip01 L Foot
+    100090: Bip01 L Forearm
+    100092: Bip01 L Hand
+    100094: Bip01 L Thigh
+    100096: Bip01 L Toe0
+    100098: Bip01 L Toe0Nub
+    100100: Bip01 L UpperArm
+    100102: Bip01 Neck
+    100104: Bip01 Pelvis
+    100106: Bip01 Prop1
+    100108: Bip01 R Calf
+    100110: Bip01 R Clavicle
+    100112: Bip01 R Finger0
+    100114: Bip01 R Finger01
+    100116: Bip01 R Finger0Nub
+    100118: Bip01 R Finger1
+    100120: Bip01 R Finger11
+    100122: Bip01 R Finger1Nub
+    100124: Bip01 R Foot
+    100126: Bip01 R Forearm
+    100128: Bip01 R Hand
+    100130: Bip01 R Thigh
+    100132: Bip01 R Toe0
+    100134: Bip01 R Toe0Nub
+    100136: Bip01 R UpperArm
+    100138: Bip01 Spine
+    100140: Bip01 Spine1
+    100142: Chaingun
+    100144: Environment
+    100146: MissileLauncher
+    100148: PositionLocator
+    100150: Soldier_Mesh
+    100152: USP
+    400000: //RootNode
+    400002: AK47
+    400004: B_Head
+    400006: B_L_Calf
+    400008: B_L_Clavicle
+    400010: B_L_Finger0
+    400012: B_L_Finger01
+    400014: B_L_Finger1
+    400016: B_L_Finger11
+    400018: B_L_Foot
+    400020: B_L_Forearm
+    400022: B_L_Hand
+    400024: B_L_Thigh
+    400026: B_L_Toe
+    400028: B_L_UpperArm
+    400030: B_Neck
+    400032: B_Pelvis
+    400034: B_Prop1
+    400036: B_R_Calf
+    400038: B_R_Clavicle
+    400040: B_R_Finger0
+    400042: B_R_Finger01
+    400044: B_R_Finger1
+    400046: B_R_Finger11
+    400048: B_R_Foot
+    400050: B_R_Forearm
+    400052: B_R_Hand
+    400054: B_R_Thigh
+    400056: B_R_Toe
+    400058: B_R_UpperArm
+    400060: B_Spine
+    400062: B_Spine1
+    400064: Bip01
+    400066: Bip01 Footsteps
+    400068: Bip01 Head
+    400070: Bip01 HeadNub
+    400072: Bip01 L Calf
+    400074: Bip01 L Clavicle
+    400076: Bip01 L Finger0
+    400078: Bip01 L Finger01
+    400080: Bip01 L Finger0Nub
+    400082: Bip01 L Finger1
+    400084: Bip01 L Finger11
+    400086: Bip01 L Finger1Nub
+    400088: Bip01 L Foot
+    400090: Bip01 L Forearm
+    400092: Bip01 L Hand
+    400094: Bip01 L Thigh
+    400096: Bip01 L Toe0
+    400098: Bip01 L Toe0Nub
+    400100: Bip01 L UpperArm
+    400102: Bip01 Neck
+    400104: Bip01 Pelvis
+    400106: Bip01 Prop1
+    400108: Bip01 R Calf
+    400110: Bip01 R Clavicle
+    400112: Bip01 R Finger0
+    400114: Bip01 R Finger01
+    400116: Bip01 R Finger0Nub
+    400118: Bip01 R Finger1
+    400120: Bip01 R Finger11
+    400122: Bip01 R Finger1Nub
+    400124: Bip01 R Foot
+    400126: Bip01 R Forearm
+    400128: Bip01 R Hand
+    400130: Bip01 R Thigh
+    400132: Bip01 R Toe0
+    400134: Bip01 R Toe0Nub
+    400136: Bip01 R UpperArm
+    400138: Bip01 Spine
+    400140: Bip01 Spine1
+    400142: Chaingun
+    400144: Environment
+    400146: MissileLauncher
+    400148: PositionLocator
+    400150: Soldier_Mesh
+    400152: USP
+    2300000: //RootNode
+    2300002: AK47
+    2300004: Chaingun
+    2300006: Environment
+    2300008: MissileLauncher
+    2300010: Soldier_Mesh
+    2300012: USP
+    3300000: //RootNode
+    3300002: AK47
+    3300004: Chaingun
+    3300006: Environment
+    3300008: MissileLauncher
+    3300010: Soldier_Mesh
+    3300012: USP
+    4300000: Environment
+    4300002: AK47
+    4300004: MissileLauncher
+    4300006: USP
+    4300008: Chaingun
+    4300010: Soldier_Mesh
+    9500000: //RootNode
+  materials:
+    importMaterials: 0
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 0.01
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 0
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 0
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 0
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 1
+  importAnimation: 0
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 0
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 0
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

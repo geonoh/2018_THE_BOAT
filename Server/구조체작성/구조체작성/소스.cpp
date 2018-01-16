@@ -35,7 +35,6 @@ int main()
 	if (retval == SOCKET_ERROR) err_quit("listen()");
 
 
-
 	CtsPacket test1;
 	test1.keyboard_click = 0x00010101;
 	test1.PushArrowKeyUp();
