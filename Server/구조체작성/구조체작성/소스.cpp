@@ -7,8 +7,18 @@ void InitServerData() {
 
 }
 
+enum ErrorMsg {
+	quit_fail = 1,
+	what,
+	dorae,
+	kindof
+};
+
 int main() 
 {
+	ErrorMsg whatkindof;
+	whatkindof = quit_fail;
+
 	int retval;
 
 
