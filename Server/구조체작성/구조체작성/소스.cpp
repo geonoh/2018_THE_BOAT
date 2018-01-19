@@ -7,18 +7,8 @@ void InitServerData() {
 
 }
 
-enum ErrorMsg {
-	quit_fail = 1,
-	what,
-	dorae,
-	kindof
-};
-
 int main() 
 {
-	ErrorMsg whatkindof;
-	whatkindof = quit_fail;
-
 	int retval;
 
 
@@ -43,6 +33,55 @@ int main()
 	// listen()
 	retval = listen(listen_sock, SOMAXCONN);
 	if (retval == SOCKET_ERROR) err_quit("listen()");
+
+
+	// 데이터 통신에 사용할 변수
+	SOCKET client_sock;
+	SOCKADDR_IN clientaddr;
+	int addrlen;
+	char buf[BUFSIZE + 1];
+	int len;
+
+
+	// 연결 되보림
+	while (true) {
+		addrlen = sizeof(clientaddr);
+		cout << "Accept 대기중" << endl;
+		client_sock = accept(listen_sock, (SOCKADDR *)&clientaddr, &addrlen);
+		cout << "Accept 완료" << endl;
+		if (client_sock == INVALID_SOCKET) {
+			err_display("accept()");
+			break;
+		}
+		// 클라이언트와 데이터 통신
+		while (1) {
+			// 데이터 받기(고정 길이)
+			cout << "데이터 받기 대기" << endl;
+			retval = recvn(client_sock, (char *)&len, sizeof(int), 0);
+			if (retval == SOCKET_ERROR) {
+				err_display("recv()");
+				break;
+			}
+			else if (retval == 0)
+				break;
+
+			// 데이터 받기(가변 길이)
+			retval = recvn(client_sock, buf, len, 0);
+			if (retval == SOCKET_ERROR) {
+				err_display("recv()");
+				break;
+			}
+			else if (retval == 0)
+				break;
+
+			// 받은 데이터 출력
+			buf[retval] = '\0';
+			printf("[TCP/%s:%d] %s\n", inet_ntoa(clientaddr.sin_addr),
+				ntohs(clientaddr.sin_port), buf);
+		}
+
+
+	}
 
 
 	CtsPacket test1;
