@@ -42,7 +42,8 @@ int main()
 	char buf[BUFSIZE + 1];
 	int len;
 
-
+	char recv_buf[sizeof(CtsPacket)] = { 0 };
+	CtsPacket packet_buffer;
 	// 연결 되보림
 	while (true) {
 		addrlen = sizeof(clientaddr);
@@ -57,27 +58,40 @@ int main()
 		while (1) {
 			// 데이터 받기(고정 길이)
 			cout << "데이터 받기 대기" << endl;
-			retval = recvn(client_sock, (char *)&len, sizeof(int), 0);
+			retval = recvn(client_sock, (char *)&recv_buf, sizeof(CtsPacket), 0);
+
 			if (retval == SOCKET_ERROR) {
 				err_display("recv()");
 				break;
 			}
 			else if (retval == 0)
 				break;
+			memcpy(&packet_buffer, recv_buf, sizeof(recv_buf));
 
-			// 데이터 받기(가변 길이)
-			retval = recvn(client_sock, buf, len, 0);
-			if (retval == SOCKET_ERROR) {
-				err_display("recv()");
-				break;
-			}
-			else if (retval == 0)
-				break;
+			printf("%x \n", packet_buffer);
+			//// 데이터 받기(고정 길이)
+			//cout << "데이터 받기 대기" << endl;
+			//retval = recvn(client_sock, (char *)&len, sizeof(int), 0);
+			//if (retval == SOCKET_ERROR) {
+			//	err_display("recv()");
+			//	break;
+			//}
+			//else if (retval == 0)
+			//	break;
 
-			// 받은 데이터 출력
-			buf[retval] = '\0';
-			printf("[TCP/%s:%d] %s\n", inet_ntoa(clientaddr.sin_addr),
-				ntohs(clientaddr.sin_port), buf);
+			//// 데이터 받기(가변 길이)
+			//retval = recvn(client_sock, buf, len, 0);
+			//if (retval == SOCKET_ERROR) {
+			//	err_display("recv()");
+			//	break;
+			//}
+			//else if (retval == 0)
+			//	break;
+
+			//// 받은 데이터 출력
+			//buf[retval] = '\0';
+			//printf("[TCP/%s:%d] %s\n", inet_ntoa(clientaddr.sin_addr),
+			//	ntohs(clientaddr.sin_port), buf);
 		}
 
 
