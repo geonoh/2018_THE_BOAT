@@ -1,5 +1,0 @@
-﻿  소스.cpp
-d:\졸업연구\2018_the_boat\server\구조체작성\구조체작성\소스.cpp(71): warning C4477: 'printf' : 서식 문자열 '%x'에 'unsigned int' 형식의 인수가 필요하지만 variadic 인수 1의 형식이 'CtsPacket'입니다.
-d:\졸업연구\2018_the_boat\server\구조체작성\구조체작성\소스.cpp(43): warning C4101: 'len' :참조되지 않은 지역 변수입니다.
-d:\졸업연구\2018_the_boat\server\구조체작성\구조체작성\소스.cpp(42): warning C4101: 'buf' :참조되지 않은 지역 변수입니다.
-  구조체작성.vcxproj -> D:\졸업연구\2018_THE_BOAT\Server\구조체작성\Debug\구조체작성.exe
