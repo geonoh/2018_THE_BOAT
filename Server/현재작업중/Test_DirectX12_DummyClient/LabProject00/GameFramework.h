@@ -1,5 +1,6 @@
 #pragma once
 #include "Timer.h"
+#include "NetworkMgr.h"
 
 class CGameFramework
 {
@@ -57,6 +58,9 @@ private:
 	D3D12_VIEWPORT m_d3dViewport;
 	D3D12_RECT m_d3dScissorRect;
 	//뷰포트와 씨저 사각형이다. 
+
+	//통신
+	NetworkMgr* network_mgr;
 public:
 	CGameFramework();
 	~CGameFramework();

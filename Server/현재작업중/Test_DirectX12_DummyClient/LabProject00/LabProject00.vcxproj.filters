@@ -25,6 +25,9 @@
     <Filter Include="GameTimer">
       <UniqueIdentifier>{f2b07ad0-3d4c-4abb-ab6c-58d177d8c4a5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Network">
+      <UniqueIdentifier>{adad4be6-617e-4169-b8bb-3580d7e3a573}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="targetver.h">
@@ -45,6 +48,12 @@
     <ClInclude Include="Timer.h">
       <Filter>GameTimer</Filter>
     </ClInclude>
+    <ClInclude Include="NetworkDeclare.h">
+      <Filter>Network</Filter>
+    </ClInclude>
+    <ClInclude Include="NetworkMgr.h">
+      <Filter>Network</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameFramework.cpp">
@@ -58,6 +67,9 @@
     </ClCompile>
     <ClCompile Include="Timer.cpp">
       <Filter>GameTimer</Filter>
+    </ClCompile>
+    <ClCompile Include="NetworkMgr.cpp">
+      <Filter>Network</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

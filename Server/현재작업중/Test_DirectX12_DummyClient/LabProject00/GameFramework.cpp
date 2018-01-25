@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "GameFramework.h"
 
-
 CGameFramework::CGameFramework()
 {
 	m_pdxgiFactory = NULL;
@@ -25,6 +24,8 @@ CGameFramework::CGameFramework()
 	m_nWndClientHeight = FRAME_BUFFER_HEIGHT;
 
 	_tcscpy_s(m_pszFrameRate, _T("LapProject ("));
+
+	network_mgr = new NetworkMgr;
 }
 CGameFramework::~CGameFramework()
 {
@@ -284,6 +285,17 @@ void CGameFramework::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPA
 			break;
 		case VK_RETURN:
 			break;
+
+		case VK_UP:
+			std::cout << "UP Key up" << std::endl;
+			break;
+		case VK_DOWN:
+			break;
+		case VK_RIGHT:
+			break;
+		case VK_LEFT:
+			break;
+
 		case VK_F8:
 			break;
 		case VK_F9:
@@ -292,6 +304,25 @@ void CGameFramework::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPA
 			break;
 		}
 		break;
+	case WM_KEYDOWN:
+		switch (wParam) {
+		case VK_ESCAPE:
+			break;
+
+		case VK_UP:
+			std::cout << "UP Key up" << std::endl;
+			break;
+		case VK_DOWN:
+			break;
+		case VK_RIGHT:
+			break;
+		case VK_LEFT:
+			break;
+
+
+		case VK_RETURN:
+			break;
+		}
 	default:
 		break;
 	}
@@ -315,7 +346,7 @@ LRESULT CALLBACK CGameFramework::OnProcessingWindowMessage(HWND hWnd, UINT nMess
 	case WM_MOUSEMOVE:
 		OnProcessingMouseMessage(hWnd, nMessageID, wParam, lParam);
 		break;
-	case WM_KEYDOWN:
+	case WM_KEYDOWN:	// 키가 눌릴때도 
 	case WM_KEYUP:
 		OnProcessingKeyboardMessage(hWnd, nMessageID, wParam, lParam);
 		break;
@@ -434,6 +465,7 @@ void CGameFramework::FrameAdvance()
 
 bool CGameFramework::OnCreate(HINSTANCE hInstance, HWND hMainWnd)
 {
+
 	m_hInstance = hInstance;
 	m_hWnd = hMainWnd;
 	//Direct3D 디바이스, 명령 큐와 명령 리스트, 스왑 체인 등을 생성하는 함수를 호출한다.
