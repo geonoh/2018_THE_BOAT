@@ -68,7 +68,7 @@ int main()
 				break;
 			memcpy(&packet_buffer, recv_buf, sizeof(recv_buf));
 
-			printf("%x \n", packet_buffer);
+			printf("%x \n", packet_buffer.keyboard_click);
 			//// 데이터 받기(고정 길이)
 			//cout << "데이터 받기 대기" << endl;
 			//retval = recvn(client_sock, (char *)&len, sizeof(int), 0);

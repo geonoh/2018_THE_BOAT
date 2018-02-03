@@ -3,7 +3,7 @@
 #include <WinSock2.h>
 #include <iostream>
 
-
+#define SERVERIP "127.0.0.1"
 #define SERVERPORT 9000
 
 

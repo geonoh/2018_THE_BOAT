@@ -4,7 +4,7 @@ class NetworkMgr
 private:
 	CtsPacket* client_to_server_packet;
 	WSADATA wsa;
-	SOCKET listen_sock;
+	SOCKET sock;
 	SOCKADDR_IN serveraddr;
 
 	SOCKET client_sock;

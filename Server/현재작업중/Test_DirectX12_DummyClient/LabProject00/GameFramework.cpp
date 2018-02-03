@@ -287,6 +287,7 @@ void CGameFramework::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPA
 			break;
 
 		case VK_UP:
+			network_mgr->ReleaseUPandSend();
 			std::cout << "UP Key up" << std::endl;
 			break;
 		case VK_DOWN:
@@ -310,7 +311,8 @@ void CGameFramework::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPA
 			break;
 
 		case VK_UP:
-			std::cout << "UP Key up" << std::endl;
+			network_mgr->PushUPandSend();
+			std::cout << "UP Key down" << std::endl;
 			break;
 		case VK_DOWN:
 			break;
@@ -477,6 +479,10 @@ bool CGameFramework::OnCreate(HINSTANCE hInstance, HWND hMainWnd)
 	CreateDepthStencilView();
 	BuildObjects();
 	//렌더링할 객체(게임 월드 객체)를 생성한다.
+
+
+	//여기서 connect를 해준다.
+	network_mgr->ConnectClient();
 	return(true);
 }
 
