@@ -21,6 +21,13 @@ int main()
 	SOCKET listen_sock = socket(AF_INET, SOCK_STREAM, 0);
 	if (listen_sock == INVALID_SOCKET) err_quit("socket()");
 
+	// 넌블로킹소켓으로 전환
+	u_long on = 1;
+	retval = ioctlsocket(listen_sock, FIONBIO, &on);
+
+	// 리슨소켓이 넌블러킹이면 client 소켓도 자동으로 넌블러킹이 된다.
+
+
 	// bind()
 	SOCKADDR_IN serveraddr;
 	ZeroMemory(&serveraddr, sizeof(serveraddr));
@@ -46,21 +53,29 @@ int main()
 	CtsPacket packet_buffer;
 	// 연결 되보림
 	while (true) {
+
+	ACCEPT_AGAIN:
 		addrlen = sizeof(clientaddr);
-		cout << "Accept 대기중" << endl;
+		//cout << "Accept 대기중" << endl;
 		client_sock = accept(listen_sock, (SOCKADDR *)&clientaddr, &addrlen);
-		cout << "Accept 완료" << endl;
+		//cout << "Accept 완료" << endl;
 		if (client_sock == INVALID_SOCKET) {
+			// 여기서 추가가 된다. 
+			if (WSAGetLastError() == WSAEWOULDBLOCK)
+				goto ACCEPT_AGAIN;
 			err_display("accept()");
 			break;
 		}
 		// 클라이언트와 데이터 통신
 		while (1) {
 			// 데이터 받기(고정 길이)
-			cout << "데이터 받기 대기" << endl;
+		RECV_AGAIN:
+			//cout << "데이터 받기 대기" << endl;
 			retval = recvn(client_sock, (char *)&recv_buf, sizeof(CtsPacket), 0);
 
 			if (retval == SOCKET_ERROR) {
+				if (WSAGetLastError() == WSAEWOULDBLOCK)
+					goto  RECV_AGAIN;
 				err_display("recv()");
 				break;
 			}

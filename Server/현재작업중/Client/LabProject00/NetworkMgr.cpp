@@ -26,6 +26,9 @@ void NetworkMgr::ConnectClient() {
 
 
 	retval = connect(sock, (SOCKADDR *)&serveraddr, sizeof(serveraddr));
+	if (retval == SOCKET_ERROR) {
+		std::cout << "소켓 연결 안됬음" << std::endl;
+	}
 	//if (retval == SOCKET_ERROR) err_quit("connect()");
 
 
@@ -49,12 +52,33 @@ void NetworkMgr::ReleaseUPandSend() {
 	}
 }
 void NetworkMgr::ReleaseDownandSend() {
+	int retval = 0;
+	client_to_server_packet->ReleaseArrowKeyDown();
+
+	retval = send(sock, (char*)client_to_server_packet, sizeof(*client_to_server_packet), 0);
+	if (retval == SOCKET_ERROR) {
+		std::cout << "보내는거 오류났음" << std::endl;
+	}
 
 }
 void NetworkMgr::ReleaseRightandSend() {
+	int retval = 0;
+	client_to_server_packet->ReleaseArrowKeyRight();
+
+	retval = send(sock, (char*)client_to_server_packet, sizeof(*client_to_server_packet), 0);
+	if (retval == SOCKET_ERROR) {
+		std::cout << "보내는거 오류났음" << std::endl;
+	}
 
 }
 void NetworkMgr::ReleaseLeftandSend() {
+	int retval = 0;
+	client_to_server_packet->ReleaseArrowKeyLeft();
+
+	retval = send(sock, (char*)client_to_server_packet, sizeof(*client_to_server_packet), 0);
+	if (retval == SOCKET_ERROR) {
+		std::cout << "보내는거 오류났음" << std::endl;
+	}
 
 }
 void NetworkMgr::PushUPandSend() {
@@ -68,12 +92,33 @@ void NetworkMgr::PushUPandSend() {
 
 }
 void NetworkMgr::PushDownandSend() {
+	int retval = 0;
+	client_to_server_packet->PushArrowKeyDown();
+
+	retval = send(sock, (char*)client_to_server_packet, sizeof(*client_to_server_packet), 0);
+	if (retval == SOCKET_ERROR) {
+		std::cout << "보내는거 오류났음" << std::endl;
+	}
 
 }
 void NetworkMgr::PushRightandSend() {
+	int retval = 0;
+	client_to_server_packet->PushArrowKeyRight();
+
+	retval = send(sock, (char*)client_to_server_packet, sizeof(*client_to_server_packet), 0);
+	if (retval == SOCKET_ERROR) {
+		std::cout << "보내는거 오류났음" << std::endl;
+	}
 
 }
 void NetworkMgr::PushLeftandSend() {
+	int retval = 0;
+	client_to_server_packet->PushArrowKeyLeft();
+
+	retval = send(sock, (char*)client_to_server_packet, sizeof(*client_to_server_packet), 0);
+	if (retval == SOCKET_ERROR) {
+		std::cout << "보내는거 오류났음" << std::endl;
+	}
 
 }
 
