@@ -1,6 +1,8 @@
 #pragma once
 #include "Timer.h"
 #include "NetworkMgr.h"
+#include "Scene.h"
+
 
 class CGameFramework
 {
@@ -43,7 +45,11 @@ private:
 	ID3D12GraphicsCommandList *m_pd3dCommandList;
 	//명령 큐, 명령 할당자, 명령 리스트 인터페이스 포인터이다. 
 	ID3D12Fence *m_pd3dFence;
-	UINT64 m_nFenceValue;
+
+
+	UINT64 m_nFenceValues[m_nSwapChainBuffers];
+	// 후면버퍼마다 현재의 펜스값을 관리하기 위해서 수정
+
 	HANDLE m_hFenceEvent;
 	//펜스 인터페이스 포인터, 펜스의 값, 이벤트 핸들이다. 
 
@@ -61,6 +67,9 @@ private:
 
 	//통신
 	NetworkMgr* network_mgr;
+
+
+	CScene *m_pScene;
 public:
 	CGameFramework();
 	~CGameFramework();
@@ -92,6 +101,7 @@ public:
 		LPARAM lParam);
 	//윈도우의 메시지(키보드, 마우스 입력)를 처리하는 함수이다.
 
-	void OnResizeBackBuffers();
+	void OnResizeBackBuffers();
 
+	void MoveToNextFrame();
 };

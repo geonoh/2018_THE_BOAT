@@ -28,6 +28,12 @@
     <Filter Include="Network">
       <UniqueIdentifier>{adad4be6-617e-4169-b8bb-3580d7e3a573}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Scene">
+      <UniqueIdentifier>{a4a83738-6b58-4ea6-86db-7b479f25e06b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader">
+      <UniqueIdentifier>{2f87c5dc-8816-495a-91e9-c403721ad579}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="targetver.h">
@@ -54,6 +60,9 @@
     <ClInclude Include="NetworkMgr.h">
       <Filter>Network</Filter>
     </ClInclude>
+    <ClInclude Include="Scene.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameFramework.cpp">
@@ -71,6 +80,9 @@
     <ClCompile Include="NetworkMgr.cpp">
       <Filter>Network</Filter>
     </ClCompile>
+    <ClCompile Include="Scene.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="LabProject00.rc">
@@ -84,5 +96,10 @@
     <Image Include="LabProject00.ico">
       <Filter>리소스 파일</Filter>
     </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="Shaders.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>
