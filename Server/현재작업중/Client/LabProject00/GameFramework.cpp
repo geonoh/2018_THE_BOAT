@@ -132,9 +132,25 @@ void CGameFramework::CreateDirect3DDevice()
 	::CreateDXGIFactory1(__uuidof(IDXGIFactory4), (void **)&m_pdxgiFactory);
 	//DXGI 팩토리를 생성한다. 
 	IDXGIAdapter1 *pd3dAdapter = NULL;
+	IUnknown* TestAd = NULL;
+	// 내가 한거임
+	/*IDXGIOutput* pOutput = NULL;
+	UINT nModes = 0;
+	UINT nFlags = DXGI_ENUM_MODES_INTERLACED;
+	DXGI_MODE_DESC* pDisplayModes = NULL;
+	*/// --
+	IUnknown* anjdi;
+
+
+
 	for (UINT i = 0; DXGI_ERROR_NOT_FOUND != m_pdxgiFactory->EnumAdapters1(i,
 		&pd3dAdapter); i++)
 	{
+		//// 내가 한거임
+		//pd3dAdapter->EnumOutputs(0, &pOutput);
+		//pOutput->GetDisplayModeList(DXGI_FORMAT_R8G8B8A8_UNORM, nFlags, &nModes, NULL);
+		//pDisplayModes = new DXGI_MODE_DESC[nModes];
+		//// ---
 		DXGI_ADAPTER_DESC1 dxgiAdapterDesc;
 		pd3dAdapter->GetDesc1(&dxgiAdapterDesc);
 		if (dxgiAdapterDesc.Flags & DXGI_ADAPTER_FLAG_SOFTWARE) continue;
@@ -291,7 +307,10 @@ void CGameFramework::ReleaseObjects()
 {
 	if (m_pScene) m_pScene->ReleaseObjects();
 	if (m_pScene) delete m_pScene;
-}void CGameFramework::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM wParam,
+}
+
+
+void CGameFramework::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM wParam,
 	LPARAM lParam)
 {
 	switch (nMessageID)
@@ -444,7 +463,10 @@ void CGameFramework::WaitForGpuComplete()
 		hResult = m_pd3dFence->SetEventOnCompletion(nFenceValue, m_hFenceEvent);
 		::WaitForSingleObject(m_hFenceEvent, INFINITE);
 	}
-}void CGameFramework::FrameAdvance()
+}
+
+
+void CGameFramework::FrameAdvance()
 {
 	m_GameTimer.Tick(0.0f);
 	ProcessInput();

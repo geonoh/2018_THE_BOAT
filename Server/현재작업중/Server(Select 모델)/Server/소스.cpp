@@ -89,7 +89,7 @@ int main()
 			else {
 				// 소켓정보 추가하기
 				AddSocketInfo(client_sock);
-				printf("소켓 입력 들어와쪄염\n");
+				printf("클라이언트 IN\n");
 			}
 		}
 
