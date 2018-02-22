@@ -291,7 +291,10 @@ void CGameFramework::ReleaseObjects()
 {
 	if (m_pScene) m_pScene->ReleaseObjects();
 	if (m_pScene) delete m_pScene;
-}void CGameFramework::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM wParam,
+}
+
+
+void CGameFramework::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM wParam,
 	LPARAM lParam)
 {
 	switch (nMessageID)
@@ -444,7 +447,10 @@ void CGameFramework::WaitForGpuComplete()
 		hResult = m_pd3dFence->SetEventOnCompletion(nFenceValue, m_hFenceEvent);
 		::WaitForSingleObject(m_hFenceEvent, INFINITE);
 	}
-}void CGameFramework::FrameAdvance()
+}
+
+
+void CGameFramework::FrameAdvance()
 {
 	m_GameTimer.Tick(0.0f);
 	ProcessInput();
