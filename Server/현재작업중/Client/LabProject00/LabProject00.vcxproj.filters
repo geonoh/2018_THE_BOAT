@@ -31,8 +31,17 @@
     <Filter Include="Scene">
       <UniqueIdentifier>{a4a83738-6b58-4ea6-86db-7b479f25e06b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Shader">
+    <Filter Include="Mesh">
+      <UniqueIdentifier>{39879eed-fcfb-4357-ba38-44cd8be4f9e4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="HLSL">
       <UniqueIdentifier>{2f87c5dc-8816-495a-91e9-c403721ad579}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader">
+      <UniqueIdentifier>{c8614602-b70b-479f-87de-a96bf4a5f890}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GameObject">
+      <UniqueIdentifier>{ed8af561-e43f-4ed4-8329-7f5db25a4622}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -99,7 +108,7 @@
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shaders.hlsl">
-      <Filter>Shader</Filter>
+      <Filter>HLSL</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>
