@@ -30,10 +30,6 @@ void NetworkMgr::ConnectClient() {
 		std::cout << "소켓 연결 안됬음" << std::endl;
 	}
 	//if (retval == SOCKET_ERROR) err_quit("connect()");
-
-
-	int addrlen;
-	int len;
 }
 
 

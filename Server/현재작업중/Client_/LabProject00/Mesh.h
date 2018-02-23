@@ -11,6 +11,8 @@ public:
 	CVertex(XMFLOAT3 xmf3Position) { m_xmf3Position = xmf3Position; }
 	~CVertex() { }
 };
+
+
 class CDiffusedVertex : public CVertex
 {
 protected:
@@ -18,8 +20,7 @@ protected:
 	XMFLOAT4 m_xmf4Diffuse;
 public:
 	CDiffusedVertex() {
-		m_xmf3Position = XMFLOAT3(0.0f, 0.0f, 0.0f); 
-		m_xmf4Diffuse =
+		m_xmf3Position = XMFLOAT3(0.0f, 0.0f, 0.0f); m_xmf4Diffuse =
 			XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
 	}
 	CDiffusedVertex(float x, float y, float z, XMFLOAT4 xmf4Diffuse) {
@@ -32,8 +33,6 @@ public:
 	}
 	~CDiffusedVertex() { }
 };
-
-
 
 class CMesh
 {
@@ -58,7 +57,6 @@ protected:
 public:
 	virtual void Render(ID3D12GraphicsCommandList *pd3dCommandList);
 };
-
 
 class CTriangleMesh : public CMesh
 {

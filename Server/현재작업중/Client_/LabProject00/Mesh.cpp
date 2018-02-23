@@ -1,7 +1,9 @@
 #include "stdafx.h"
 #include "Mesh.h"
 
-CMesh::CMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList) {
+
+CMesh::CMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList)
+{
 
 }
 
@@ -13,7 +15,7 @@ CMesh::~CMesh()
 
 void CMesh::ReleaseUploadBuffers()
 {
-	//정점 버퍼를 위한 업로드 버퍼를 소멸시킨다. 
+	//정점 버퍼를 위한 업로드 버퍼를 소멸시킨다.
 	if (m_pd3dVertexUploadBuffer) m_pd3dVertexUploadBuffer->Release();
 	m_pd3dVertexUploadBuffer = NULL;
 };
@@ -31,7 +33,7 @@ void CMesh::Render(ID3D12GraphicsCommandList *pd3dCommandList)
 CTriangleMesh::CTriangleMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList
 	*pd3dCommandList) : CMesh(pd3dDevice, pd3dCommandList)
 {
-	//삼각형 메쉬를 정의한다.
+	//삼각형 메쉬를 정의한다. 
 	m_nVertices = 3;
 	m_nStride = sizeof(CDiffusedVertex);
 	m_d3dPrimitiveTopology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
@@ -45,7 +47,7 @@ CTriangleMesh::CTriangleMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList
 	m_pd3dVertexBuffer = ::CreateBufferResource(pd3dDevice, pd3dCommandList, pVertices,
 	m_nStride * m_nVertices, D3D12_HEAP_TYPE_DEFAULT,
 		D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, &m_pd3dVertexUploadBuffer);
-		//정점 버퍼 뷰를 생성한다.
+		//정점 버퍼 뷰를 생성한다. 
 	m_d3dVertexBufferView.BufferLocation = m_pd3dVertexBuffer->GetGPUVirtualAddress();
 		m_d3dVertexBufferView.StrideInBytes = m_nStride;
 		m_d3dVertexBufferView.SizeInBytes = m_nStride * m_nVertices;
