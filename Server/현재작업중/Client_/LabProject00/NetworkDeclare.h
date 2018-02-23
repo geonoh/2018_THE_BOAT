@@ -6,6 +6,14 @@
 #define SERVERIP "127.0.0.1"
 #define SERVERPORT 9000
 
+enum ClientID {
+	client_id_1 = 1,
+	client_id_2,
+	client_id_3,
+	client_id_4
+};
+
+
 
 struct Point2D {
 	float x, y;
@@ -61,6 +69,7 @@ int recvn(SOCKET s, char *buf, int len, int flags) {
 struct CtsPacket {
 	UINT keyboard_click = 0x00000000;
 	UINT mouse_click = 0x00000000;
+	UINT player_id = 0;
 	Point2D mouse_direction = { 0 };
 
 	// 클라이언트에서 보낼 때 키보드의 클릭을 받을 때

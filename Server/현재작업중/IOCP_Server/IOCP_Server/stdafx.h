@@ -1,12 +1,31 @@
 #pragma once
 #pragma comment (lib, "ws2_32.lib")
-#pragma comment (lib, "winmm.lib")
+//#pragma comment (lib, "winmm.lib")
 #include <WinSock2.h>
 #include <iostream>
 #include <Windows.h>
 #include <stdlib.h>
 
+// -----------------------------------
+// Server Define
+#define SERVERPORT 9000
+#define RUOK	1
+#define RUFAIL	0
+
+void err_quit(char *msg);
+void err_display(char* msg);
+
+enum ClientID {
+	client_id_1 = 1,
+	client_id_2,
+	client_id_3,
+	client_id_4
+};
+// -----------------------------------
+
+
 using namespace std;
+
 
 struct Point2D {
 	int x, y;
@@ -21,6 +40,7 @@ struct StcPacket {
 struct CtsPacket {
 	UINT keyboard_click = 0x00000000;
 	UINT mouse_click = 0x00000000;
+	UINT player_id = 0;
 	Point2D mouse_direction = { 0 };
 
 	// 클라이언트에서 보낼 때 키보드의 클릭을 받을 때
@@ -94,4 +114,11 @@ struct CtsPacket {
 		UINT input_buffer = 0x11111110;
 		keyboard_click = keyboard_click & input_buffer;
 	}
+};
+
+struct SocketInfo {
+	OVERLAPPED overlapped;
+	SOCKET socket;
+	char buf[sizeof(CtsPacket)];
+	WSABUF wsa_buffer;
 };

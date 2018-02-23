@@ -16,6 +16,9 @@
     <Filter Include="ServerFramework">
       <UniqueIdentifier>{d6719b3c-4140-4cfe-b5ad-ca4fb4a708e7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="stdafx">
+      <UniqueIdentifier>{704df87a-dc7c-4413-bb02-08b8700012b0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="iocp_server_main.cpp">
@@ -24,13 +27,16 @@
     <ClCompile Include="ServerFramework.cpp">
       <Filter>ServerFramework</Filter>
     </ClCompile>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>stdafx</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="stdafx.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="ServerFramework.h">
       <Filter>ServerFramework</Filter>
+    </ClInclude>
+    <ClInclude Include="stdafx.h">
+      <Filter>stdafx</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -8,6 +8,9 @@ private:
 	StcPacket* stc_packet;
 	WSADATA wsa;
 
+	SOCKET listen_socket;
+	SOCKADDR_IN server_address;
+	HANDLE hcp;		// Handle for IOCP
 
 public:
 	ServerFramework();
@@ -20,6 +23,13 @@ public:
 	int Initialize();
 
 	// WorkerThread for networking with client.
-	DWORD WINAPI WorkerThread(LPVOID arg);
+	// Warning! should be declared by static.
+	static DWORD WINAPI WorkerThread(LPVOID arg);
+
+	// Connect IOCP from client_socket_buffer (client number added)
+	int AcceptClient(UINT client_number);
+	
+	// collide check and generate boat module
+	int Update();
 };
 
