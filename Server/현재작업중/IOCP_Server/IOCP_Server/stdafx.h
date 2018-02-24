@@ -118,7 +118,7 @@ struct CtsPacket {
 
 struct SocketInfo {
 	OVERLAPPED overlapped;
-	SOCKET socket;
 	char buf[sizeof(CtsPacket)];
 	WSABUF wsa_buffer;
+	SOCKET socket;
 };

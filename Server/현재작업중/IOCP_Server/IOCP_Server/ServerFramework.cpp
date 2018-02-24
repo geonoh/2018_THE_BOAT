@@ -9,21 +9,56 @@ DWORD WINAPI ServerFramework::WorkerThread(LPVOID arg) {
 		DWORD transferred_size;
 		SOCKET client_socket_buffer;
 		SocketInfo* socket_info_buffer;
-		
-		retval = GetQueuedCompletionStatus(thread_hcp, &transferred_size,
+
+		retval = GetQueuedCompletionStatus(thread_hcp, &transferred_size,		// FAIL뜨면 0을 return 함
 			(PULONG_PTR)&client_socket_buffer, (LPOVERLAPPED*)&socket_info_buffer, INFINITE);
 
 		SOCKADDR_IN clinet_address;
 		int addrlen = sizeof(clinet_address);
+
+
+		// -----------------------------------------------------------------------------------------
+		// 이 부분 왜 되는지 이해 X
 		// Get name from "socket_info_buffer->socket"
 		getpeername(socket_info_buffer->socket, (SOCKADDR*)&clinet_address, &addrlen);
+		//printf("[테스트]: IP 주소=%s, 포트 번호=%d\n",
+		//	inet_ntoa(clinet_address.sin_addr), ntohs(clinet_address.sin_port));
+		// -----------------------------------------------------------------------------------------
 
-		// Check async IO result
+
+		// Check async IO result, 종료된 클라이언트를 검출
 		if (retval == 0 || transferred_size == 0) {
 			if (retval == 0) {
 				DWORD temp1, temp2;
-
+				WSAGetOverlappedResult(socket_info_buffer->socket, &socket_info_buffer->overlapped,
+					&temp1, FALSE, &temp2);
+				err_display((char*)"WSAGetOverlappedResult()");
 			}
+			closesocket(socket_info_buffer->socket);
+			printf("[TCP 서버] 클라이언트 종료: IP 주소=%s, 포트 번호=%d\n",
+				inet_ntoa(clinet_address.sin_addr), ntohs(clinet_address.sin_port));
+			delete socket_info_buffer;
+			continue;
+		}
+
+
+		// 받아왔기때문에 여기까지 올 수 있다. 
+		CtsPacket read;
+		memcpy(&read, socket_info_buffer->buf, sizeof(socket_info_buffer->buf));
+		cout << std::hex << read.keyboard_click << endl;
+		//printf("%x\n", read.keyboard_click);
+		cout << "한 턴 받아옴" << endl;
+
+		DWORD recvbytes;
+		DWORD flags = 0;
+
+		retval = WSARecv(socket_info_buffer->socket, &socket_info_buffer->wsa_buffer, 1,
+			&recvbytes, &flags, &socket_info_buffer->overlapped, NULL);
+		if (retval == SOCKET_ERROR) {
+			if (WSAGetLastError() != WSA_IO_PENDING) {
+				err_display((char*)"WSARecv()");
+			}
+			continue;
 		}
 
 	}
@@ -56,22 +91,26 @@ int ServerFramework::Initialize() {
 		return 0;
 	}
 
-	printf("CreateIoCompletionPort...");
+	cout << "CreateIoCompletionPort...";
 	hcp = CreateIoCompletionPort(INVALID_HANDLE_VALUE, NULL, 0, 0);
 	if (hcp == NULL) {
-		printf("CreateIoCompletionPort 초기화 에러\n");
+		cout << "CreateIoCompletionPort 초기화 에러" << endl;
 		return 0;
 	}
-	printf("Done\n");
+	cout << "Done" << endl;
 
 	SYSTEM_INFO sys_info;
 	GetSystemInfo(&sys_info);
-	printf("Num of Processor : %d\n", (int)sys_info.dwNumberOfProcessors);
+	cout << "Num of Processor : " << (int)sys_info.dwNumberOfProcessors << endl;
 
 
 	HANDLE handle_thread;
 	for (int i = 0; i < (int)sys_info.dwNumberOfProcessors * 2; ++i) {
 		handle_thread = CreateThread(NULL, 0, WorkerThread, hcp, 0, NULL);
+		if (handle_thread == NULL) {
+			cout << "CreateThread error" << endl;
+			return 1;
+		}
 		CloseHandle(handle_thread);
 	}
 
@@ -101,6 +140,7 @@ int ServerFramework::Initialize() {
 		err_quit((char*)"listen()");
 	}
 
+	cout << "Server On" << endl;
 }
 
 int ServerFramework::AcceptClient(UINT client_number) {
@@ -116,8 +156,8 @@ int ServerFramework::AcceptClient(UINT client_number) {
 		err_display((char*)"accept()");
 	}
 
-	printf("[TCP 서버] 클라이언트 접속: IP 주소=%s, 포트 번호=%d\n",
-		inet_ntoa(client_address_buffer.sin_addr), ntohs(client_address_buffer.sin_port));
+	cout << "[TCP 서버] 클라이언트 접속: IP 주소=" << inet_ntoa(client_address_buffer.sin_addr)
+		<< ", 포트 번호=" << ntohs(client_address_buffer.sin_port) << endl;
 
 	CreateIoCompletionPort((HANDLE)client_socket_buffer, hcp, client_socket_buffer, 0);
 

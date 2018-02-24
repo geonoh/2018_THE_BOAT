@@ -16,9 +16,6 @@ void PlayingSession();
 
 int main() {
 	InitServer();
-
-
-
 	while (true) {
 		player_counter++;
 		if (player_counter <= 4) {
@@ -26,12 +23,14 @@ int main() {
 				cout << player_counter << " player enterd" << endl;
 			}
 		}
-		else if (player_counter == 4) {
-			PlayingSession();
+		if (player_counter == 4) {
+			break;
 		}
 	}
-
-
+	cout << "Game Start" << endl;
+	while (true) {
+		PlayingSession();
+	}
 	return 0;
 }
 
