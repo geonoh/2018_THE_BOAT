@@ -17,6 +17,7 @@ void PlayingSession();
 int main() {
 	InitServer();
 	while (true) {
+		// for문으로 대체 가능?
 		player_counter++;
 		if (player_counter <= 4) {
 			if (server_framework.AcceptClient(player_counter) == RUOK) {
@@ -40,6 +41,10 @@ void InitServer() {
 }
 
 void PlayingSession() {
-	// update from 
+	// 1. 업데이트 
+	// 2. 충돌체크 
+	// 3. 서버->클라이언트 데이터 송신
 	server_framework.Update();
+
+	server_framework.CollideCheck();
 }

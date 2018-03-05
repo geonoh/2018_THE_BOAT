@@ -29,7 +29,10 @@ public:
 	// Connect IOCP from client_socket_buffer (client number added)
 	int AcceptClient(UINT client_number);
 	
-	// collide check and generate boat module
+	// generate boat module
 	int Update();
+
+	// collide check -> this maybe included in Update func
+	int CollideCheck();
 };
 

@@ -45,9 +45,9 @@ DWORD WINAPI ServerFramework::WorkerThread(LPVOID arg) {
 		// 받아왔기때문에 여기까지 올 수 있다. 
 		CtsPacket read;
 		memcpy(&read, socket_info_buffer->buf, sizeof(socket_info_buffer->buf));
-		cout << std::hex << read.keyboard_click << endl;
-		//printf("%x\n", read.keyboard_click);
-		cout << "한 턴 받아옴" << endl;
+		printf("[테스트]: IP 주소=%s, 포트 번호=%d, 내용 : %x\n",
+			inet_ntoa(clinet_address.sin_addr), ntohs(clinet_address.sin_port), read.keyboard_click);
+		//cout << std::hex << read.keyboard_click << endl;
 
 		DWORD recvbytes;
 		DWORD flags = 0;
@@ -60,6 +60,9 @@ DWORD WINAPI ServerFramework::WorkerThread(LPVOID arg) {
 			}
 			continue;
 		}
+
+
+		// 받는부분 상시 대기
 
 	}
 	return 0;
@@ -103,7 +106,8 @@ int ServerFramework::Initialize() {
 	GetSystemInfo(&sys_info);
 	cout << "Num of Processor : " << (int)sys_info.dwNumberOfProcessors << endl;
 
-
+	// 쓰레드의 수 만큼 WorkerThread 생성
+	// 
 	HANDLE handle_thread;
 	for (int i = 0; i < (int)sys_info.dwNumberOfProcessors * 2; ++i) {
 		handle_thread = CreateThread(NULL, 0, WorkerThread, hcp, 0, NULL);
@@ -174,6 +178,7 @@ int ServerFramework::AcceptClient(UINT client_number) {
 	// asynchronous io start
 	flags = 0;
 	int retval = 0;
+	
 	retval = WSARecv(client_socket_buffer, &socket_info_buffer->wsa_buffer, 1,
 		&recv_bytes, &flags, &socket_info_buffer->overlapped, NULL);
 	if (retval == SOCKET_ERROR) {
@@ -189,8 +194,17 @@ int ServerFramework::Update() {
 	// 1. Recv From client -> worker thread do this act
 	// 2. Collide Check
 	// 3. Send to Client
-	// 4. 
 
+
+
+
+	// Send to client
+
+	return 0;
+}
+
+int ServerFramework::CollideCheck() {
+	// 
 
 	return 0;
 }
