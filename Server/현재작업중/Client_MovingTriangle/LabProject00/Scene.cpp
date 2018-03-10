@@ -17,11 +17,18 @@ void CScene::BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList
 	m_ppObjects = new CGameObject*[m_nObjects];
 	CRotatingObject *pRotatingObject = new CRotatingObject();
 	pRotatingObject->SetMesh(pMesh);
+
+
 	CDiffusedShader *pShader = new CDiffusedShader();
 	pShader->CreateShader(pd3dDevice, m_pd3dGraphicsRootSignature);
 	pShader->CreateShaderVariables(pd3dDevice, pd3dCommandList);
+
+
 	pRotatingObject->SetShader(pShader);
+
+
 	m_ppObjects[0] = pRotatingObject;
+
 }
 
 void CScene::ReleaseObjects()
@@ -32,7 +39,8 @@ void CScene::ReleaseObjects()
 		for (int j = 0; j < m_nObjects; j++) if (m_ppObjects[j]) delete m_ppObjects[j];
 		delete[] m_ppObjects;
 	}
-}
+}
+
 bool CScene::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM
 	lParam)
 {
@@ -80,7 +88,8 @@ void CScene::ReleaseUploadBuffers()
 		for (int j = 0; j < m_nObjects; j++) if (m_ppObjects[j])
 			m_ppObjects[j]->ReleaseUploadBuffers();
 	}
-}
+}
+
 ID3D12RootSignature *CScene::GetGraphicsRootSignature()
 {
 	return(m_pd3dGraphicsRootSignature);

@@ -85,7 +85,8 @@ D3D12_INPUT_LAYOUT_DESC CShader::CreateInputLayout()
 	d3dInputLayoutDesc.pInputElementDescs = NULL;
 	d3dInputLayoutDesc.NumElements = 0;
 	return(d3dInputLayoutDesc);
-}
+}
+
 
 //정점 셰이더 바이트 코드를 생성(컴파일)한다. 
 D3D12_SHADER_BYTECODE CShader::CreateVertexShader(ID3DBlob **ppd3dShaderBlob)
@@ -161,7 +162,8 @@ void CShader::OnPrepareRender(ID3D12GraphicsCommandList *pd3dCommandList)
 void CShader::Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera)
 {
 	OnPrepareRender(pd3dCommandList);
-}
+}
+
 
 
 void CShader::CreateShaderVariables(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList
@@ -187,7 +189,10 @@ CDiffusedShader::CDiffusedShader()
 }
 CDiffusedShader::~CDiffusedShader()
 {
-}D3D12_INPUT_LAYOUT_DESC CDiffusedShader::CreateInputLayout()
+}
+
+
+D3D12_INPUT_LAYOUT_DESC CDiffusedShader::CreateInputLayout()
 {
 	UINT nInputElementDescs = 2;
 	D3D12_INPUT_ELEMENT_DESC *pd3dInputElementDescs = new

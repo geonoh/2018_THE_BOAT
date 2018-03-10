@@ -38,7 +38,8 @@ void CCamera::GenerateViewMatrix(XMFLOAT3 xmf3Position, XMFLOAT3 xmf3LookAt, XMF
 	xmf3Up)
 {
 	m_xmf4x4View = Matrix4x4::LookAtLH(xmf3Position, xmf3LookAt, xmf3Up);
-}
+}
+
 void CCamera::CreateShaderVariables(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList
 	*pd3dCommandList)
 {
@@ -56,7 +57,8 @@ void CCamera::UpdateShaderVariables(ID3D12GraphicsCommandList *pd3dCommandList)
 }
 void CCamera::ReleaseShaderVariables()
 {
-}
+}
+
 void CCamera::SetViewportsAndScissorRects(ID3D12GraphicsCommandList *pd3dCommandList)
 {
 	pd3dCommandList->RSSetViewports(1, &m_d3dViewport);

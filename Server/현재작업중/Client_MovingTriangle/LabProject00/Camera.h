@@ -1,12 +1,14 @@
 #pragma once
 
 // Á¾È¾ºñ
-#define ASPECT_RATIO (float(FRAME_BUFFER_WIDTH) / float(FRAME_BUFFER_HEIGHT))
+#define ASPECT_RATIO (float(FRAME_BUFFER_WIDTH) / float(FRAME_BUFFER_HEIGHT))
+
 struct VS_CB_CAMERA_INFO
 {
 	XMFLOAT4X4 m_xmf4x4View;
 	XMFLOAT4X4 m_xmf4x4Projection;
-};
+};
+
 
 class CCamera
 {

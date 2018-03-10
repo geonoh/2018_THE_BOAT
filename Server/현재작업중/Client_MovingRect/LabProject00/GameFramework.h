@@ -2,7 +2,7 @@
 #include "Timer.h"
 #include "NetworkMgr.h"
 #include "Scene.h"
-
+#include "Camera.h"
 
 class CGameFramework
 {
@@ -61,15 +61,17 @@ private:
 #if defined(_DEBUG)
 	ID3D12Debug *m_pd3dDebugController;
 #endif
-	D3D12_VIEWPORT m_d3dViewport;
-	D3D12_RECT m_d3dScissorRect;
-	//뷰포트와 씨저 사각형이다. 
+	//D3D12_VIEWPORT m_d3dViewport;
+	//D3D12_RECT m_d3dScissorRect;
+	////뷰포트와 씨저 사각형이다. 
 
 	//통신
 	NetworkMgr* network_mgr;
 
 
 	CScene *m_pScene;
+
+	CCamera *m_pCamera = NULL;
 public:
 	CGameFramework();
 	~CGameFramework();
