@@ -92,39 +92,39 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <GenerateManifest>true</GenerateManifest>
-    <IncludePath>C:\Program Files\Autodesk\FBX\FBX SDK\2017.1\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Program Files\Autodesk\FBX\FBX SDK\2017.1\lib\vs2015\x86\debug;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Program Files\Autodesk\FBX\FBX SDK\2017.1\include;$(IncludePath);D:\Programs\FBX SDK\2018.1.1\include;D:\Programs\FBX SDK\2018.1.1\include;D:\Programs\FBX SDK\2017.1\include</IncludePath>
+    <LibraryPath>C:\Program Files\Autodesk\FBX\FBX SDK\2017.1\lib\vs2015\x86\debug;$(LibraryPath);D:\Programs\FBX SDK\2018.1.1\lib;D:\Programs\FBX SDK\2018.1.1\lib;D:\Programs\FBX SDK\2017.1\lib</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|X64'">
     <LinkIncremental>true</LinkIncremental>
     <GenerateManifest>true</GenerateManifest>
-    <IncludePath>C:\Program Files\Autodesk\FBX\FBX SDK\2017.1\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Program Files\Autodesk\FBX\FBX SDK\2017.1\lib\vs2015\x64\debug;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Program Files\Autodesk\FBX\FBX SDK\2017.1\include;$(IncludePath);D:\Programs\FBX SDK\2018.1.1\include;D:\Programs\FBX SDK\2017.1\include</IncludePath>
+    <LibraryPath>C:\Program Files\Autodesk\FBX\FBX SDK\2017.1\lib\vs2015\x64\debug;$(LibraryPath);D:\Programs\FBX SDK\2018.1.1\lib;D:\Programs\FBX SDK\2017.1\lib</LibraryPath>
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)$libfbxsdk.dll</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <GenerateManifest>true</GenerateManifest>
-    <IncludePath>C:\Program Files\Autodesk\FBX\FBX SDK\2017.1\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Program Files\Autodesk\FBX\FBX SDK\2017.1\lib\vs2015\x86\release;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Program Files\Autodesk\FBX\FBX SDK\2017.1\include;$(IncludePath);D:\Programs\FBX SDK\2018.1.1\include;D:\Programs\FBX SDK\2018.1.1\include;D:\Programs\FBX SDK\2017.1\include</IncludePath>
+    <LibraryPath>C:\Program Files\Autodesk\FBX\FBX SDK\2017.1\lib\vs2015\x86\release;$(LibraryPath);D:\Programs\FBX SDK\2018.1.1\lib;D:\Programs\FBX SDK\2018.1.1\lib;D:\Programs\FBX SDK\2017.1\lib</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|X64'">
     <LinkIncremental>false</LinkIncremental>
     <GenerateManifest>true</GenerateManifest>
-    <IncludePath>C:\Program Files\Autodesk\FBX\FBX SDK\2017.1\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Program Files\Autodesk\FBX\FBX SDK\2017.1\lib\vs2015\x64\release;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Program Files\Autodesk\FBX\FBX SDK\2017.1\include;$(IncludePath);D:\Programs\FBX SDK\2018.1.1\include;D:\Programs\FBX SDK\2017.1\include</IncludePath>
+    <LibraryPath>C:\Program Files\Autodesk\FBX\FBX SDK\2017.1\lib\vs2015\x64\release;$(LibraryPath);D:\Programs\FBX SDK\2018.1.1\lib;D:\Programs\FBX SDK\2017.1\lib</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <GenerateManifest>true</GenerateManifest>
-    <IncludePath>C:\Program Files\Autodesk\FBX\FBX SDK\2014.2\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Program Files\Autodesk\FBX\FBX SDK\2014.2\lib\vs2012\x86\release;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Program Files\Autodesk\FBX\FBX SDK\2014.2\include;$(IncludePath);D:\Programs\FBX SDK\2018.1.1\include;D:\Programs\FBX SDK\2018.1.1\include;D:\Programs\FBX SDK\2017.1\include</IncludePath>
+    <LibraryPath>C:\Program Files\Autodesk\FBX\FBX SDK\2014.2\lib\vs2012\x86\release;$(LibraryPath);D:\Programs\FBX SDK\2018.1.1\lib;D:\Programs\FBX SDK\2018.1.1\lib;D:\Programs\FBX SDK\2017.1\lib</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|X64'">
     <LinkIncremental>false</LinkIncremental>
     <GenerateManifest>true</GenerateManifest>
-    <IncludePath>C:\Program Files\Autodesk\FBX\FBX SDK\2014.2\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Program Files\Autodesk\FBX\FBX SDK\2014.2\lib\vs2012\x64\release;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Program Files\Autodesk\FBX\FBX SDK\2014.2\include;$(IncludePath);D:\Programs\FBX SDK\2018.1.1\include;D:\Programs\FBX SDK\2017.1\include</IncludePath>
+    <LibraryPath>C:\Program Files\Autodesk\FBX\FBX SDK\2014.2\lib\vs2012\x64\release;$(LibraryPath);D:\Programs\FBX SDK\2018.1.1\lib;D:\Programs\FBX SDK\2017.1\lib</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

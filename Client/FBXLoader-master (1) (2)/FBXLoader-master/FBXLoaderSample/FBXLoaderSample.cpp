@@ -59,6 +59,7 @@ void CleanupApp();
 void UpdateApp();
 HRESULT SetupTransformSRV();
 void	SetMatrix();
+
 FBX_LOADER::CFBXRenderDX11*	g_pFbxDX11[NUMBER_OF_MODELS];
 char g_files[NUMBER_OF_MODELS][256] =
 {

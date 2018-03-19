@@ -219,21 +219,29 @@
     <OutDir>Bin\Desktop_2012\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>Bin\Desktop_2012\$(Platform)\$(Configuration)\</IntDir>
     <TargetName>DirectXTK</TargetName>
+    <IncludePath>D:\Programs\FBX SDK\2018.1.1\include;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\Programs\FBX SDK\2018.1.1\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>Bin\Desktop_2012\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>Bin\Desktop_2012\$(Platform)\$(Configuration)\</IntDir>
     <TargetName>DirectXTK</TargetName>
+    <IncludePath>D:\Programs\FBX SDK\2018.1.1\include;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\Programs\FBX SDK\2018.1.1\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>Bin\Desktop_2012\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>Bin\Desktop_2012\$(Platform)\$(Configuration)\</IntDir>
     <TargetName>DirectXTK</TargetName>
+    <IncludePath>D:\Programs\FBX SDK\2018.1.1\include;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\Programs\FBX SDK\2018.1.1\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>Bin\Desktop_2012\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>Bin\Desktop_2012\$(Platform)\$(Configuration)\</IntDir>
     <TargetName>DirectXTK</TargetName>
+    <IncludePath>D:\Programs\FBX SDK\2018.1.1\include;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\Programs\FBX SDK\2018.1.1\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>

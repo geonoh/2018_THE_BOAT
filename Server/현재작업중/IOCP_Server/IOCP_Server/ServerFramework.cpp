@@ -109,7 +109,7 @@ int ServerFramework::Initialize() {
 	// 쓰레드의 수 만큼 WorkerThread 생성
 	// 
 	HANDLE handle_thread;
-	for (int i = 0; i < (int)sys_info.dwNumberOfProcessors * 2; ++i) {
+	for (int i = 0; i < (int)sys_info.dwNumberOfProcessors; ++i) {
 		handle_thread = CreateThread(NULL, 0, WorkerThread, hcp, 0, NULL);
 		if (handle_thread == NULL) {
 			cout << "CreateThread error" << endl;

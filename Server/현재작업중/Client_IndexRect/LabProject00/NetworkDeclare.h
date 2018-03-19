@@ -1,19 +1,10 @@
 #pragma once
-#pragma comment (lib, "ws2_32.lib")
-//#pragma comment (lib, "winmm.lib")
+#pragma comment(lib, "ws2_32")
 #include <WinSock2.h>
 #include <iostream>
-#include <Windows.h>
-#include <stdlib.h>
 
-// -----------------------------------
-// Server Define
+#define SERVERIP "127.0.0.1"
 #define SERVERPORT 9000
-#define RUOK	1
-#define RUFAIL	0
-
-void err_quit(char *msg);
-void err_display(char* msg);
 
 enum ClientID {
 	client_id_1 = 1,
@@ -21,22 +12,60 @@ enum ClientID {
 	client_id_3,
 	client_id_4
 };
-// -----------------------------------
 
-
-using namespace std;
 
 
 struct Point2D {
-	int x, y;
+	float x, y;
 };
 
-struct StcPacket {
+void err_quit(const char *msg) {
+	LPVOID lpMsgBuf;
+	FormatMessage(
+		FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
+		NULL, WSAGetLastError(),
+		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+		(LPTSTR)&lpMsgBuf, 0, NULL);
+	//MessageBox(NULL, (LPCTSTR)lpMsgBuf, msg, MB_ICONERROR);
+	LocalFree(lpMsgBuf);
+	exit(1);
+}
 
-};
+// 소켓 함수 오류 출력
+void err_display(const char *msg) {
+	LPVOID lpMsgBuf;
+	FormatMessage(
+		FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
+		NULL, WSAGetLastError(),
+		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+		(LPTSTR)&lpMsgBuf, 0, NULL);
+	printf("[%s] %s", msg, (char *)lpMsgBuf);
+	LocalFree(lpMsgBuf);
+}
 
-// 해당 클라이언트에서 선언되어 값이 변경되지 않는이상 그대로 저장
-// 되어있다. 
+
+// 사용자 정의 데이터 수신 함수
+int recvn(SOCKET s, char *buf, int len, int flags) {
+	int received;
+	char *ptr = buf;
+	int left = len;
+
+	while (left > 0) {
+		received = recv(s, ptr, left, flags);
+		if (received == SOCKET_ERROR)
+			return SOCKET_ERROR;
+		else if (received == 0)
+			break;
+		left -= received;
+		ptr += received;
+	}
+	return (len - left);
+}
+
+
+// ------------------------------------------------------------------------------
+
+// 클라이언트에서 서버로 보내는 패킷
 struct CtsPacket {
 	UINT keyboard_click = 0x00000000;
 	UINT mouse_click = 0x00000000;
@@ -114,14 +143,4 @@ struct CtsPacket {
 		UINT input_buffer = 0x11111110;
 		keyboard_click = keyboard_click & input_buffer;
 	}
-};
-
-struct SocketInfo {
-	OVERLAPPED overlapped;
-	char buf[sizeof(CtsPacket)];
-	WSABUF wsa_buffer;
-	int a;
-	int b;
-	char c;
-	SOCKET socket;
 };

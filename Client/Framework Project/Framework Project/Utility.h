@@ -1,15 +1,17 @@
 
 #pragma once
-
 #include <windows.h>
 #include <wrl.h>
 #include <dxgi1_4.h>
 #include <d3d12.h>
 #include <D3Dcompiler.h>
+
 #include <DirectXMath.h>
 #include <DirectXPackedVector.h>
 #include <DirectXColors.h>
 #include <DirectXCollision.h>
+
+
 #include <string>
 #include <memory>
 #include <algorithm>
@@ -27,12 +29,19 @@ inline bool IsZero(float fValue) { return((fabsf(fValue) < EPSILON)); }
 
 // TODO: 프로그램에 필요한 추가 헤더는 여기에서 참조합니다.
 
-
+using namespace DirectX;
+using namespace DirectX::PackedVector;
 
 //3차원 벡터의 연산
 
 namespace Vector3 {
-	
+	XMFLOAT3 XMVectorToFloat3(XMVECTOR& xmvVector)
+	{
+		XMFLOAT3 xmf3Result;
+		XMStoreFloat3(&xmf3Result, xmvVector);
+		return(xmf3Result);
+	}
+
 	XMFLOAT3 XMVectorToFloat3(XMVECTOR& xmvVector)
 	{
 
