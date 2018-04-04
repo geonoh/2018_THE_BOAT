@@ -3,6 +3,8 @@
 //***************************************************************************************
 
 #include "Camera.h"
+#include "Utility.h"
+#include "MathHelper.h"
 
 using namespace DirectX;
 

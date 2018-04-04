@@ -11,8 +11,8 @@
 #ifndef CAMERA_H
 #define CAMERA_H
 
-#include "Utility.h"
-#include "MathHelper.h"
+
+
 class Camera
 {
 public:

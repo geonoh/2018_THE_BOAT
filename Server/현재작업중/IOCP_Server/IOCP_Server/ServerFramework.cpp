@@ -110,7 +110,7 @@ int ServerFramework::Initialize() {
 	// 
 	HANDLE handle_thread;
 	for (int i = 0; i < (int)sys_info.dwNumberOfProcessors; ++i) {
-		handle_thread = CreateThread(NULL, 0, WorkerThread, hcp, 0, NULL);
+		handle_thread = CreateThread(NULL, 0, this->WorkerThread, hcp, 0, NULL);
 		if (handle_thread == NULL) {
 			cout << "CreateThread error" << endl;
 			return 1;
@@ -144,7 +144,7 @@ int ServerFramework::Initialize() {
 		err_quit((char*)"listen()");
 	}
 
-	cout << "Server On" << endl;
+	return true;
 }
 
 int ServerFramework::AcceptClient(UINT client_number) {

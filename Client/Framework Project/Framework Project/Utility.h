@@ -23,7 +23,7 @@
 #include <sstream>
 #include <cassert>
 #include "d3dx12.h"
-<<<<<<< HEAD
+//<<<<<<< HEAD
 #define EPSILON 1.0e-8f
 extern const int gNumFrameResources;
 inline bool IsZero(float fValue) { return((fabsf(fValue) < EPSILON)); }
@@ -33,16 +33,10 @@ inline bool IsZero(float fValue) { return((fabsf(fValue) < EPSILON)); }
 using namespace DirectX;
 using namespace DirectX::PackedVector;
 
+
 //3차원 벡터의 연산
 
 namespace Vector3 {
-	XMFLOAT3 XMVectorToFloat3(XMVECTOR& xmvVector)
-	{
-		XMFLOAT3 xmf3Result;
-		XMStoreFloat3(&xmf3Result, xmvVector);
-		return(xmf3Result);
-	}
-
 	XMFLOAT3 XMVectorToFloat3(XMVECTOR& xmvVector)
 	{
 
@@ -170,13 +164,13 @@ namespace Vector3 {
 
 	}
 
-	inline float Angle(XMFLOAT3& xmf3Vector1, XMFLOAT3& xmf3Vector2)
+	//inline float Angle(XMFLOAT3& xmf3Vector1, XMFLOAT3& xmf3Vector2)
 
-	{
+	//{
 
-		return(Angle(XMLoadFloat3(&xmf3Vector1), XMLoadFloat3(&xmf3Vector2)));
+	//	return(Angle(XMLoadFloat3(&xmf3Vector1), XMLoadFloat3(&xmf3Vector2)));
 
-	}
+	//}
 
 	inline XMFLOAT3 TransformNormal(XMFLOAT3& xmf3Vector, XMMATRIX& xmmtxTransform)
 
@@ -189,8 +183,8 @@ namespace Vector3 {
 		return(xmf3Result);
 
 	}
-=======
->>>>>>> origin/frame
+//=======
+//>>>>>>> origin/frame
 
 
 #define FRAME_BUFFER_WIDTH 640

@@ -12,6 +12,7 @@ private:
 	SOCKADDR_IN server_address;
 	HANDLE hcp;		// Handle for IOCP
 
+	time_point<steady_clock> server_time;
 public:
 	ServerFramework();
 	~ServerFramework();
@@ -34,5 +35,6 @@ public:
 
 	// collide check -> this maybe included in Update func
 	int CollideCheck();
+
 };
 

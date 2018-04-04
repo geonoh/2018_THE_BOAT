@@ -1,10 +1,12 @@
 #pragma once
+#define _WINSOCK_DEPRECATED_NO_WARNINGS
 #pragma comment (lib, "ws2_32.lib")
 //#pragma comment (lib, "winmm.lib")
 #include <WinSock2.h>
 #include <iostream>
 #include <Windows.h>
-#include <stdlib.h>
+#include <chrono>
+#include <thread>
 
 // -----------------------------------
 // Server Define
@@ -15,16 +17,10 @@
 void err_quit(char *msg);
 void err_display(char* msg);
 
-enum ClientID {
-	client_id_1 = 1,
-	client_id_2,
-	client_id_3,
-	client_id_4
-};
-// -----------------------------------
 
 
 using namespace std;
+using namespace std::chrono;
 
 
 struct Point2D {
@@ -120,8 +116,5 @@ struct SocketInfo {
 	OVERLAPPED overlapped;
 	char buf[sizeof(CtsPacket)];
 	WSABUF wsa_buffer;
-	int a;
-	int b;
-	char c;
 	SOCKET socket;
 };

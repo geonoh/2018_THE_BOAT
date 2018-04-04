@@ -13,6 +13,8 @@ ServerFramework server_framework;
 UINT player_counter = 0;
 void InitServer();
 void PlayingSession();
+BOOL LoadAndSendInit();
+
 
 int main() {
 	InitServer();
@@ -28,10 +30,16 @@ int main() {
 			break;
 		}
 	}
-	cout << "Game Start" << endl;
+	cout << "4명의 플레이어 모두 서버 접속 완료" << endl;
+	if (!LoadAndSendInit()) {
+		cout << "LoadAndSendInit() 에러" << endl;
+		return 0;
+	}
 	while (true) {
 		PlayingSession();
 	}
+
+	cout << "Server Quit" << endl;
 	return 0;
 }
 
@@ -47,4 +55,12 @@ void PlayingSession() {
 	server_framework.Update();
 
 	server_framework.CollideCheck();
+}
+
+BOOL LoadAndSendInit() {
+	// 여기서 플레이어의 위치
+	// 게임 타이머 
+	// 
+
+	return TRUE;
 }
