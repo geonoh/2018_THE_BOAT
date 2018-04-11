@@ -1,24 +1,34 @@
 #pragma once
 
+#define SERVER_IP	127.0.0.1
 #define SERVER_PORT 9000
 #define MAX_BUFFER_SIZE 4000
 #define MAX_PACKET_SIZE 256
 #define MAXIMUM_PLAYER	4
-
+#define	WM_SOCKET				WM_USER + 1
+#define CLIENT_BUF_SIZE	1024
 // Server To Client
-#define SC_POS				1
-#define SC_ENTER_PLAYER		2
+#define SC_ENTER_PLAYER		1
+#define SC_POS				2
+#define SC_REMOVE_PLAYER	3
 
 
 // Client To Server
-#define SC_KEY_UP			1
-#define SC_KEY_DOWN			2
-#define SC_KEY_LEFT			3
-#define SC_KEY_RIGHT		4
-#define SC_KEY_1			5
-#define SC_KEY_2			6
-#define SC_KEY_SHIFT		7
-#define SC_KEY_SPACE		8
+#define CS_KEY_UP			1
+#define CS_KEY_DOWN			2
+#define CS_KEY_LEFT			3
+#define CS_KEY_RIGHT		4
+#define CS_KEY_SPACE		5
+
+#define CS_KEY_1			6
+#define CS_KEY_2			7
+#define CS_KEY_SHIFT		8
+
+#define CS_LEFT_BUTTON_DOWN		9
+#define CS_RIGHT_BUTTON_DOWN	10
+
+#define CS_PLAYER_READY		100
+#define CS_PLAYER_TEAM_SELECT	101
 
 
 
@@ -37,15 +47,37 @@ enum SubWeapons {
 	NON_SUB = 0
 };
 
+// Server To Client packet
 struct SC_PACKET_ENTER_PLAYER {
+	BYTE size;
+	BYTE type;
+	WORD id;
+	bool player_in[4];
+	bool player_ready[4];
+};
+
+struct SC_PACKET_POS {
+	BYTE size;
+	BYTE type;
+	WORD id;
+	int x, y, z;
+};
+
+// 포지션 관련된 패킷 하나 더 필요
+
+
+
+// Client To Server 오직 키보드 입력 Ready
+struct CS_PACKET_BIGGEST {
 	BYTE size;
 	BYTE type;
 	WORD id;
 	bool player_in[4];
 };
 
-// Client To Server 오직 키보드 입력 Ready
-//
+
+
+
 struct CS_PACKET_KEYUP {
 	BYTE size;
 	BYTE type;
@@ -105,4 +137,10 @@ struct CS_PACKET_TEAM_SELECT {
 	BYTE size;
 	BYTE type;
 	Team team;
+};
+
+struct SC_PACKET_REMOVE_PLAYER {
+	BYTE size;
+	BYTE type;
+	WORD client_id;
 };
