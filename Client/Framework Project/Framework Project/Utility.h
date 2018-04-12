@@ -29,7 +29,6 @@
 
 using namespace DirectX;
 extern const int gNumFrameResources;
-inline bool IsZero(float fValue) { return((fabsf(fValue) < EPSILON)); }
 
 inline void d3dSetDebugName(IDXGIObject* obj, const char* name)
 {

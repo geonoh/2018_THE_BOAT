@@ -78,6 +78,9 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
+    <Link>
+      <SubSystem>NotSet</SubSystem>
+    </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -117,7 +120,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="FrameResource.cpp" />
     <ClCompile Include="Framework.cpp" />
+    <ClCompile Include="GeometryGenerator.cpp" />
+    <ClCompile Include="HeightMap.cpp" />
     <ClCompile Include="MathHelper.cpp" />
     <ClCompile Include="TheBoat.cpp" />
     <ClCompile Include="Timer.cpp" />
@@ -125,9 +131,14 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="FrameResource.h" />
     <ClInclude Include="Framework.h" />
+    <ClInclude Include="GeometryGenerator.h" />
+    <ClInclude Include="HeightMap.h" />
     <ClInclude Include="MathHelper.h" />
+    <ClInclude Include="stdafx.h" />
     <ClInclude Include="Timer.h" />
+    <ClInclude Include="UploadBuffer.h" />
     <ClInclude Include="Utility.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
