@@ -9,6 +9,7 @@ class ServerMgr
 	WSABUF recv_wsabuf;
 	int my_client_id = 0;
 	bool first_set_id = true;
+
 	char send_buffer[CLIENT_BUF_SIZE] = { 0 };
 	char recv_buffer[CLIENT_BUF_SIZE] = { 0 };
 
@@ -16,7 +17,7 @@ class ServerMgr
 	DWORD in_packet_size = 0;
 	DWORD saved_packet_size = 0;
 public:
-	void Initialize();
+	void Initialize(HWND& hwnd);
 	void ClientError();
 	void ReadPacket();
 	void SendPacket(int type);

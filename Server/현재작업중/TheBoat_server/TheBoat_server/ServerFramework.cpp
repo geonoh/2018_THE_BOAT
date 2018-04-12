@@ -188,10 +188,10 @@ void ServerFramework::ProcessPacket(int cl_id, char* packet) {
 				SendPacket(i, &packet);
 			}
 		}
+
 	}
 	// 플레이어 상태 변화 _ Ready, Team 변경, Mode 변경등
 	else if (100 <= packet_buffer->type) {
-
 		for (int i = 0; i < MAXIMUM_PLAYER; ++i) {
 			if (clients[i].in_use == true) {
 
@@ -210,9 +210,16 @@ void ServerFramework::WorkerThread() {
 	while (true) {
 		bool retval = GetQueuedCompletionStatus(iocp_handle, &data_size,
 			&client_id, &overlapped, INFINITE);
-		printf("[WorkerThread::GQCS ClientID : %d, Size : %d\n", client_id, data_size);
+
+		// 송수신 확인 용 
+		OverlappedExtensionSet* is_recv_or_send = reinterpret_cast<OverlappedExtensionSet*>(overlapped);
+		if(is_recv_or_send->is_recv==true)
+			printf("[WorkerThread::GQCS] 수신 ClientID : %d, Size : %d\n", client_id, data_size);
+		else
+			printf("[WorkerThread::GQCS] 송신 ClientID : %d, Size : %d\n", client_id, data_size);
+
 		if (retval == FALSE) {
-			printf("[WorkerThread::GQCS ClientID : %d\n", client_id);
+			printf("[WorkerThread::GQCS] 접속 해제 ClientID : %d\n", client_id);
 			//cout << "[WorkerThread::GQCS] ClientID : <" << client_id << ">\n";
 			DisconnectPlayer(client_id);
 			continue;
@@ -254,6 +261,18 @@ void ServerFramework::WorkerThread() {
 					ptr += recved_size;	// 이것도 의미가 없는 코드
 				}
 			}
+
+			unsigned long rflag = 0;
+			ZeroMemory(&overlapped_buffer->wsa_over, sizeof(WSAOVERLAPPED));
+			int retval = WSARecv(clients[client_id].s, &overlapped_buffer->wsabuf, 1, NULL, &rflag, &overlapped_buffer->wsa_over, NULL);
+			if (retval != 0) {
+				int err_no = WSAGetLastError();
+				// 이 함수에 대한 설명은 Send 부분 참조
+				if (err_no != WSA_IO_PENDING) {
+					ErrorDisplay("Error in WorkerThread(Recv) : ", err_no);
+				}
+			}
+
 		}
 		// Send로 인해 할당된 영역 반납
 		else {

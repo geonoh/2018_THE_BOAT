@@ -1,12 +1,13 @@
 #pragma once
 
 #define SERVER_IP	127.0.0.1
-#define SERVER_PORT 9000
+#define SERVER_PORT 4000
 #define MAX_BUFFER_SIZE 4000
 #define MAX_PACKET_SIZE 256
 #define MAXIMUM_PLAYER	4
 #define	WM_SOCKET				WM_USER + 1
 #define CLIENT_BUF_SIZE	1024
+ 
 // Server To Client
 #define SC_ENTER_PLAYER		1
 #define SC_POS				2

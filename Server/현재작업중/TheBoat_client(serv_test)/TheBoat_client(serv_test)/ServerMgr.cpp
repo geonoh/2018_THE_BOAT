@@ -15,7 +15,7 @@ void ServerMgr::ErrorDisplay(const char* msg, int err_no) {
 	LocalFree(lpMsgBuf);
 }
 
-void ServerMgr::Initialize() {
+void ServerMgr::Initialize(HWND& hwnd) {
 	WSADATA	wsadata;
 	WSAStartup(MAKEWORD(2, 2), &wsadata);
 
@@ -27,9 +27,12 @@ void ServerMgr::Initialize() {
 	ServerAddr.sin_port = htons(SERVER_PORT);
 	ServerAddr.sin_addr.s_addr = inet_addr("127.0.0.1");
 
-	int Result = WSAConnect(sock, (sockaddr *)&ServerAddr, sizeof(ServerAddr), NULL, NULL, NULL, NULL);
-
-	WSAAsyncSelect(sock, async_handle, WM_SOCKET, FD_CLOSE | FD_READ);
+	int retval = WSAConnect(sock, (sockaddr *)&ServerAddr, sizeof(ServerAddr), NULL, NULL, NULL, NULL);
+	if (retval == SOCKET_ERROR) {
+		printf("소켓 연결 안됨\n");
+	}
+	async_handle = hwnd;
+	WSAAsyncSelect(sock, async_handle, WM_SOCKET, FD_CONNECT | FD_CLOSE | FD_READ);
 
 	send_wsabuf.buf = send_buffer;
 	send_wsabuf.len = CLIENT_BUF_SIZE;
@@ -43,17 +46,17 @@ void ServerMgr::ReadPacket() {
 	DWORD io_bytes, io_flag = 0;
 
 	int retval = WSARecv(sock, &recv_wsabuf, 1, &io_bytes, &io_flag, NULL, NULL);
-	if (retval == false) {
+	if (retval == 1) {
 		int err_code = WSAGetLastError();
 		ErrorDisplay("[WSARecv] : 에러 ", err_code);
 	}
-	char* ptr = reinterpret_cast<char*>(recv_buffer);
+	BYTE* ptr = reinterpret_cast<BYTE*>(recv_buffer);
 
 	while (io_bytes != 0) {
 		if (in_packet_size == 0)
 			in_packet_size = ptr[0];
 		if (io_bytes + saved_packet_size >= in_packet_size) {
-			memcpy(packet_buffer + in_packet_size, ptr, in_packet_size - saved_packet_size);
+			memcpy(packet_buffer + saved_packet_size, ptr, in_packet_size - saved_packet_size);
 			ProcessPacket(packet_buffer);
 			ptr += in_packet_size - saved_packet_size;
 			io_bytes -= in_packet_size - saved_packet_size;
