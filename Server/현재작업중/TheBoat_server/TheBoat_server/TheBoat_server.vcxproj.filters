@@ -19,6 +19,9 @@
     <Filter Include="stdafx">
       <UniqueIdentifier>{89bbbe9f-145b-4cc2-8eaa-ea8b5452ce93}</UniqueIdentifier>
     </Filter>
+    <Filter Include="HeightMap">
+      <UniqueIdentifier>{75a11a1a-1e53-4abf-9b30-f415616b3553}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="targetver.h">
@@ -33,6 +36,9 @@
     <ClInclude Include="stdafx.h">
       <Filter>stdafx</Filter>
     </ClInclude>
+    <ClInclude Include="HeightMap.h">
+      <Filter>HeightMap</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="TheBoat_server.cpp">
@@ -43,6 +49,9 @@
     </ClCompile>
     <ClCompile Include="stdafx.cpp">
       <Filter>stdafx</Filter>
+    </ClCompile>
+    <ClCompile Include="HeightMap.cpp">
+      <Filter>HeightMap</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

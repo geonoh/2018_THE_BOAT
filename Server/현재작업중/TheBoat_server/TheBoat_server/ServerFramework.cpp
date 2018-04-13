@@ -1,5 +1,7 @@
 #include "stdafx.h"
+#include "HeightMap.h"
 #include "ServerFramework.h"
+
 
 void ErrorDisplay(const char* msg, int err_no) {
 	WCHAR *lpMsgBuf;
@@ -53,6 +55,15 @@ void ServerFramework::InitServer() {
 	if (retval == SOCKET_ERROR)
 		printf("listen 에러\n");
 
+
+	// HeightMap 불러오기
+	XMFLOAT3 xmf_3_scale(1.f, 0.2f, 1.f);
+	LPCTSTR file_name = _T("MapResource/HeightMap.raw");
+	height_map = new HeightMap(file_name, 257, 257, xmf_3_scale);
+
+	printf("%f\n", height_map->GetHeight(20.f, 30.1f));
+
+	// 
 }
 
 void ServerFramework::AcceptPlayer() {
