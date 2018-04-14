@@ -97,37 +97,76 @@ void ServerMgr::SendPacket(int type) {
 	int retval = 0;
 	DWORD iobytes;
 	switch (type) {
-	case CS_KEY_UP:
-		packet_buffer->type = CS_KEY_UP;
+	case CS_KEY_PRESS_UP:
+		packet_buffer->type = CS_KEY_PRESS_UP;
 		retval = WSASend(sock, &send_wsabuf, 1, &iobytes, 0, NULL, NULL);
 		break;
-	case CS_KEY_DOWN:
-		packet_buffer->type = CS_KEY_DOWN;
+	case CS_KEY_PRESS_DOWN:
+		packet_buffer->type = CS_KEY_PRESS_DOWN;
 		retval = WSASend(sock, &send_wsabuf, 1, &iobytes, 0, NULL, NULL);
 		break;
-	case CS_KEY_RIGHT:
-		packet_buffer->type = CS_KEY_RIGHT;
+	case CS_KEY_PRESS_RIGHT:
+		packet_buffer->type = CS_KEY_PRESS_RIGHT;
 		retval = WSASend(sock, &send_wsabuf, 1, &iobytes, 0, NULL, NULL);
 		break;
-	case CS_KEY_LEFT:
-		packet_buffer->type = CS_KEY_LEFT;
+	case CS_KEY_PRESS_LEFT:
+		packet_buffer->type = CS_KEY_PRESS_LEFT;
 		retval = WSASend(sock, &send_wsabuf, 1, &iobytes, 0, NULL, NULL);
 		break;
 
-	case CS_KEY_SHIFT:
-		packet_buffer->type = CS_KEY_SHIFT;
+	case CS_KEY_PRESS_SHIFT:
+		packet_buffer->type = CS_KEY_PRESS_SHIFT;
 		retval = WSASend(sock, &send_wsabuf, 1, &iobytes, 0, NULL, NULL);
 		break;
-	case CS_KEY_SPACE:
-		packet_buffer->type = CS_KEY_SPACE;
+	case CS_KEY_PRESS_SPACE:
+		packet_buffer->type = CS_KEY_PRESS_SPACE;
 		retval = WSASend(sock, &send_wsabuf, 1, &iobytes, 0, NULL, NULL);
 		break;
-	case CS_KEY_1:
-		packet_buffer->type = CS_KEY_1;
+	case CS_KEY_PRESS_1:
+		packet_buffer->type = CS_KEY_PRESS_1;
 		retval = WSASend(sock, &send_wsabuf, 1, &iobytes, 0, NULL, NULL);
 		break;
-	case CS_KEY_2:
-		packet_buffer->type = CS_KEY_2;
+	case CS_KEY_PRESS_2:
+		packet_buffer->type = CS_KEY_PRESS_2;
+		retval = WSASend(sock, &send_wsabuf, 1, &iobytes, 0, NULL, NULL);
+		break;
+
+
+
+
+
+
+	case CS_KEY_RELEASE_UP:
+		packet_buffer->type = CS_KEY_RELEASE_UP;
+		retval = WSASend(sock, &send_wsabuf, 1, &iobytes, 0, NULL, NULL);
+		break;
+	case CS_KEY_RELEASE_DOWN:
+		packet_buffer->type = CS_KEY_RELEASE_DOWN;
+		retval = WSASend(sock, &send_wsabuf, 1, &iobytes, 0, NULL, NULL);
+		break;
+	case CS_KEY_RELEASE_RIGHT:
+		packet_buffer->type = CS_KEY_RELEASE_RIGHT;
+		retval = WSASend(sock, &send_wsabuf, 1, &iobytes, 0, NULL, NULL);
+		break;
+	case CS_KEY_RELEASE_LEFT:
+		packet_buffer->type = CS_KEY_RELEASE_LEFT;
+		retval = WSASend(sock, &send_wsabuf, 1, &iobytes, 0, NULL, NULL);
+		break;
+
+	case CS_KEY_RELEASE_SHIFT:
+		packet_buffer->type = CS_KEY_RELEASE_SHIFT;
+		retval = WSASend(sock, &send_wsabuf, 1, &iobytes, 0, NULL, NULL);
+		break;
+	case CS_KEY_RELEASE_SPACE:
+		packet_buffer->type = CS_KEY_RELEASE_SPACE;
+		retval = WSASend(sock, &send_wsabuf, 1, &iobytes, 0, NULL, NULL);
+		break;
+	case CS_KEY_RELEASE_1:
+		packet_buffer->type = CS_KEY_RELEASE_1;
+		retval = WSASend(sock, &send_wsabuf, 1, &iobytes, 0, NULL, NULL);
+		break;
+	case CS_KEY_RELEASE_2:
+		packet_buffer->type = CS_KEY_RELEASE_2;
 		retval = WSASend(sock, &send_wsabuf, 1, &iobytes, 0, NULL, NULL);
 		break;
 
