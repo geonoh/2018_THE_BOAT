@@ -1,5 +1,5 @@
 //***************************************************************************************
-// LandAndWavesApp.cpp by Frank Luna (C) 2015 All Rights Reserved.
+// TheBoat.cpp by Frank Luna (C) 2015 All Rights Reserved.
 //
 // Hold down '1' key to view scene in wireframe mode.
 //***************************************************************************************
@@ -55,13 +55,13 @@ enum class RenderLayer : int
 	Count
 };
 
-class LandAndWavesApp : public Framework
+class TheBoat : public Framework
 {
 public:
-    LandAndWavesApp(HINSTANCE hInstance);
-    LandAndWavesApp(const LandAndWavesApp& rhs) = delete;
-    LandAndWavesApp& operator=(const LandAndWavesApp& rhs) = delete;
-    ~LandAndWavesApp();
+    TheBoat(HINSTANCE hInstance);
+    TheBoat(const TheBoat& rhs) = delete;
+    TheBoat& operator=(const TheBoat& rhs) = delete;
+    ~TheBoat();
 
     virtual bool Initialize()override;
 	
@@ -152,7 +152,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance,
 
     try
     {
-        LandAndWavesApp theApp(hInstance);
+        TheBoat theApp(hInstance);
         if(!theApp.Initialize())
             return 0;
 
@@ -165,18 +165,18 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance,
     }
 }
 
-LandAndWavesApp::LandAndWavesApp(HINSTANCE hInstance)
+TheBoat::TheBoat(HINSTANCE hInstance)
     : Framework(hInstance)
 {
 }
 
-LandAndWavesApp::~LandAndWavesApp()
+TheBoat::~TheBoat()
 {
     if(md3dDevice != nullptr)
         FlushCommandQueue();
 }
 
-bool LandAndWavesApp::Initialize()
+bool TheBoat::Initialize()
 {
     if(!Framework::Initialize())
         return false;
@@ -206,7 +206,7 @@ bool LandAndWavesApp::Initialize()
     return true;
 }
  
-void LandAndWavesApp::OnResize()
+void TheBoat::OnResize()
 {
     Framework::OnResize();
 
@@ -215,7 +215,7 @@ void LandAndWavesApp::OnResize()
     XMStoreFloat4x4(&mProj, P);
 }
 
-void LandAndWavesApp::Update(const Timer& gt)
+void TheBoat::Update(const Timer& gt)
 {
 	OnKeyboardInput(gt);
 	UpdateCamera(gt);
@@ -239,7 +239,7 @@ void LandAndWavesApp::Update(const Timer& gt)
 	UpdateWaves(gt);
 }
 
-void LandAndWavesApp::Draw(const Timer& gt)
+void TheBoat::Draw(const Timer& gt)
 {
 	auto cmdListAlloc = mCurrFrameResource->CmdListAlloc;
 
@@ -304,7 +304,7 @@ void LandAndWavesApp::Draw(const Timer& gt)
 	mCommandQueue->Signal(mFence.Get(), mCurrentFence);
 }
 
-void LandAndWavesApp::OnMouseDown(WPARAM btnState, int x, int y)
+void TheBoat::OnMouseDown(WPARAM btnState, int x, int y)
 {
     mLastMousePos.x = x;
     mLastMousePos.y = y;
@@ -312,12 +312,12 @@ void LandAndWavesApp::OnMouseDown(WPARAM btnState, int x, int y)
     SetCapture(mhMainWnd);
 }
 
-void LandAndWavesApp::OnMouseUp(WPARAM btnState, int x, int y)
+void TheBoat::OnMouseUp(WPARAM btnState, int x, int y)
 {
     ReleaseCapture();
 }
 
-void LandAndWavesApp::OnMouseMove(WPARAM btnState, int x, int y)
+void TheBoat::OnMouseMove(WPARAM btnState, int x, int y)
 {
     if((btnState & MK_LBUTTON) != 0)
     {
@@ -349,7 +349,7 @@ void LandAndWavesApp::OnMouseMove(WPARAM btnState, int x, int y)
     mLastMousePos.y = y;
 }
 
-void LandAndWavesApp::OnKeyboardInput(const Timer& gt)
+void TheBoat::OnKeyboardInput(const Timer& gt)
 {
     if(GetAsyncKeyState('1') & 0x8000)
         mIsWireframe = true;
@@ -357,7 +357,7 @@ void LandAndWavesApp::OnKeyboardInput(const Timer& gt)
         mIsWireframe = false;
 }
 
-void LandAndWavesApp::UpdateCamera(const Timer& gt)
+void TheBoat::UpdateCamera(const Timer& gt)
 {
 	// Convert Spherical to Cartesian coordinates.
 	mEyePos.x = mRadius*sinf(mPhi)*cosf(mTheta);
@@ -373,7 +373,7 @@ void LandAndWavesApp::UpdateCamera(const Timer& gt)
 	XMStoreFloat4x4(&mView, view);
 }
 
-void LandAndWavesApp::UpdateObjectCBs(const Timer& gt)
+void TheBoat::UpdateObjectCBs(const Timer& gt)
 {
 	auto currObjectCB = mCurrFrameResource->ObjectCB.get();
 	for(auto& e : mAllRitems)
@@ -395,7 +395,7 @@ void LandAndWavesApp::UpdateObjectCBs(const Timer& gt)
 	}
 }
 
-void LandAndWavesApp::UpdateMainPassCB(const Timer& gt)
+void TheBoat::UpdateMainPassCB(const Timer& gt)
 {
 	XMMATRIX view = XMLoadFloat4x4(&mView);
 	XMMATRIX proj = XMLoadFloat4x4(&mProj);
@@ -423,7 +423,7 @@ void LandAndWavesApp::UpdateMainPassCB(const Timer& gt)
 	currPassCB->CopyData(0, mMainPassCB);
 }
 
-void LandAndWavesApp::UpdateWaves(const Timer& gt)
+void TheBoat::UpdateWaves(const Timer& gt)
 {
 	// Every quarter second, generate a random wave.
 	static float t_base = 0.0f;
@@ -458,7 +458,7 @@ void LandAndWavesApp::UpdateWaves(const Timer& gt)
 	mWavesRitem->Geo->VertexBufferGPU = currWavesVB->Resource();
 }
 
-void LandAndWavesApp::BuildRootSignature()
+void TheBoat::BuildRootSignature()
 {
     // Root parameter can be a table, root descriptor or root constants.
     CD3DX12_ROOT_PARAMETER slotRootParameter[2];
@@ -489,7 +489,7 @@ void LandAndWavesApp::BuildRootSignature()
         IID_PPV_ARGS(mRootSignature.GetAddressOf())));
 }
 
-void LandAndWavesApp::BuildShadersAndInputLayout()
+void TheBoat::BuildShadersAndInputLayout()
 {
 	mShaders["standardVS"] = Utility::CompileShader(L"Shaders\\color.hlsl", nullptr, "VS", "vs_5_0");
 	mShaders["opaquePS"] = Utility::CompileShader(L"Shaders\\color.hlsl", nullptr, "PS", "ps_5_0");
@@ -501,7 +501,7 @@ void LandAndWavesApp::BuildShadersAndInputLayout()
     };
 }
 
-void LandAndWavesApp::BuildLandGeometry()
+void TheBoat::BuildLandGeometry()
 {
 	GeometryGenerator geoGen;
 	GeometryGenerator::MeshData grid = geoGen.CreateGrid(257, 257, 257, 257);
@@ -592,7 +592,7 @@ void LandAndWavesApp::BuildLandGeometry()
 	mGeometries["landGeo"] = std::move(geo);
 }
 
-void LandAndWavesApp::BuildWavesGeometryBuffers()
+void TheBoat::BuildWavesGeometryBuffers()
 {
 	std::vector<std::uint16_t> indices(3 * mWaves->TriangleCount()); // 3 indices per face
 	assert(mWaves->VertexCount() < 0x0000ffff);
@@ -648,7 +648,7 @@ void LandAndWavesApp::BuildWavesGeometryBuffers()
 	mGeometries["waterGeo"] = std::move(geo);
 }
 
-void LandAndWavesApp::BuildPSOs()
+void TheBoat::BuildPSOs()
 {
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC opaquePsoDesc;
 
@@ -689,7 +689,7 @@ void LandAndWavesApp::BuildPSOs()
     ThrowIfFailed(md3dDevice->CreateGraphicsPipelineState(&opaqueWireframePsoDesc, IID_PPV_ARGS(&mPSOs["opaque_wireframe"])));
 }
 
-void LandAndWavesApp::BuildFrameResources()
+void TheBoat::BuildFrameResources()
 {
     for(int i = 0; i < gNumFrameResources; ++i)
     {
@@ -698,7 +698,7 @@ void LandAndWavesApp::BuildFrameResources()
     }
 }
 
-void LandAndWavesApp::BuildRenderItems()
+void TheBoat::BuildRenderItems()
 {
 	auto wavesRitem = std::make_unique<RenderItem>();
 	wavesRitem->World = MathHelper::Identity4x4();
@@ -728,7 +728,7 @@ void LandAndWavesApp::BuildRenderItems()
 	mAllRitems.push_back(std::move(gridRitem));
 }
 
-void LandAndWavesApp::DrawRenderItems(ID3D12GraphicsCommandList* cmdList, const std::vector<RenderItem*>& ritems)
+void TheBoat::DrawRenderItems(ID3D12GraphicsCommandList* cmdList, const std::vector<RenderItem*>& ritems)
 {
 	UINT objCBByteSize = Utility::CalcConstantBufferByteSize(sizeof(ObjectConstants));
 
@@ -751,7 +751,7 @@ void LandAndWavesApp::DrawRenderItems(ID3D12GraphicsCommandList* cmdList, const 
 		cmdList->DrawIndexedInstanced(ri->IndexCount, 1, ri->StartIndexLocation, ri->BaseVertexLocation, 0);
 	}
 }
-float LandAndWavesApp::GetHillsHeight(int x, int z, void * pContext)const
+float TheBoat::GetHillsHeight(int x, int z, void * pContext)const
 {
 	HeightMap *pHeightMap = (HeightMap *)pContext;
 	BYTE *pHeightMapPixels = pHeightMap->GetHeightMapPixels();
@@ -760,7 +760,7 @@ float LandAndWavesApp::GetHillsHeight(int x, int z, void * pContext)const
 	float fHeight = pHeightMapPixels[ x + (z*nWidth)] * xmf3Scale.y;
 	return(fHeight);
 }
-XMFLOAT4 LandAndWavesApp::OnGetColor(int x, int z, void *pContext)
+XMFLOAT4 TheBoat::OnGetColor(int x, int z, void *pContext)
 {
 	//조명의 방향 벡터(정점에서 조명까지의 벡터)이다.
 	XMFLOAT3 xmf3LightDirection = XMFLOAT3(-1.0f, 1.0f, 1.0f);
@@ -788,7 +788,7 @@ XMFLOAT4 LandAndWavesApp::OnGetColor(int x, int z, void *pContext)
 	return(xmf4Color);
 }
 
-XMFLOAT3 LandAndWavesApp::GetHillsNormal(float x, float z)const
+XMFLOAT3 TheBoat::GetHillsNormal(float x, float z)const
 {
     // n = (-df/dx, 1, -df/dz)
     XMFLOAT3 n(

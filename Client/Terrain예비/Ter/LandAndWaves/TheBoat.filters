@@ -18,9 +18,6 @@
     <ClCompile Include="FrameResource.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="LandAndWavesApp.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Waves.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -39,10 +36,13 @@
     <ClCompile Include="..\..\Common\Framework.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Common\Utility.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\Common\Timer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\Utility.cpp">
+    <ClCompile Include="TheBoat.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -74,10 +74,10 @@
     <ClInclude Include="..\..\Common\Framework.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\Timer.h">
+    <ClInclude Include="..\..\Common\Utility.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\Utility.h">
+    <ClInclude Include="..\..\Common\Timer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
