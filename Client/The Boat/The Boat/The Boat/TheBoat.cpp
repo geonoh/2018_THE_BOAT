@@ -1,8 +1,3 @@
-//***************************************************************************************
-// TheBoat.cpp by Frank Luna (C) 2015 All Rights Reserved.
-//
-// Hold down '1' key to view scene in wireframe mode.
-//***************************************************************************************
 
 #include "../../Common/Framework.h"
 #include "../../Common/MathHelper.h"
@@ -18,32 +13,20 @@ using namespace DirectX::PackedVector;
 using Microsoft::WRL::ComPtr;
 const int gNumFrameResources = 3;
 
-// Lightweight structure stores parameters to draw a shape.  This will
-// vary from app-to-app.
 struct RenderItem
 {
 	RenderItem() = default;
 
-	// World matrix of the shape that describes the object's local space
-	// relative to the world space, which defines the position, orientation,
-	// and scale of the object in the world.
 	XMFLOAT4X4 World = MathHelper::Identity4x4();
 
-	// Dirty flag indicating the object data has changed and we need to update the constant buffer.
-	// Because we have an object cbuffer for each FrameResource, we have to apply the
-	// update to each FrameResource.  Thus, when we modify obect data we should set 
-	// NumFramesDirty = gNumFrameResources so that each frame resource gets the update.
 	int NumFramesDirty = gNumFrameResources;
 
-	// Index into GPU constant buffer corresponding to the ObjectCB for this render item.
 	UINT ObjCBIndex = -1;
 
 	MeshGeometry* Geo = nullptr;
 
-	// Primitive topology.
 	D3D12_PRIMITIVE_TOPOLOGY PrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 
-	// DrawIndexedInstanced parameters.
 	UINT IndexCount = 0;
 	UINT StartIndexLocation = 0;
 	int BaseVertexLocation = 0;
@@ -145,7 +128,6 @@ public:
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance,
     PSTR cmdLine, int showCmd)
 {
-    // Enable run-time memory check for debug builds.
 #if defined(DEBUG) | defined(_DEBUG)
     _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
@@ -181,7 +163,6 @@ bool TheBoat::Initialize()
     if(!Framework::Initialize())
         return false;
 
-    // Reset the command list to prep for initialization commands.
     ThrowIfFailed(mCommandList->Reset(mDirectCmdListAlloc.Get(), nullptr));
 
 	mWaves = std::make_unique<Waves>(128, 128, 1.0f, 0.03f, 4.0f, 0.2f);
@@ -195,12 +176,10 @@ bool TheBoat::Initialize()
     BuildFrameResources();
 	BuildPSOs();
 
-    // Execute the initialization commands.
     ThrowIfFailed(mCommandList->Close());
     ID3D12CommandList* cmdsLists[] = { mCommandList.Get() };
     mCommandQueue->ExecuteCommandLists(_countof(cmdsLists), cmdsLists);
 
-    // Wait until initialization is complete.
     FlushCommandQueue();
 
     return true;
@@ -210,7 +189,6 @@ void TheBoat::OnResize()
 {
     Framework::OnResize();
 
-    // The window resized, so update the aspect ratio and recompute the projection matrix.
     XMMATRIX P = XMMatrixPerspectiveFovLH(0.25f*MathHelper::Pi, AspectRatio(), 1.0f, 1000.0f);
     XMStoreFloat4x4(&mProj, P);
 }
@@ -220,12 +198,9 @@ void TheBoat::Update(const Timer& gt)
 	OnKeyboardInput(gt);
 	UpdateCamera(gt);
 
-	// Cycle through the circular frame resource array.
 	mCurrFrameResourceIndex = (mCurrFrameResourceIndex + 1) % gNumFrameResources;
 	mCurrFrameResource = mFrameResources[mCurrFrameResourceIndex].get();
 
-	// Has the GPU finished processing the commands of the current frame resource?
-	// If not, wait until the GPU has completed commands up to this fence point.
 	if(mCurrFrameResource->Fence != 0 && mFence->GetCompletedValue() < mCurrFrameResource->Fence)
 	{
 		HANDLE eventHandle = CreateEventEx(nullptr, false, false, EVENT_ALL_ACCESS);
@@ -243,12 +218,8 @@ void TheBoat::Draw(const Timer& gt)
 {
 	auto cmdListAlloc = mCurrFrameResource->CmdListAlloc;
 
-	// Reuse the memory associated with command recording.
-	// We can only reset when the associated command lists have finished execution on the GPU.
 	ThrowIfFailed(cmdListAlloc->Reset());
 
-	// A command list can be reset after it has been added to the command queue via ExecuteCommandList.
-	// Reusing the command list reuses memory.
     if(mIsWireframe)
     {
         ThrowIfFailed(mCommandList->Reset(cmdListAlloc.Get(), mPSOs["opaque_wireframe"].Get()));
@@ -261,46 +232,34 @@ void TheBoat::Draw(const Timer& gt)
 	mCommandList->RSSetViewports(1, &mScreenViewport);
 	mCommandList->RSSetScissorRects(1, &mScissorRect);
 
-	// Indicate a state transition on the resource usage.
 	mCommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(CurrentBackBuffer(),
 		D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET));
 
-	// Clear the back buffer and depth buffer.
 	mCommandList->ClearRenderTargetView(CurrentBackBufferView(), Colors::LightSteelBlue, 0, nullptr);
 	mCommandList->ClearDepthStencilView(DepthStencilView(), D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
 
-	// Specify the buffers we are going to render to.
 	mCommandList->OMSetRenderTargets(1, &CurrentBackBufferView(), true, &DepthStencilView());
 
 	mCommandList->SetGraphicsRootSignature(mRootSignature.Get());
 
-    // Bind per-pass constant buffer.  We only need to do this once per-pass.
 	auto passCB = mCurrFrameResource->PassCB->Resource();
 	mCommandList->SetGraphicsRootConstantBufferView(1, passCB->GetGPUVirtualAddress());
 
 	DrawRenderItems(mCommandList.Get(), mRitemLayer[(int)RenderLayer::Opaque]);
 
-	// Indicate a state transition on the resource usage.
 	mCommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(CurrentBackBuffer(),
 		D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT));
 
-	// Done recording commands.
 	ThrowIfFailed(mCommandList->Close());
 
-	// Add the command list to the queue for execution.
 	ID3D12CommandList* cmdsLists[] = { mCommandList.Get() };
 	mCommandQueue->ExecuteCommandLists(_countof(cmdsLists), cmdsLists);
 
-	// Swap the back and front buffers
 	ThrowIfFailed(mSwapChain->Present(0, 0));
 	mCurrBackBuffer = (mCurrBackBuffer + 1) % SwapChainBufferCount;
 
-	// Advance the fence value to mark commands up to this fence point.
 	mCurrFrameResource->Fence = ++mCurrentFence;
 
-	// Add an instruction to the command queue to set a new fence point. 
-    // Because we are on the GPU timeline, the new fence point won't be 
-    // set until the GPU finishes processing all the commands prior to this Signal().
 	mCommandQueue->Signal(mFence.Get(), mCurrentFence);
 }
 
@@ -321,27 +280,21 @@ void TheBoat::OnMouseMove(WPARAM btnState, int x, int y)
 {
     if((btnState & MK_LBUTTON) != 0)
     {
-        // Make each pixel correspond to a quarter of a degree.
         float dx = XMConvertToRadians(0.25f*static_cast<float>(x - mLastMousePos.x));
         float dy = XMConvertToRadians(0.25f*static_cast<float>(y - mLastMousePos.y));
 
-        // Update angles based on input to orbit camera around box.
         mTheta += dx;
         mPhi += dy;
 
-        // Restrict the angle mPhi.
         mPhi = MathHelper::Clamp(mPhi, 0.1f, MathHelper::Pi - 0.1f);
     }
     else if((btnState & MK_RBUTTON) != 0)
     {
-        // Make each pixel correspond to 0.2 unit in the scene.
         float dx = 0.2f*static_cast<float>(x - mLastMousePos.x);
         float dy = 0.2f*static_cast<float>(y - mLastMousePos.y);
 
-        // Update the camera radius based on input.
         mRadius += dx - dy;
 
-        // Restrict the radius.
         mRadius = MathHelper::Clamp(mRadius, 5.0f, 150.0f);
     }
 
@@ -359,12 +312,10 @@ void TheBoat::OnKeyboardInput(const Timer& gt)
 
 void TheBoat::UpdateCamera(const Timer& gt)
 {
-	// Convert Spherical to Cartesian coordinates.
 	mEyePos.x = mRadius*sinf(mPhi)*cosf(mTheta);
 	mEyePos.z = mRadius*sinf(mPhi)*sinf(mTheta);
 	mEyePos.y = mRadius*cosf(mPhi);
 
-	// Build the view matrix.
 	XMVECTOR pos = XMVectorSet(mEyePos.x, 100, mEyePos.z, 1.0f);
 	XMVECTOR target = XMVectorZero();//XMVectorSet(70,0, -70, 1.0f);
 	XMVECTOR up = XMVectorSet(0.0f, 1.0f,0.0f, 0.0f);
@@ -378,8 +329,6 @@ void TheBoat::UpdateObjectCBs(const Timer& gt)
 	auto currObjectCB = mCurrFrameResource->ObjectCB.get();
 	for(auto& e : mAllRitems)
 	{
-		// Only update the cbuffer data if the constants have changed.  
-		// This needs to be tracked per frame resource.
 		if(e->NumFramesDirty > 0)
 		{
 			XMMATRIX world = XMLoadFloat4x4(&e->World);
@@ -389,7 +338,6 @@ void TheBoat::UpdateObjectCBs(const Timer& gt)
 
 			currObjectCB->CopyData(e->ObjCBIndex, objConstants);
 
-			// Next FrameResource need to be updated too.
 			e->NumFramesDirty--;
 		}
 	}
@@ -425,7 +373,6 @@ void TheBoat::UpdateMainPassCB(const Timer& gt)
 
 void TheBoat::UpdateWaves(const Timer& gt)
 {
-	// Every quarter second, generate a random wave.
 	static float t_base = 0.0f;
 	if((mTimer.TotalTime() - t_base) >= 0.25f)
 	{
@@ -439,10 +386,8 @@ void TheBoat::UpdateWaves(const Timer& gt)
 		mWaves->Disturb(i, j, r);
 	}
 
-	// Update the wave simulation.
 	mWaves->Update(gt.DeltaTime());
 
-	// Update the wave vertex buffer with the new solution.
 	auto currWavesVB = mCurrFrameResource->WavesVB.get();
 	for(int i = 0; i < mWaves->VertexCount(); ++i)
 	{
@@ -454,23 +399,18 @@ void TheBoat::UpdateWaves(const Timer& gt)
 		currWavesVB->CopyData(i, v);
 	}
 
-	// Set the dynamic VB of the wave renderitem to the current frame VB.
 	mWavesRitem->Geo->VertexBufferGPU = currWavesVB->Resource();
 }
 
 void TheBoat::BuildRootSignature()
 {
-    // Root parameter can be a table, root descriptor or root constants.
     CD3DX12_ROOT_PARAMETER slotRootParameter[2];
 
-    // Create root CBV.
     slotRootParameter[0].InitAsConstantBufferView(0);
     slotRootParameter[1].InitAsConstantBufferView(1);
 
-    // A root signature is an array of root parameters.
 	CD3DX12_ROOT_SIGNATURE_DESC rootSigDesc(2, slotRootParameter, 0, nullptr, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
 
-    // create a root signature with a single slot which points to a descriptor range consisting of a single constant buffer
     ComPtr<ID3DBlob> serializedRootSig = nullptr;
     ComPtr<ID3DBlob> errorBlob = nullptr;
     HRESULT hr = D3D12SerializeRootSignature(&rootSigDesc, D3D_ROOT_SIGNATURE_VERSION_1,
@@ -507,11 +447,6 @@ void TheBoat::BuildLandGeometry()
 	GeometryGenerator::MeshData grid = geoGen.CreateGrid(257, 257, 257, 257);
 	XMFLOAT3 xmf3Scale(1.0f, 0.2f, 1.0f);
 	qwr = new HeightMap(FileName, 257, 257, xmf3Scale);
-	//
-	// Extract the vertex elements we are interested and apply the height function to
-	// each vertex.  In addition, color the vertices based on their height so we have
-	// sandy looking beaches, grassy low hills, and snow mountain peaks.
-	//
 
 	std::vector<Vertex> vertices(grid.Vertices.size());
 	/*for(size_t i = 0; i < grid.Vertices.size(); ++i)
@@ -594,10 +529,9 @@ void TheBoat::BuildLandGeometry()
 
 void TheBoat::BuildWavesGeometryBuffers()
 {
-	std::vector<std::uint16_t> indices(3 * mWaves->TriangleCount()); // 3 indices per face
+	std::vector<std::uint16_t> indices(3 * mWaves->TriangleCount()); 
 	assert(mWaves->VertexCount() < 0x0000ffff);
 
-	// Iterate over each quad.
 	int m = mWaves->RowCount();
 	int n = mWaves->ColumnCount();
 	int k = 0;
@@ -613,7 +547,7 @@ void TheBoat::BuildWavesGeometryBuffers()
 			indices[k + 4] = i*n + j + 1;
 			indices[k + 5] = (i + 1)*n + j + 1;
 
-			k += 6; // next quad
+			k += 6; 
 		}
 	}
 
@@ -623,7 +557,6 @@ void TheBoat::BuildWavesGeometryBuffers()
 	auto geo = std::make_unique<MeshGeometry>();
 	geo->Name = "waterGeo";
 
-	// Set dynamically.
 	geo->VertexBufferCPU = nullptr;
 	geo->VertexBufferGPU = nullptr;
 
@@ -652,9 +585,7 @@ void TheBoat::BuildPSOs()
 {
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC opaquePsoDesc;
 
-	//
-	// PSO for opaque objects.
-	//
+
 	ZeroMemory(&opaquePsoDesc, sizeof(D3D12_GRAPHICS_PIPELINE_STATE_DESC));
 	opaquePsoDesc.InputLayout = { mInputLayout.data(), (UINT)mInputLayout.size() };
 	opaquePsoDesc.pRootSignature = mRootSignature.Get();
@@ -680,9 +611,6 @@ void TheBoat::BuildPSOs()
 	opaquePsoDesc.DSVFormat = mDepthStencilFormat;
 	ThrowIfFailed(md3dDevice->CreateGraphicsPipelineState(&opaquePsoDesc, IID_PPV_ARGS(&mPSOs["opaque"])));
 
-    //
-    // PSO for opaque wireframe objects.
-    //
 
     D3D12_GRAPHICS_PIPELINE_STATE_DESC opaqueWireframePsoDesc = opaquePsoDesc;
     opaqueWireframePsoDesc.RasterizerState.FillMode = D3D12_FILL_MODE_WIREFRAME;
@@ -734,7 +662,6 @@ void TheBoat::DrawRenderItems(ID3D12GraphicsCommandList* cmdList, const std::vec
 
 	auto objectCB = mCurrFrameResource->ObjectCB->Resource();
 
-	// For each render item...
 	for(size_t i = 0; i < ritems.size(); ++i)
 	{
 		auto ri = ritems[i];
@@ -762,16 +689,11 @@ float TheBoat::GetHillsHeight(int x, int z, void * pContext)const
 }
 XMFLOAT4 TheBoat::OnGetColor(int x, int z, void *pContext)
 {
-	//조명의 방향 벡터(정점에서 조명까지의 벡터)이다.
 	XMFLOAT3 xmf3LightDirection = XMFLOAT3(-1.0f, 1.0f, 1.0f);
 	xmf3LightDirection = Vector3::Normalize(xmf3LightDirection);
 	HeightMap *pHeightMapImage = (HeightMap *)pContext;
 	XMFLOAT3 xmf3Scale = pHeightMapImage->GetScale();
-	//조명의 색상(세기, 밝기)이다.
 	XMFLOAT4 xmf4IncidentLightColor(0.9f, 0.8f, 0.4f, 1.0f);
-	/*정점 (x, z)에서 조명이 반사되는 양(비율)은 정점 (x, z)의 법선 벡터와 조명의 방향 벡터의 내적(cos)과 인접한 3개
-	의 정점 (x+1, z), (x, z+1), (x+1, z+1)의 법선 벡터와 조명의 방향 벡터의 내적을 평균하여 구한다. 정점 (x, z)의 색
-	상은 조명 색상(세기)과 반사되는 양(비율)을 곱한 값이다.*/
 	float fScale = Vector3::DotProduct(pHeightMapImage->GetHeightMapNormal(x, z),
 		xmf3LightDirection);
 	fScale += Vector3::DotProduct(pHeightMapImage->GetHeightMapNormal(x + 1, z),
@@ -783,14 +705,12 @@ XMFLOAT4 TheBoat::OnGetColor(int x, int z, void *pContext)
 	fScale = (fScale / 4.0f) + 0.05f;
 	if (fScale > 1.0f) fScale = 1.0f;
 	if (fScale < 0.25f) fScale = 0.25f;
-	//fScale은 조명 색상(밝기)이 반사되는 비율이다.
 	XMFLOAT4 xmf4Color = Vector4::Multiply(fScale, xmf4IncidentLightColor);
 	return(xmf4Color);
 }
 
 XMFLOAT3 TheBoat::GetHillsNormal(float x, float z)const
 {
-    // n = (-df/dx, 1, -df/dz)
     XMFLOAT3 n(
         -0.03f*z*cosf(0.1f*x) - 0.3f*cosf(0.1f*z),
         1.0f,

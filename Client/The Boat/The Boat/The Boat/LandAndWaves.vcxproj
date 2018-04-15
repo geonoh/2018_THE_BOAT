@@ -150,7 +150,7 @@
     <ClCompile Include="..\..\Common\Utility.cpp" />
     <ClCompile Include="FrameResource.cpp" />
     <ClCompile Include="HeightMap.cpp" />
-    <ClCompile Include="LandAndWavesApp.cpp" />
+    <ClCompile Include="TheBoat.cpp" />
     <ClCompile Include="stdafx.cpp" />
     <ClCompile Include="Waves.cpp" />
   </ItemGroup>
