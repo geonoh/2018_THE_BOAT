@@ -460,10 +460,7 @@ void TheBoat::BuildLandGeometry()
 			vertices[i].Pos = p;
 			vertices[i].Pos.y = GetHillsHeight(x, z, qwr);
 			vertices[i].Color = OnGetColor(x, z, qwr);
-			vertices[0].Pos.y = -100;
-			vertices[256].Pos.y = -100;
-			vertices[65792].Pos.y = -100;
-			vertices[66048].Pos.y = -100;
+			
 			//// Color the vertex based on its height.
 			//if (vertices[i].Pos.y < -10.0f)
 			//{
@@ -494,9 +491,7 @@ void TheBoat::BuildLandGeometry()
 	}
 	const UINT vbByteSize = (UINT)vertices.size() * sizeof(Vertex);
 
-	std::vector<std::uint16_t> indices = grid.GetIndices16();
-	const UINT ibByteSize = (UINT)indices.size() * sizeof(std::uint16_t);
-
+	const UINT ibByteSize = (UINT)grid.Indices32.size() * sizeof(std::uint32_t);
 	auto geo = std::make_unique<MeshGeometry>();
 	geo->Name = "landGeo";
 
@@ -504,17 +499,19 @@ void TheBoat::BuildLandGeometry()
 	CopyMemory(geo->VertexBufferCPU->GetBufferPointer(), vertices.data(), vbByteSize);
 
 	ThrowIfFailed(D3DCreateBlob(ibByteSize, &geo->IndexBufferCPU));
-	CopyMemory(geo->IndexBufferCPU->GetBufferPointer(), indices.data(), ibByteSize);
+	CopyMemory(geo->IndexBufferCPU->GetBufferPointer(), grid.Indices32.data(), ibByteSize);
 
-	geo->VertexBufferGPU = Utility::CreateDefaultBuffer(md3dDevice.Get(),
+	geo->VertexBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(),
 		mCommandList.Get(), vertices.data(), vbByteSize, geo->VertexBufferUploader);
 
-	geo->IndexBufferGPU = Utility::CreateDefaultBuffer(md3dDevice.Get(),
-		mCommandList.Get(), indices.data(), ibByteSize, geo->IndexBufferUploader);
+	geo->IndexBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(),
+		mCommandList.Get(), grid.Indices32.data(), ibByteSize, geo->IndexBufferUploader);
 
 	geo->VertexByteStride = sizeof(Vertex);
 	geo->VertexBufferByteSize = vbByteSize;
-	geo->IndexFormat = DXGI_FORMAT_R16_UINT;
+	geo->IndexFormat = DXGI_FORMAT_R32_UINT;
+	geo->IndexBufferByteSize = ibByteSize;
+
 	geo->IndexBufferByteSize = ibByteSize;
 
 	SubmeshGeometry submesh;
