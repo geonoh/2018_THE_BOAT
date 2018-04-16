@@ -501,10 +501,10 @@ void TheBoat::BuildLandGeometry()
 	ThrowIfFailed(D3DCreateBlob(ibByteSize, &geo->IndexBufferCPU));
 	CopyMemory(geo->IndexBufferCPU->GetBufferPointer(), grid.Indices32.data(), ibByteSize);
 
-	geo->VertexBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(),
+	geo->VertexBufferGPU = Utility::CreateDefaultBuffer(md3dDevice.Get(),
 		mCommandList.Get(), vertices.data(), vbByteSize, geo->VertexBufferUploader);
 
-	geo->IndexBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(),
+	geo->IndexBufferGPU = Utility::CreateDefaultBuffer(md3dDevice.Get(),
 		mCommandList.Get(), grid.Indices32.data(), ibByteSize, geo->IndexBufferUploader);
 
 	geo->VertexByteStride = sizeof(Vertex);
@@ -515,7 +515,7 @@ void TheBoat::BuildLandGeometry()
 	geo->IndexBufferByteSize = ibByteSize;
 
 	SubmeshGeometry submesh;
-	submesh.IndexCount = (UINT)indices.size();
+	submesh.IndexCount = (UINT)grid.Indices32.size();
 	submesh.StartIndexLocation = 0;
 	submesh.BaseVertexLocation = 0;
 
