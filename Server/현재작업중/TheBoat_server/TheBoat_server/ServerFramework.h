@@ -30,7 +30,7 @@ public:
 	// 이 함수는 ElaspsedTime을 측정하는 스레드 함수이다.
 	void TimerFunc();
 	// ElapsedTime을 받아와서 업데이트 하는 함수이다. 
-	void Update(duration<double>& elapsed_time);
+	void Update(duration<float>& elapsed_time);
 	ServerFramework();
 	~ServerFramework();
 };

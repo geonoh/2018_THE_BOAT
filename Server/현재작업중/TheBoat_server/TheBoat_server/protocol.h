@@ -1,5 +1,4 @@
 #pragma once
-
 #define SERVER_IP	127.0.0.1
 #define SERVER_PORT 4000
 #define MAX_BUFFER_SIZE 4000
@@ -20,22 +19,25 @@
 #define CS_KEY_PRESS_LEFT		3
 #define CS_KEY_PRESS_RIGHT		4
 #define CS_KEY_PRESS_SPACE		5
-#define CS_KEY_PRESS_1			6
-#define CS_KEY_PRESS_2			7
-#define CS_KEY_PRESS_SHIFT		8
+#define CS_KEY_PRESS_SHIFT		6
+#define CS_KEY_PRESS_1			7
+#define CS_KEY_PRESS_2			8
+#define CS_LEFT_BUTTON_DOWN		9
+#define CS_RIGHT_BUTTON_DOWN	10
 
-#define CS_KEY_RELEASE_UP			9
-#define CS_KEY_RELEASE_DOWN			10
-#define CS_KEY_RELEASE_LEFT			11
-#define CS_KEY_RELEASE_RIGHT		12
-#define CS_KEY_RELEASE_SPACE		13
-#define CS_KEY_RELEASE_1			14
-#define CS_KEY_RELEASE_2			15
+
+#define CS_KEY_RELEASE_UP			11
+#define CS_KEY_RELEASE_DOWN			12
+#define CS_KEY_RELEASE_LEFT			13
+#define CS_KEY_RELEASE_RIGHT		14
+#define CS_KEY_RELEASE_SPACE		15
 #define CS_KEY_RELEASE_SHIFT		16
+#define CS_KEY_RELEASE_1			17
+#define CS_KEY_RELEASE_2			18
+#define CS_LEFT_BUTTON_UP		19
+#define CS_RIGHT_BUTTON_UP		20
 
-
-#define CS_LEFT_BUTTON_DOWN		17
-#define CS_RIGHT_BUTTON_DOWN	18
+#define CS_MOUSE_MOVE			0
 
 #define CS_PLAYER_READY		100
 #define CS_PLAYER_TEAM_SELECT	101
@@ -75,8 +77,6 @@ struct SC_PACKET_POS {
 
 // 포지션 관련된 패킷 하나 더 필요
 
-
-
 // Client To Server 오직 키보드 입력 Ready
 struct CS_PACKET_BIGGEST {
 	BYTE size;
@@ -84,8 +84,6 @@ struct CS_PACKET_BIGGEST {
 	WORD id;
 	bool player_in[4];
 };
-
-
 
 
 struct CS_PACKET_KEYUP {
@@ -147,6 +145,13 @@ struct CS_PACKET_TEAM_SELECT {
 	BYTE size;
 	BYTE type;
 	Team team;
+};
+
+// 클라이언트에서 서버로 look 벡터를 보내줘야 한다. 
+struct CS_PACKET_LOOK_VECTOR {
+	BYTE size;
+	BYTE type;
+	DirectX::XMVECTOR look_vector;
 };
 
 struct SC_PACKET_REMOVE_PLAYER {

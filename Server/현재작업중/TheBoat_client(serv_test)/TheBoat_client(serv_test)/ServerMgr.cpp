@@ -132,10 +132,6 @@ void ServerMgr::SendPacket(int type) {
 		break;
 
 
-
-
-
-
 	case CS_KEY_RELEASE_UP:
 		packet_buffer->type = CS_KEY_RELEASE_UP;
 		retval = WSASend(sock, &send_wsabuf, 1, &iobytes, 0, NULL, NULL);
@@ -170,6 +166,7 @@ void ServerMgr::SendPacket(int type) {
 		retval = WSASend(sock, &send_wsabuf, 1, &iobytes, 0, NULL, NULL);
 		break;
 
+
 	case CS_LEFT_BUTTON_DOWN:
 		packet_buffer->type = CS_LEFT_BUTTON_DOWN;
 		retval = WSASend(sock, &send_wsabuf, 1, &iobytes, 0, NULL, NULL);
@@ -178,6 +175,20 @@ void ServerMgr::SendPacket(int type) {
 		packet_buffer->type = CS_RIGHT_BUTTON_DOWN;
 		retval = WSASend(sock, &send_wsabuf, 1, &iobytes, 0, NULL, NULL);
 		break;
+
+	case CS_LEFT_BUTTON_UP:
+		packet_buffer->type = CS_LEFT_BUTTON_UP;
+		retval = WSASend(sock, &send_wsabuf, 1, &iobytes, 0, NULL, NULL);
+		break;
+	case CS_RIGHT_BUTTON_UP:
+		packet_buffer->type = CS_RIGHT_BUTTON_UP;
+		retval = WSASend(sock, &send_wsabuf, 1, &iobytes, 0, NULL, NULL);
+		break;
+
+	case CS_MOUSE_MOVE:
+		packet_buffer->type = CS_MOUSE_MOVE;
+		// 여기에 추가적으로 player의 look 벡터를 같이 해서 보내줘야한다. 
+		retval = WSASend(sock, &send_wsabuf, 1, &iobytes, 0, NULL, NULL);
 	}
 	if (retval == 1) {
 		int error_code = WSAGetLastError();

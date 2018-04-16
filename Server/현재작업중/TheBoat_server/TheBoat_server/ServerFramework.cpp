@@ -62,7 +62,7 @@ void ServerFramework::InitServer() {
 	LPCTSTR file_name = _T("MapResource/HeightMap.raw");
 	height_map = new HeightMap(file_name, 257, 257, xmf_3_scale);
 
-	printf("%f\n", height_map->GetHeight(20.f, 30.1f));
+	//printf("%f\n", height_map->GetHeight(20.f, 30.1f));
 }
 
 void ServerFramework::AcceptPlayer() {
@@ -165,11 +165,18 @@ void ServerFramework::ProcessPacket(int cl_id, char* packet) {
 	case CS_KEY_PRESS_RIGHT:
 		clients[cl_id].is_move_right = true;
 		break;
+
+		// 무기 변경하기
 	case CS_KEY_PRESS_1:
+		printf("[ProcessPacket] :: AR 무기 선택\n");
 		break;
 	case CS_KEY_PRESS_2:
+		printf("[ProcessPacket] :: 권총 무기 선택\n");
+
 		break;
+
 	case CS_KEY_PRESS_SHIFT:
+		clients[cl_id].is_running = true;
 		break;
 	case CS_KEY_PRESS_SPACE:
 		break;
@@ -191,29 +198,48 @@ void ServerFramework::ProcessPacket(int cl_id, char* packet) {
 	case CS_KEY_RELEASE_2:
 		break;
 	case CS_KEY_RELEASE_SHIFT:
+		clients[cl_id].is_running = false;
 		break;
 	case CS_KEY_RELEASE_SPACE:
 		break;
 
 
+		// 마우스 입력 처리 해주기
+	case CS_RIGHT_BUTTON_DOWN:
+		printf("우측 클릭했음\n");
+		clients[cl_id].is_right_click = true;
+		break;
+	case CS_RIGHT_BUTTON_UP:
+		printf("우측 클릭 땜\n");
+		clients[cl_id].is_right_click = false;
+		break;
 
 
-	// 레디, 팀선택
+	case CS_LEFT_BUTTON_DOWN:
+		clients[cl_id].is_left_click = true;
+		break;
+	case CS_LEFT_BUTTON_UP:
+		clients[cl_id].is_left_click = false;
+		break;
+
+		// 마우스 움직임에도 Player의 Look 벡터를 보내줘야한다. 
+	case CS_MOUSE_MOVE:
+		//printf("마우스 움직임 서버에서 감지\n");
+		break;
+
+
+		// 레디, 팀선택
 	case CS_PLAYER_READY:
 		player_ready[cl_id] = true;
 		break;
 	case CS_PLAYER_TEAM_SELECT:
 		break;
 	}
-
-
-
-
 	// 이 아래 모든 패킷 다 보내줘야한다.
 	// 모든 플레이어에게 해당 플레이어가 이동한것만 보내주면 된다.
 
 	// 이동 관련된 패킷 처리 (점프 포함)
-	if (CS_KEY_PRESS_UP <= packet_buffer->type && packet_buffer->type <= CS_KEY_PRESS_SHIFT) {
+	if (CS_KEY_PRESS_UP <= packet_buffer->type && packet_buffer->type <= CS_KEY_PRESS_SPACE) {
 		SC_PACKET_POS packets;
 		packets.id = cl_id;
 		packets.size = sizeof(SC_PACKET_POS);
@@ -229,6 +255,33 @@ void ServerFramework::ProcessPacket(int cl_id, char* packet) {
 		}
 
 	}
+	// 이동을 하다가 key를 때서 이동을 정지하는것도 플레이어에게 알려줘야한다. 
+	else if (CS_KEY_RELEASE_UP <= packet_buffer->type && packet_buffer->type <= CS_KEY_RELEASE_SPACE) {
+		SC_PACKET_POS packets;
+		packets.id = cl_id;
+		packets.size = sizeof(SC_PACKET_POS);
+		packets.type = SC_POS;		// 키를 떄도 포지션 관련 패킷이 보내진다.
+		packets.x = clients[cl_id].x;
+		packets.y = clients[cl_id].y;
+		packets.z = clients[cl_id].z;
+		// 포지션 패킷 
+		for (int i = 0; i < MAXIMUM_PLAYER; ++i) {
+			if (clients[i].in_use == true) {
+				SendPacket(i, &packets);
+			}
+		}
+	}
+
+	// 현재 클라이언트의 Look 벡터 같이 해서 보내야함.
+	else if (CS_MOUSE_MOVE == packet_buffer->type) {
+		printf("여기서 마우스 움직임 처리한 패킷 보내줘야햔디ㅏ\n"); 
+
+
+	}
+
+	// 플레이어 총알 발사 관련 예외 처리 해야함
+
+
 	// 플레이어 상태 변화 _ Ready, Team 변경, Mode 변경등
 	else if (100 <= packet_buffer->type) {
 		for (int i = 0; i < MAXIMUM_PLAYER; ++i) {
@@ -378,32 +431,57 @@ bool ServerFramework::IsStartGame() {
 void ServerFramework::TimerFunc() {
 	while (true) {
 		time_point<system_clock> cur_time = system_clock::now();
-		duration<double> elapsed_time = cur_time - prev_time;
+		duration<float> elapsed_time = cur_time - prev_time;
 		Update(elapsed_time);
 		prev_time = cur_time;
 	}
 }
-void ServerFramework::Update(duration<double>& elapsed_time) {
+void ServerFramework::Update(duration<float>& elapsed_time) {
 	//printf("%lf\n", elapsed_time);// 단위 세컨드인듯 ?
 	// 맞다
 	// 여기서 넘어오는 elapsed_time은 s단위이다. 
-	double elapsed_double = elapsed_time.count();
+	float elapsed_double = elapsed_time.count();
 	for (int i = 0; i < MAXIMUM_PLAYER; ++i) {
 		if (clients[i].is_move_foward) {
-			clients[i].z += (6000.f * elapsed_double / 3600.f);
-			printf("%d 번 앞으로 간다! %lf\n",i, clients[i].z);
+			if (clients[i].is_running) {
+				clients[i].z += (10000.f * elapsed_double / 3600.f);
+				printf("%d 번 앞으로 뛴다 %lf\n", i, clients[i].z);
+			}
+			else {
+				clients[i].z += (6000.f * elapsed_double / 3600.f);
+				printf("%d 번 앞으로 간다! %lf\n", i, clients[i].z);
+			}
 		}
 		if (clients[i].is_move_backward) {
-			clients[i].z -= (6000.f * elapsed_double / 3600.f);
-			printf("%d 번 뒤로 간다! %lf\n", i, clients[i].z);
+			if (clients[i].is_running) {
+				clients[i].z -= (10000.f * elapsed_double / 3600.f);
+				printf("%d 번 뒤로 뛴다 %lf\n", i, clients[i].z);
+			}
+			else {
+				clients[i].z -= (6000.f * elapsed_double / 3600.f);
+				printf("%d 번 뒤로 간다! %lf\n", i, clients[i].z);
+			}
 		}
 		if (clients[i].is_move_left) {
-			clients[i].x -= (6000.f * elapsed_double / 3600.f);
-			printf("%d 번 왼쪽으로 간다! %lf\n", i, clients[i].x);
+			if (clients[i].is_running) {
+				clients[i].x -= (10000.f * elapsed_double / 3600.f);
+				printf("%d 번 왼쪽으로 뛴다 %lf\n", i, clients[i].x);
+			}
+			else {
+				clients[i].x -= (6000.f * elapsed_double / 3600.f);
+				printf("%d 번 왼쪽으로 간다! %lf\n", i, clients[i].x);
+			}
 		}
 		if (clients[i].is_move_right) {
-			clients[i].x += (6000.f * elapsed_double / 3600.f);
-			printf("%d 번 오른쪽으로 간다! %lf\n", i, clients[i].x);
+			if (clients[i].is_running) {
+				clients[i].x += (10000.f * elapsed_double / 3600.f);
+				printf("%d 번 오른쪽으로 뛴다 %lf\n", i, clients[i].x);
+			}
+			else {
+				clients[i].x += (6000.f * elapsed_double / 3600.f);
+				printf("%d 번 오른쪽으로 간다! %lf\n", i, clients[i].x);
+			}
+
 		}
 	}
 }
