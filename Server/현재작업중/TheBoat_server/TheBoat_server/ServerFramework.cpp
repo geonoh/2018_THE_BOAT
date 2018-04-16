@@ -1,5 +1,7 @@
 #include "stdafx.h"
+#include "HeightMap.h"
 #include "ServerFramework.h"
+
 
 void ErrorDisplay(const char* msg, int err_no) {
 	WCHAR *lpMsgBuf;
@@ -23,6 +25,7 @@ ServerFramework::ServerFramework()
 
 ServerFramework::~ServerFramework()
 {
+	delete height_map;
 }
 
 void ServerFramework::InitServer() {
@@ -53,6 +56,13 @@ void ServerFramework::InitServer() {
 	if (retval == SOCKET_ERROR)
 		printf("listen 에러\n");
 
+
+	// HeightMap 불러오기
+	XMFLOAT3 xmf_3_scale(1.f, 0.2f, 1.f);
+	LPCTSTR file_name = _T("MapResource/HeightMap.raw");
+	height_map = new HeightMap(file_name, 257, 257, xmf_3_scale);
+
+	printf("%f\n", height_map->GetHeight(20.f, 30.1f));
 }
 
 void ServerFramework::AcceptPlayer() {
@@ -125,6 +135,7 @@ void ServerFramework::AcceptPlayer() {
 	}
 
 	for (int i = 0; i < MAXIMUM_PLAYER; ++i) {
+
 		if(clients[i].in_use)
 			SendPacket(i, &packet);	// 모든 플레이어에게 입장정보 보내야함
 	}
@@ -142,23 +153,51 @@ void ServerFramework::ProcessPacket(int cl_id, char* packet) {
 	switch (packet_buffer->type) {
 
 		// <단순>플레이어 키 입력 부분
-	case CS_KEY_UP:
-		clients[cl_id].z++;
+	case CS_KEY_PRESS_UP:
+		clients[cl_id].is_move_foward = true;
 		break;
-	case CS_KEY_DOWN:
+	case CS_KEY_PRESS_DOWN:
+		clients[cl_id].is_move_backward = true;
 		break;
-	case CS_KEY_LEFT:
+	case CS_KEY_PRESS_LEFT:
+		clients[cl_id].is_move_left = true;
 		break;
-	case CS_KEY_RIGHT:
+	case CS_KEY_PRESS_RIGHT:
+		clients[cl_id].is_move_right = true;
 		break;
-	case CS_KEY_1:
+	case CS_KEY_PRESS_1:
 		break;
-	case CS_KEY_2:
+	case CS_KEY_PRESS_2:
 		break;
-	case CS_KEY_SHIFT:
+	case CS_KEY_PRESS_SHIFT:
 		break;
-	case CS_KEY_SPACE:
+	case CS_KEY_PRESS_SPACE:
 		break;
+
+	case CS_KEY_RELEASE_UP:
+		clients[cl_id].is_move_foward = false;
+		break;
+	case CS_KEY_RELEASE_DOWN:
+		clients[cl_id].is_move_backward = false;
+		break;
+	case CS_KEY_RELEASE_LEFT:
+		clients[cl_id].is_move_left = false;
+		break;
+	case CS_KEY_RELEASE_RIGHT:
+		clients[cl_id].is_move_right = false;
+		break;
+	case CS_KEY_RELEASE_1:
+		break;
+	case CS_KEY_RELEASE_2:
+		break;
+	case CS_KEY_RELEASE_SHIFT:
+		break;
+	case CS_KEY_RELEASE_SPACE:
+		break;
+
+
+
+
 	// 레디, 팀선택
 	case CS_PLAYER_READY:
 		player_ready[cl_id] = true;
@@ -174,18 +213,18 @@ void ServerFramework::ProcessPacket(int cl_id, char* packet) {
 	// 모든 플레이어에게 해당 플레이어가 이동한것만 보내주면 된다.
 
 	// 이동 관련된 패킷 처리 (점프 포함)
-	if (CS_KEY_UP <= packet_buffer->type && packet_buffer->type <= CS_KEY_SPACE) {
-		SC_PACKET_POS packet;
-		packet.id = cl_id;
-		packet.size = sizeof(SC_PACKET_POS);
-		packet.type = SC_POS;
-		packet.x = clients[cl_id].x;
-		packet.y = clients[cl_id].y;
-		packet.z = clients[cl_id].z;
+	if (CS_KEY_PRESS_UP <= packet_buffer->type && packet_buffer->type <= CS_KEY_PRESS_SHIFT) {
+		SC_PACKET_POS packets;
+		packets.id = cl_id;
+		packets.size = sizeof(SC_PACKET_POS);
+		packets.type = SC_POS;
+		packets.x = clients[cl_id].x;
+		packets.y = clients[cl_id].y;
+		packets.z = clients[cl_id].z;
 		// 포지션 패킷 
 		for (int i = 0; i < MAXIMUM_PLAYER; ++i) {
 			if (clients[i].in_use == true) {
-				SendPacket(i, &packet);
+				SendPacket(i, &packets);
 			}
 		}
 
@@ -199,6 +238,7 @@ void ServerFramework::ProcessPacket(int cl_id, char* packet) {
 		}
 
 	}
+
 }
 
 void ServerFramework::WorkerThread() {
@@ -220,7 +260,6 @@ void ServerFramework::WorkerThread() {
 
 		if (retval == FALSE) {
 			printf("[WorkerThread::GQCS] 접속 해제 ClientID : %d\n", client_id);
-			//cout << "[WorkerThread::GQCS] ClientID : <" << client_id << ">\n";
 			DisconnectPlayer(client_id);
 			continue;
 		}
@@ -334,4 +373,37 @@ bool ServerFramework::IsStartGame() {
 		return true;
 	else
 		return false;
+}
+
+void ServerFramework::TimerFunc() {
+	while (true) {
+		time_point<system_clock> cur_time = system_clock::now();
+		duration<double> elapsed_time = cur_time - prev_time;
+		Update(elapsed_time);
+		prev_time = cur_time;
+	}
+}
+void ServerFramework::Update(duration<double>& elapsed_time) {
+	//printf("%lf\n", elapsed_time);// 단위 세컨드인듯 ?
+	// 맞다
+	// 여기서 넘어오는 elapsed_time은 s단위이다. 
+	double elapsed_double = elapsed_time.count();
+	for (int i = 0; i < MAXIMUM_PLAYER; ++i) {
+		if (clients[i].is_move_foward) {
+			clients[i].z += (6000.f * elapsed_double / 3600.f);
+			printf("%d 번 앞으로 간다! %lf\n",i, clients[i].z);
+		}
+		if (clients[i].is_move_backward) {
+			clients[i].z -= (6000.f * elapsed_double / 3600.f);
+			printf("%d 번 뒤로 간다! %lf\n", i, clients[i].z);
+		}
+		if (clients[i].is_move_left) {
+			clients[i].x -= (6000.f * elapsed_double / 3600.f);
+			printf("%d 번 왼쪽으로 간다! %lf\n", i, clients[i].x);
+		}
+		if (clients[i].is_move_right) {
+			clients[i].x += (6000.f * elapsed_double / 3600.f);
+			printf("%d 번 오른쪽으로 간다! %lf\n", i, clients[i].x);
+		}
+	}
 }

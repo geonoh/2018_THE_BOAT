@@ -15,18 +15,27 @@
 
 
 // Client To Server
-#define CS_KEY_UP			1
-#define CS_KEY_DOWN			2
-#define CS_KEY_LEFT			3
-#define CS_KEY_RIGHT		4
-#define CS_KEY_SPACE		5
+#define CS_KEY_PRESS_UP			1
+#define CS_KEY_PRESS_DOWN		2
+#define CS_KEY_PRESS_LEFT		3
+#define CS_KEY_PRESS_RIGHT		4
+#define CS_KEY_PRESS_SPACE		5
+#define CS_KEY_PRESS_1			6
+#define CS_KEY_PRESS_2			7
+#define CS_KEY_PRESS_SHIFT		8
 
-#define CS_KEY_1			6
-#define CS_KEY_2			7
-#define CS_KEY_SHIFT		8
+#define CS_KEY_RELEASE_UP			9
+#define CS_KEY_RELEASE_DOWN			10
+#define CS_KEY_RELEASE_LEFT			11
+#define CS_KEY_RELEASE_RIGHT		12
+#define CS_KEY_RELEASE_SPACE		13
+#define CS_KEY_RELEASE_1			14
+#define CS_KEY_RELEASE_2			15
+#define CS_KEY_RELEASE_SHIFT		16
 
-#define CS_LEFT_BUTTON_DOWN		9
-#define CS_RIGHT_BUTTON_DOWN	10
+
+#define CS_LEFT_BUTTON_DOWN		17
+#define CS_RIGHT_BUTTON_DOWN	18
 
 #define CS_PLAYER_READY		100
 #define CS_PLAYER_TEAM_SELECT	101
