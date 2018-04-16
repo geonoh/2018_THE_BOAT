@@ -1,17 +1,15 @@
 
 #pragma once
+
 #include <windows.h>
 #include <wrl.h>
 #include <dxgi1_4.h>
 #include <d3d12.h>
 #include <D3Dcompiler.h>
-
 #include <DirectXMath.h>
 #include <DirectXPackedVector.h>
 #include <DirectXColors.h>
 #include <DirectXCollision.h>
-
-
 #include <string>
 #include <memory>
 #include <algorithm>
@@ -23,173 +21,7 @@
 #include <sstream>
 #include <cassert>
 #include "d3dx12.h"
-<<<<<<< HEAD
-//<<<<<<< HEAD
-#define EPSILON 1.0e-8f
-extern const int gNumFrameResources;
-inline bool IsZero(float fValue) { return((fabsf(fValue) < EPSILON)); }
-
-// TODO: 프로그램에 필요한 추가 헤더는 여기에서 참조합니다.
-
-using namespace DirectX;
-using namespace DirectX::PackedVector;
-
-
-//3차원 벡터의 연산
-
-namespace Vector3 {
-	XMFLOAT3 XMVectorToFloat3(XMVECTOR& xmvVector)
-	{
-
-		XMFLOAT3 xmf3Result;
-
-		XMStoreFloat3(&xmf3Result, xmvVector);
-
-		return(xmf3Result);
-
-	}
-
-	inline XMFLOAT3 ScalarProduct(XMFLOAT3& xmf3Vector, float fScalar, bool bNormalize = true)
-
-	{
-
-		XMFLOAT3 xmf3Result;
-
-		if (bNormalize)
-
-			XMStoreFloat3(&xmf3Result, XMVector3Normalize(XMLoadFloat3(&xmf3Vector)) * fScalar);
-
-		else
-
-			XMStoreFloat3(&xmf3Result, XMLoadFloat3(&xmf3Vector) * fScalar); return(xmf3Result);
-
-	}
-
-	inline XMFLOAT3 Add(const XMFLOAT3& xmf3Vector1, const XMFLOAT3& xmf3Vector2)
-
-	{
-
-		XMFLOAT3 xmf3Result;
-
-		XMStoreFloat3(&xmf3Result, XMLoadFloat3(&xmf3Vector1) + XMLoadFloat3(&xmf3Vector2));
-
-		return(xmf3Result);
-
-	}
-
-	inline XMFLOAT3 Add(XMFLOAT3& xmf3Vector1, XMFLOAT3& xmf3Vector2, float fScalar)
-
-	{
-
-		XMFLOAT3 xmf3Result;
-
-		XMStoreFloat3(&xmf3Result, XMLoadFloat3(&xmf3Vector1) + (XMLoadFloat3(&xmf3Vector2) * fScalar));
-
-		return(xmf3Result);
-
-	}
-
-	inline XMFLOAT3 Subtract(XMFLOAT3& xmf3Vector1, XMFLOAT3& xmf3Vector2)
-
-	{
-
-		XMFLOAT3 xmf3Result;
-
-		XMStoreFloat3(&xmf3Result, XMLoadFloat3(&xmf3Vector1) - XMLoadFloat3(&xmf3Vector2));
-
-		return(xmf3Result);
-
-	}
-
-	inline float DotProduct(XMFLOAT3& xmf3Vector1, XMFLOAT3& xmf3Vector2)
-
-	{
-
-		XMFLOAT3 xmf3Result;
-
-		XMStoreFloat3(&xmf3Result, XMVector3Dot(XMLoadFloat3(&xmf3Vector1), XMLoadFloat3(&xmf3Vector2)));
-
-		return(xmf3Result.x);
-
-	}
-
-	inline XMFLOAT3 CrossProduct(XMFLOAT3& xmf3Vector1, XMFLOAT3& xmf3Vector2, bool bNormalize = true)
-
-	{
-
-		XMFLOAT3 xmf3Result;
-
-		if (bNormalize)
-
-			XMStoreFloat3(&xmf3Result, XMVector3Normalize(XMVector3Cross(XMLoadFloat3(&xmf3Vector1), XMLoadFloat3(&xmf3Vector2))));
-
-		else
-
-			XMStoreFloat3(&xmf3Result, XMVector3Cross(XMLoadFloat3(&xmf3Vector1), XMLoadFloat3(&xmf3Vector2)));
-
-		return(xmf3Result);
-
-	}
-
-	inline XMFLOAT3 Normalize(XMFLOAT3& xmf3Vector)
-
-	{
-
-		XMFLOAT3 m_xmf3Normal;
-
-		XMStoreFloat3(&m_xmf3Normal, XMVector3Normalize(XMLoadFloat3(&xmf3Vector)));
-
-		return(m_xmf3Normal);
-
-	}
-
-	inline float Length(XMFLOAT3& xmf3Vector)
-
-	{
-
-		XMFLOAT3 xmf3Result;
-
-		XMStoreFloat3(&xmf3Result, XMVector3Length(XMLoadFloat3(&xmf3Vector)));
-
-		return(xmf3Result.x);
-
-	}
-
-	inline float Angle(XMVECTOR& xmvVector1, XMVECTOR& xmvVector2)
-
-	{
-
-		XMVECTOR xmvAngle = XMVector3AngleBetweenNormals(xmvVector1, xmvVector2);
-
-		return(XMConvertToDegrees(acosf(XMVectorGetX(xmvAngle))));
-
-	}
-
-	//inline float Angle(XMFLOAT3& xmf3Vector1, XMFLOAT3& xmf3Vector2)
-
-	//{
-
-	//	return(Angle(XMLoadFloat3(&xmf3Vector1), XMLoadFloat3(&xmf3Vector2)));
-
-	//}
-
-	inline XMFLOAT3 TransformNormal(XMFLOAT3& xmf3Vector, XMMATRIX& xmmtxTransform)
-
-	{
-
-		XMFLOAT3 xmf3Result;
-
-		XMStoreFloat3(&xmf3Result, XMVector3TransformNormal(XMLoadFloat3(&xmf3Vector), xmmtxTransform));
-
-		return(xmf3Result);
-
-	}
-//=======
-//>>>>>>> origin/frame
-
-=======
 #include "MathHelper.h"
->>>>>>> frame
 
 #define FRAME_BUFFER_WIDTH 640
 #define FRAME_BUFFER_HEIGHT 480
@@ -328,11 +160,11 @@ struct MeshGeometry
 struct Light
 {
 	XMFLOAT3 Strength = { 0.5f, 0.5f, 0.5f };
-	float FalloffStart = 1.0f;                          
+	float FalloffStart = 1.0f;
 	XMFLOAT3 Direction = { 0.0f, -1.0f, 0.0f };
-	float FalloffEnd = 10.0f;                           
-	XMFLOAT3 Position = { 0.0f, 0.0f, 0.0f };  
-	float SpotPower = 64.0f;                            
+	float FalloffEnd = 10.0f;
+	XMFLOAT3 Position = { 0.0f, 0.0f, 0.0f };
+	float SpotPower = 64.0f;
 };
 
 #define MaxLights 16
