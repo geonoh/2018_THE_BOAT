@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="ServerMgr">
+      <UniqueIdentifier>{15c59d79-7b06-4235-8197-7b53b055a02f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -60,6 +63,12 @@
     <ClInclude Include="FBXLoader.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="ServerMgr.h">
+      <Filter>ServerMgr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Server\현재작업중\TheBoat_server\TheBoat_server\protocol.h">
+      <Filter>ServerMgr</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -97,6 +106,9 @@
     </ClCompile>
     <ClCompile Include="FBXLoader.cpp">
       <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="ServerMgr.cpp">
+      <Filter>ServerMgr</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

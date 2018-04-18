@@ -5,9 +5,17 @@
 
 #pragma once
 
+#ifdef _DEBUG
+#pragma comment(linker, "/entry:wWinMainCRTStartup /subsystem:console")
+#endif
+
 #define WIN32_LEAN_AND_MEAN             // 거의 사용되지 않는 내용은 Windows 헤더에서 제외합니다.
+#define _WINSOCK_DEPRECATED_NO_WARNINGS
 // Windows 헤더 파일:
 #include <windows.h>
+#pragma comment(lib,"ws2_32")
+#include <WinSock2.h>
+
 
 // C의 런타임 헤더 파일입니다.
 #include <stdlib.h>
@@ -37,6 +45,8 @@ using namespace std;
 #include <algorithm>
 #include <memory.h>
 #include <fbxsdk.h>
+
+#include "..\..\..\Server\현재작업중\TheBoat_server\TheBoat_server\protocol.h"
 
 using namespace DirectX;
 using namespace DirectX::PackedVector;

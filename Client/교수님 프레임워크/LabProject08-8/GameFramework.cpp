@@ -326,7 +326,7 @@ void CGameFramework::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPA
 			switch (wParam)
 			{
 				case VK_ESCAPE:
-					::PostQuitMessage(0);
+					exit(-1);
 					break;
 				case VK_RETURN:
 					break;
