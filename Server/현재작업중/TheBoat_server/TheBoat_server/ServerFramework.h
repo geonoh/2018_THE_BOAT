@@ -15,9 +15,12 @@ class ServerFramework
 										// Client_ID¿¡ ¸Â´Â ¹è¿­ true
 										// ¸ğµÎ true°¡ µÇ¸é °ÔÀÓ ½ÃÀÛ ÇÔ¼ö ½ÇÇà
 	HeightMap* height_map;
+<<<<<<< HEAD
 	time_point<system_clock> start_time, end_time;
 	time_point<system_clock> prev_time = system_clock::now();
 
+=======
+>>>>>>> [ì„œë²„ í”„ë ˆì„ì›Œí¬] : HeightMap Class ë¶™ì´ê¸° ì„±ê³µ. ì´ì œ ë§µë§Œ ë§Œë“¤ë©´ ë¨
 public:
 	void InitServer();
 	void AcceptPlayer();

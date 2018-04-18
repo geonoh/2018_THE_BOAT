@@ -62,7 +62,13 @@ void ServerFramework::InitServer() {
 	LPCTSTR file_name = _T("MapResource/HeightMap.raw");
 	height_map = new HeightMap(file_name, 257, 257, xmf_3_scale);
 
+<<<<<<< HEAD
 	//printf("%f\n", height_map->GetHeight(20.f, 30.1f));
+=======
+	printf("%f\n", height_map->GetHeight(20.f, 30.1f));
+
+	// 
+>>>>>>> [서버 프레임워크] : HeightMap Class 붙이기 성공. 이제 맵만 만들면 됨
 }
 
 void ServerFramework::AcceptPlayer() {
