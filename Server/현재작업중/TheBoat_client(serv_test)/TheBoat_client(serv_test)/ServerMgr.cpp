@@ -128,6 +128,48 @@ void ServerMgr::SendPacket(int type) {
 		break;
 	case CS_KEY_PRESS_2:
 		packet_buffer->type = CS_KEY_PRESS_2;
+<<<<<<< HEAD
+=======
+		retval = WSASend(sock, &send_wsabuf, 1, &iobytes, 0, NULL, NULL);
+		break;
+
+
+
+
+
+
+	case CS_KEY_RELEASE_UP:
+		packet_buffer->type = CS_KEY_RELEASE_UP;
+		retval = WSASend(sock, &send_wsabuf, 1, &iobytes, 0, NULL, NULL);
+		break;
+	case CS_KEY_RELEASE_DOWN:
+		packet_buffer->type = CS_KEY_RELEASE_DOWN;
+		retval = WSASend(sock, &send_wsabuf, 1, &iobytes, 0, NULL, NULL);
+		break;
+	case CS_KEY_RELEASE_RIGHT:
+		packet_buffer->type = CS_KEY_RELEASE_RIGHT;
+		retval = WSASend(sock, &send_wsabuf, 1, &iobytes, 0, NULL, NULL);
+		break;
+	case CS_KEY_RELEASE_LEFT:
+		packet_buffer->type = CS_KEY_RELEASE_LEFT;
+		retval = WSASend(sock, &send_wsabuf, 1, &iobytes, 0, NULL, NULL);
+		break;
+
+	case CS_KEY_RELEASE_SHIFT:
+		packet_buffer->type = CS_KEY_RELEASE_SHIFT;
+		retval = WSASend(sock, &send_wsabuf, 1, &iobytes, 0, NULL, NULL);
+		break;
+	case CS_KEY_RELEASE_SPACE:
+		packet_buffer->type = CS_KEY_RELEASE_SPACE;
+		retval = WSASend(sock, &send_wsabuf, 1, &iobytes, 0, NULL, NULL);
+		break;
+	case CS_KEY_RELEASE_1:
+		packet_buffer->type = CS_KEY_RELEASE_1;
+		retval = WSASend(sock, &send_wsabuf, 1, &iobytes, 0, NULL, NULL);
+		break;
+	case CS_KEY_RELEASE_2:
+		packet_buffer->type = CS_KEY_RELEASE_2;
+>>>>>>> [서버 프레임워크] : 키 push, down 에 따른 이동 방식 구현 [더미클라이언트] : 키 입력 중첩 안되도록 코드 수정
 		retval = WSASend(sock, &send_wsabuf, 1, &iobytes, 0, NULL, NULL);
 		break;
 

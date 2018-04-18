@@ -19,11 +19,30 @@
 #define CS_KEY_PRESS_LEFT		3
 #define CS_KEY_PRESS_RIGHT		4
 #define CS_KEY_PRESS_SPACE		5
+<<<<<<< HEAD
 #define CS_KEY_PRESS_SHIFT		6
 #define CS_KEY_PRESS_1			7
 #define CS_KEY_PRESS_2			8
 #define CS_LEFT_BUTTON_DOWN		9
 #define CS_RIGHT_BUTTON_DOWN	10
+=======
+#define CS_KEY_PRESS_1			6
+#define CS_KEY_PRESS_2			7
+#define CS_KEY_PRESS_SHIFT		8
+
+#define CS_KEY_RELEASE_UP			9
+#define CS_KEY_RELEASE_DOWN			10
+#define CS_KEY_RELEASE_LEFT			11
+#define CS_KEY_RELEASE_RIGHT		12
+#define CS_KEY_RELEASE_SPACE		13
+#define CS_KEY_RELEASE_1			14
+#define CS_KEY_RELEASE_2			15
+#define CS_KEY_RELEASE_SHIFT		16
+
+
+#define CS_LEFT_BUTTON_DOWN		17
+#define CS_RIGHT_BUTTON_DOWN	18
+>>>>>>> [서버 프레임워크] : 키 push, down 에 따른 이동 방식 구현 [더미클라이언트] : 키 입력 중첩 안되도록 코드 수정
 
 
 #define CS_KEY_RELEASE_UP			11

@@ -66,9 +66,12 @@ void ServerFramework::InitServer() {
 	//printf("%f\n", height_map->GetHeight(20.f, 30.1f));
 =======
 	printf("%f\n", height_map->GetHeight(20.f, 30.1f));
+<<<<<<< HEAD
 
 	// 
 >>>>>>> [ì„œë²„ í”„ë ˆì„ì›Œí¬] : HeightMap Class ë¶™ì´ê¸° ì„±ê³µ. ì´ì œ ë§µë§Œ ë§Œë“¤ë©´ ë¨
+=======
+>>>>>>> [ì„œë²„ í”„ë ˆì„ì›Œí¬] : í‚¤ push, down ì— ë”°ë¥¸ ì´ë™ ë°©ì‹ êµ¬í˜„ [ë”ë¯¸í´ë¼ì´ì–¸íŠ¸] : í‚¤ ì…ë ¥ ì¤‘ì²© ì•ˆë˜ë„ë¡ ì½”ë“œ ìˆ˜ì •
 }
 
 void ServerFramework::AcceptPlayer() {
@@ -161,6 +164,7 @@ void ServerFramework::ProcessPacket(int cl_id, char* packet) {
 		// <´Ü¼ø>ÇÃ·¹ÀÌ¾î Å° ÀÔ·Â ºÎºĞ
 	case CS_KEY_PRESS_UP:
 		clients[cl_id].is_move_foward = true;
+<<<<<<< HEAD
 		break;
 	case CS_KEY_PRESS_DOWN:
 		clients[cl_id].is_move_backward = true;
@@ -189,6 +193,54 @@ void ServerFramework::ProcessPacket(int cl_id, char* packet) {
 
 	case CS_KEY_RELEASE_UP:
 		clients[cl_id].is_move_foward = false;
+=======
+		break;
+	case CS_KEY_PRESS_DOWN:
+		clients[cl_id].is_move_backward = true;
+		break;
+	case CS_KEY_PRESS_LEFT:
+		clients[cl_id].is_move_left = true;
+		break;
+	case CS_KEY_PRESS_RIGHT:
+		clients[cl_id].is_move_right = true;
+		break;
+	case CS_KEY_PRESS_1:
+		break;
+	case CS_KEY_PRESS_2:
+		break;
+	case CS_KEY_PRESS_SHIFT:
+		break;
+	case CS_KEY_PRESS_SPACE:
+		break;
+
+	case CS_KEY_RELEASE_UP:
+		clients[cl_id].is_move_foward = false;
+		break;
+	case CS_KEY_RELEASE_DOWN:
+		clients[cl_id].is_move_backward = false;
+		break;
+	case CS_KEY_RELEASE_LEFT:
+		clients[cl_id].is_move_left = false;
+		break;
+	case CS_KEY_RELEASE_RIGHT:
+		clients[cl_id].is_move_right = false;
+		break;
+	case CS_KEY_RELEASE_1:
+		break;
+	case CS_KEY_RELEASE_2:
+		break;
+	case CS_KEY_RELEASE_SHIFT:
+		break;
+	case CS_KEY_RELEASE_SPACE:
+		break;
+
+
+
+
+	// ·¹µğ, ÆÀ¼±ÅÃ
+	case CS_PLAYER_READY:
+		player_ready[cl_id] = true;
+>>>>>>> [ì„œë²„ í”„ë ˆì„ì›Œí¬] : í‚¤ push, down ì— ë”°ë¥¸ ì´ë™ ë°©ì‹ êµ¬í˜„ [ë”ë¯¸í´ë¼ì´ì–¸íŠ¸] : í‚¤ ì…ë ¥ ì¤‘ì²© ì•ˆë˜ë„ë¡ ì½”ë“œ ìˆ˜ì •
 		break;
 	case CS_KEY_RELEASE_DOWN:
 		clients[cl_id].is_move_backward = false;
@@ -245,7 +297,11 @@ void ServerFramework::ProcessPacket(int cl_id, char* packet) {
 	// ¸ğµç ÇÃ·¹ÀÌ¾î¿¡°Ô ÇØ´ç ÇÃ·¹ÀÌ¾î°¡ ÀÌµ¿ÇÑ°Í¸¸ º¸³»ÁÖ¸é µÈ´Ù.
 
 	// ÀÌµ¿ °ü·ÃµÈ ÆĞÅ¶ Ã³¸® (Á¡ÇÁ Æ÷ÇÔ)
+<<<<<<< HEAD
 	if (CS_KEY_PRESS_UP <= packet_buffer->type && packet_buffer->type <= CS_KEY_PRESS_SPACE) {
+=======
+	if (CS_KEY_PRESS_UP <= packet_buffer->type && packet_buffer->type <= CS_KEY_PRESS_SHIFT) {
+>>>>>>> [ì„œë²„ í”„ë ˆì„ì›Œí¬] : í‚¤ push, down ì— ë”°ë¥¸ ì´ë™ ë°©ì‹ êµ¬í˜„ [ë”ë¯¸í´ë¼ì´ì–¸íŠ¸] : í‚¤ ì…ë ¥ ì¤‘ì²© ì•ˆë˜ë„ë¡ ì½”ë“œ ìˆ˜ì •
 		SC_PACKET_POS packets;
 		packets.id = cl_id;
 		packets.size = sizeof(SC_PACKET_POS);
@@ -437,11 +493,16 @@ bool ServerFramework::IsStartGame() {
 void ServerFramework::TimerFunc() {
 	while (true) {
 		time_point<system_clock> cur_time = system_clock::now();
+<<<<<<< HEAD
 		duration<float> elapsed_time = cur_time - prev_time;
+=======
+		duration<double> elapsed_time = cur_time - prev_time;
+>>>>>>> [ì„œë²„ í”„ë ˆì„ì›Œí¬] : í‚¤ push, down ì— ë”°ë¥¸ ì´ë™ ë°©ì‹ êµ¬í˜„ [ë”ë¯¸í´ë¼ì´ì–¸íŠ¸] : í‚¤ ì…ë ¥ ì¤‘ì²© ì•ˆë˜ë„ë¡ ì½”ë“œ ìˆ˜ì •
 		Update(elapsed_time);
 		prev_time = cur_time;
 	}
 }
+<<<<<<< HEAD
 void ServerFramework::Update(duration<float>& elapsed_time) {
 	//printf("%lf\n", elapsed_time);// ´ÜÀ§ ¼¼ÄÁµåÀÎµí ?
 	// ¸Â´Ù
@@ -488,6 +549,29 @@ void ServerFramework::Update(duration<float>& elapsed_time) {
 				printf("%d ¹ø ¿À¸¥ÂÊÀ¸·Î °£´Ù! %lf\n", i, clients[i].x);
 			}
 
+=======
+void ServerFramework::Update(duration<double>& elapsed_time) {
+	//printf("%lf\n", elapsed_time);// ´ÜÀ§ ¼¼ÄÁµåÀÎµí ?
+	// ¸Â´Ù
+	// ¿©±â¼­ ³Ñ¾î¿À´Â elapsed_timeÀº s´ÜÀ§ÀÌ´Ù. 
+	double elapsed_double = elapsed_time.count();
+	for (int i = 0; i < MAXIMUM_PLAYER; ++i) {
+		if (clients[i].is_move_foward) {
+			clients[i].z += (6000.f * elapsed_double / 3600.f);
+			printf("%d ¹ø ¾ÕÀ¸·Î °£´Ù! %lf\n",i, clients[i].z);
+		}
+		if (clients[i].is_move_backward) {
+			clients[i].z -= (6000.f * elapsed_double / 3600.f);
+			printf("%d ¹ø µÚ·Î °£´Ù! %lf\n", i, clients[i].z);
+		}
+		if (clients[i].is_move_left) {
+			clients[i].x -= (6000.f * elapsed_double / 3600.f);
+			printf("%d ¹ø ¿ŞÂÊÀ¸·Î °£´Ù! %lf\n", i, clients[i].x);
+		}
+		if (clients[i].is_move_right) {
+			clients[i].x += (6000.f * elapsed_double / 3600.f);
+			printf("%d ¹ø ¿À¸¥ÂÊÀ¸·Î °£´Ù! %lf\n", i, clients[i].x);
+>>>>>>> [ì„œë²„ í”„ë ˆì„ì›Œí¬] : í‚¤ push, down ì— ë”°ë¥¸ ì´ë™ ë°©ì‹ êµ¬í˜„ [ë”ë¯¸í´ë¼ì´ì–¸íŠ¸] : í‚¤ ì…ë ¥ ì¤‘ì²© ì•ˆë˜ë„ë¡ ì½”ë“œ ìˆ˜ì •
 		}
 	}
 }
