@@ -68,6 +68,22 @@ struct SC_PACKET_ENTER_PLAYER {
 	bool player_ready[4];
 };
 
+// 걷기 패킷
+struct SC_PACKET_MOVING {
+	BYTE size;
+	BYTE type;
+	WORD id;
+};
+
+// 달리기 패킷
+struct SC_PACKET_RUNNING {
+	BYTE size;
+	BYTE type;
+	WORD id;
+};
+
+
+
 struct SC_PACKET_POS {
 	BYTE size;
 	BYTE type;
