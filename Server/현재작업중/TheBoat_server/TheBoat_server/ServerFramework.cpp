@@ -181,6 +181,9 @@ void ServerFramework::ProcessPacket(int cl_id, char* packet) {
 	case CS_KEY_PRESS_SPACE:
 		break;
 
+
+		// 떼는 순간 모든 클라이언트에 플레이어 이동 정보를 
+		// 보내줘야한다. 
 	case CS_KEY_RELEASE_UP:
 		clients[cl_id].is_move_foward = false;
 		break;
@@ -216,9 +219,11 @@ void ServerFramework::ProcessPacket(int cl_id, char* packet) {
 
 
 	case CS_LEFT_BUTTON_DOWN:
+		printf("좌측 클릭했음\n");
 		clients[cl_id].is_left_click = true;
 		break;
 	case CS_LEFT_BUTTON_UP:
+		printf("좌측 클릭 땜\n");
 		clients[cl_id].is_left_click = false;
 		break;
 
@@ -238,23 +243,42 @@ void ServerFramework::ProcessPacket(int cl_id, char* packet) {
 	// 이 아래 모든 패킷 다 보내줘야한다.
 	// 모든 플레이어에게 해당 플레이어가 이동한것만 보내주면 된다.
 
+
 	// 이동 관련된 패킷 처리 (점프 포함)
 	if (CS_KEY_PRESS_UP <= packet_buffer->type && packet_buffer->type <= CS_KEY_PRESS_SPACE) {
-		SC_PACKET_POS packets;
-		packets.id = cl_id;
-		packets.size = sizeof(SC_PACKET_POS);
-		packets.type = SC_POS;
-		packets.x = clients[cl_id].x;
-		packets.y = clients[cl_id].y;
-		packets.z = clients[cl_id].z;
-		// 포지션 패킷 
-		for (int i = 0; i < MAXIMUM_PLAYER; ++i) {
-			if (clients[i].in_use == true) {
-				SendPacket(i, &packets);
-			}
+		//SC_PACKET_POS packets;
+		//packets.id = cl_id;
+		//packets.size = sizeof(SC_PACKET_POS);
+		//packets.type = SC_POS;
+		//packets.x = clients[cl_id].x;
+		//packets.y = clients[cl_id].y;
+		//packets.z = clients[cl_id].z;
+		//// 포지션 패킷 
+		//for (int i = 0; i < MAXIMUM_PLAYER; ++i) {
+		//	if (clients[i].in_use == true) {
+		//		SendPacket(i, &packets);
+		//	}
+		//}
+		if (clients[cl_id].is_running) {
+			printf("달리기 패킷 보내야함\n");
+
+		}
+		else {
+			printf("걷기 패킷 보내야함\n");
+
 		}
 
+		// 키 입력했을때 Moving 패킷을 전 클라이언트에게 보내준다. 
+
 	}
+	// 달리기 버튼을 눌렀을때 
+	if (CS_KEY_PRESS_SHIFT == packet_buffer->type) {
+		// 움직이고 있는 상태면 
+		if (clients[cl_id].is_move_foward || clients[cl_id].is_move_backward || clients[cl_id].is_move_right || clients[cl_id].is_move_left ) {
+			printf("러닝 패킷 보내야함\n");
+		}
+	}
+
 	// 이동을 하다가 key를 때서 이동을 정지하는것도 플레이어에게 알려줘야한다. 
 	else if (CS_KEY_RELEASE_UP <= packet_buffer->type && packet_buffer->type <= CS_KEY_RELEASE_SPACE) {
 		SC_PACKET_POS packets;
@@ -442,44 +466,50 @@ void ServerFramework::Update(duration<float>& elapsed_time) {
 	// 여기서 넘어오는 elapsed_time은 s단위이다. 
 	float elapsed_double = elapsed_time.count();
 	for (int i = 0; i < MAXIMUM_PLAYER; ++i) {
+		// 총알 발사 부분 업데이트
+
+
+
+
+		// 이동부분 업데이트 
 		if (clients[i].is_move_foward) {
 			if (clients[i].is_running) {
 				clients[i].z += (10000.f * elapsed_double / 3600.f);
-				printf("%d 번 앞으로 뛴다 %lf\n", i, clients[i].z);
+				//printf("%d 번 앞으로 뛴다 %lf\n", i, clients[i].z);
 			}
 			else {
 				clients[i].z += (6000.f * elapsed_double / 3600.f);
-				printf("%d 번 앞으로 간다! %lf\n", i, clients[i].z);
+				//printf("%d 번 앞으로 간다! %lf\n", i, clients[i].z);
 			}
 		}
 		if (clients[i].is_move_backward) {
 			if (clients[i].is_running) {
 				clients[i].z -= (10000.f * elapsed_double / 3600.f);
-				printf("%d 번 뒤로 뛴다 %lf\n", i, clients[i].z);
+				//printf("%d 번 뒤로 뛴다 %lf\n", i, clients[i].z);
 			}
 			else {
 				clients[i].z -= (6000.f * elapsed_double / 3600.f);
-				printf("%d 번 뒤로 간다! %lf\n", i, clients[i].z);
+				//printf("%d 번 뒤로 간다! %lf\n", i, clients[i].z);
 			}
 		}
 		if (clients[i].is_move_left) {
 			if (clients[i].is_running) {
 				clients[i].x -= (10000.f * elapsed_double / 3600.f);
-				printf("%d 번 왼쪽으로 뛴다 %lf\n", i, clients[i].x);
+				//printf("%d 번 왼쪽으로 뛴다 %lf\n", i, clients[i].x);
 			}
 			else {
 				clients[i].x -= (6000.f * elapsed_double / 3600.f);
-				printf("%d 번 왼쪽으로 간다! %lf\n", i, clients[i].x);
+				//printf("%d 번 왼쪽으로 간다! %lf\n", i, clients[i].x);
 			}
 		}
 		if (clients[i].is_move_right) {
 			if (clients[i].is_running) {
 				clients[i].x += (10000.f * elapsed_double / 3600.f);
-				printf("%d 번 오른쪽으로 뛴다 %lf\n", i, clients[i].x);
+				//printf("%d 번 오른쪽으로 뛴다 %lf\n", i, clients[i].x);
 			}
 			else {
 				clients[i].x += (6000.f * elapsed_double / 3600.f);
-				printf("%d 번 오른쪽으로 간다! %lf\n", i, clients[i].x);
+				//printf("%d 번 오른쪽으로 간다! %lf\n", i, clients[i].x);
 			}
 
 		}
