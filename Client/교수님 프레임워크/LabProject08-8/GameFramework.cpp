@@ -37,6 +37,9 @@ CGameFramework::CGameFramework()
 	m_pPlayer = NULL;
 
 	_tcscpy_s(m_pszFrameRate, _T("LabProject ("));
+
+
+	// 
 }
 
 CGameFramework::~CGameFramework()
@@ -55,6 +58,10 @@ bool CGameFramework::OnCreate(HINSTANCE hInstance, HWND hMainWnd)
 
 	BuildObjects();
 
+	// 여기서 핸들을 받아서 비동기 방식으로 통신하면 됨
+	printf("통신모듈 초기화 시작\n");
+	server_mgr.Initialize(hMainWnd);
+	printf("통신모듈 초기화 끝\n");
 	return(true);
 }
 

@@ -7,9 +7,13 @@
 #include "Player.h"
 #include "Scene.h"
 #include "Shader.h"
+#include "ServerMgr.h"
+
 
 class CGameFramework
 {
+private:
+	ServerMgr server_mgr;
 public:
 	CGameFramework();
 	~CGameFramework();
