@@ -89,7 +89,7 @@ struct SC_PACKET_POS {
 	BYTE size;
 	BYTE type;
 	WORD id;
-	int x, y, z;
+	float x, y, z;
 };
 
 // 포지션 관련된 패킷 하나 더 필요

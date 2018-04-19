@@ -56,6 +56,12 @@ void ServerFramework::InitServer() {
 	if (retval == SOCKET_ERROR)
 		printf("listen 에러\n");
 
+	// 플레이어의 위치 초기화 해주기;
+	for (int i = 0; i < MAXIMUM_PLAYER; ++i) {
+		clients[i].x = 200.f;
+		clients[i].y = 200.f;
+		clients[i].z = 1500.f;
+	}
 
 	// HeightMap 불러오기
 	XMFLOAT3 xmf_3_scale(1.f, 0.2f, 1.f);
@@ -260,17 +266,36 @@ void ServerFramework::ProcessPacket(int cl_id, char* packet) {
 		//	}
 		//}
 		if (clients[cl_id].is_running) {
-			printf("달리기 패킷 보내야함\n");
+			//printf("달리기 패킷 보내야함\n");
 
 		}
 		else {
-			printf("걷기 패킷 보내야함\n");
+			//printf("걷기 패킷 보내야함\n");
 
 		}
 
 		// 키 입력했을때 Moving 패킷을 전 클라이언트에게 보내준다. 
 
 	}
+	// 내가 볼때 그냥 누를때마다 보내줘야할거같다 ㅠㅠㅠ
+	if (CS_KEY_PRESS_UP <= packet_buffer->type&&packet_buffer->type <= CS_KEY_PRESS_RIGHT) {
+		SC_PACKET_POS packets;
+		packets.id = cl_id;
+		packets.size = sizeof(SC_PACKET_POS);
+		packets.type = SC_POS;		// 키를 떄도 포지션 관련 패킷이 보내진다.
+		packets.x = clients[cl_id].x;
+		packets.y = clients[cl_id].y;
+		packets.z = clients[cl_id].z;
+		printf("x = %f, y = %f, z = %f \n", packets.x, packets.y, packets.z);
+		// 포지션 패킷 
+		for (int i = 0; i < MAXIMUM_PLAYER; ++i) {
+			if (clients[i].in_use == true) {
+				SendPacket(i, &packets);
+			}
+		}
+	}
+
+
 	// 달리기 버튼을 눌렀을때 
 	if (CS_KEY_PRESS_SHIFT == packet_buffer->type) {
 		// 움직이고 있는 상태면 
@@ -288,6 +313,7 @@ void ServerFramework::ProcessPacket(int cl_id, char* packet) {
 		packets.x = clients[cl_id].x;
 		packets.y = clients[cl_id].y;
 		packets.z = clients[cl_id].z;
+		//printf("x = %f, y = %f, z = %f \n", packets.x, packets.y, packets.z);
 		// 포지션 패킷 
 		for (int i = 0; i < MAXIMUM_PLAYER; ++i) {
 			if (clients[i].in_use == true) {
@@ -330,10 +356,12 @@ void ServerFramework::WorkerThread() {
 
 		// 송수신 확인 용 
 		OverlappedExtensionSet* is_recv_or_send = reinterpret_cast<OverlappedExtensionSet*>(overlapped);
-		if(is_recv_or_send->is_recv==true)
-			printf("[WorkerThread::GQCS] 수신 ClientID : %d, Size : %d\n", client_id, data_size);
-		else
-			printf("[WorkerThread::GQCS] 송신 ClientID : %d, Size : %d\n", client_id, data_size);
+
+
+		//if(is_recv_or_send->is_recv==true)
+		//	printf("[WorkerThread::GQCS] 수신 ClientID : %d, Size : %d\n", client_id, data_size);
+		//else
+		//	printf("[WorkerThread::GQCS] 송신 ClientID : %d, Size : %d\n", client_id, data_size);
 
 		if (retval == FALSE) {
 			printf("[WorkerThread::GQCS] 접속 해제 ClientID : %d\n", client_id);
@@ -416,7 +444,7 @@ void ServerFramework::SendPacket(int cl_id, void* packet) {
 			ErrorDisplay("SendPacket에서 에러 발생 : ", err_no);
 		}
 	}
-	printf("[SendPacket] ClientID : <%d> Type[%d]\n", cl_id, (int)send_buffer[1]);
+	//printf("[SendPacket] ClientID : <%d> Type[%d]\n", cl_id, (int)send_buffer[1]);
 	//cout << "[SendPacket] ClientID : <" << cl_id << "> Type [" << (int)send_buffer[1] << "] Size [" << (int)send_buffer[0] << "]\n";
 
 }

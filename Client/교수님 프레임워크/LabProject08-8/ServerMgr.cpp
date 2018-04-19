@@ -86,9 +86,12 @@ void ServerMgr::ProcessPacket(char* ptr) {
 		break; }
 	case SC_POS: {
 		SC_PACKET_POS* packets = reinterpret_cast<SC_PACKET_POS*>(ptr);
-
 		//cout << "[SC_PACKET_POS] : " << packets->id << "플레이어 이동" << endl;
-		printf("[SC_PACKET_POS] : %d 플레이어 이동\n", packets->id);
+		sc_vec_buff.x = packets->x;
+		sc_vec_buff.y = packets->y;
+		sc_vec_buff.z = packets->z;
+		printf("x = %f, y = %f, z = %f \n", sc_vec_buff.x, sc_vec_buff.y, sc_vec_buff.z);
+		//printf("[SC_PACKET_POS] : %d 플레이어 이동\n", packets->id);
 
 		break; }
 	}
@@ -203,4 +206,8 @@ void ServerMgr::SendPacket(int type) {
 
 void ServerMgr::ClientError() {
 	exit(-1);
+}
+
+XMFLOAT3 ServerMgr::ReturnXMFLOAT3() {
+	return sc_vec_buff;
 }

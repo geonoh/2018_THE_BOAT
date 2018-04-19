@@ -16,6 +16,8 @@ class ServerMgr
 	char packet_buffer[CLIENT_BUF_SIZE] = { 0 };
 	DWORD in_packet_size = 0;
 	DWORD saved_packet_size = 0;
+
+	XMFLOAT3 sc_vec_buff;
 public:
 	void Initialize(HWND& hwnd);
 	void ClientError();
@@ -23,5 +25,5 @@ public:
 	void SendPacket(int type);
 	void ProcessPacket(char* ptr);
 	void ErrorDisplay(const char* msg, int err_no);
-
+	XMFLOAT3 ReturnXMFLOAT3();
 };

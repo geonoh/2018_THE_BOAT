@@ -351,47 +351,55 @@ void CGameFramework::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPA
 		switch (key_buffer) {
 		case 'w':
 		case 'W':
-			if (is_pushed[CS_KEY_PRESS_UP] == false) {
-				printf("[WM_KEYDOWN] : w,W키 입력 \n");
+			//if (is_pushed[CS_KEY_PRESS_UP] == false) {
+				//printf("[WM_KEYDOWN] : w,W키 입력 \n");
 				server_mgr.SendPacket(CS_KEY_PRESS_UP);
+				m_pPlayer->SetPosition(server_mgr.ReturnXMFLOAT3());
+
 				is_pushed[CS_KEY_PRESS_UP] = true;
-			}
+			//}
 			break;
 		case 'a':
 		case 'A':
 			if (is_pushed[CS_KEY_PRESS_LEFT] == false) {
-				printf("[WM_KEYDOWN] : a,A키 입력 \n");
+				//printf("[WM_KEYDOWN] : a,A키 입력 \n");
 				server_mgr.SendPacket(CS_KEY_PRESS_LEFT);
+				m_pPlayer->SetPosition(server_mgr.ReturnXMFLOAT3());
+
 				is_pushed[CS_KEY_PRESS_LEFT] = true;
 			}
 			break;
 		case 's':
 		case 'S':
 			if (is_pushed[CS_KEY_PRESS_DOWN] == false) {
-				printf("[WM_KEYDOWN] : s,S키 입력 \n");
+				//printf("[WM_KEYDOWN] : s,S키 입력 \n");
 				server_mgr.SendPacket(CS_KEY_PRESS_DOWN);
+				m_pPlayer->SetPosition(server_mgr.ReturnXMFLOAT3());
+
 				is_pushed[CS_KEY_PRESS_DOWN] = true;
 			}
 			break;
 		case 'd':
 		case 'D':
 			if (is_pushed[CS_KEY_PRESS_RIGHT] == false) {
-				printf("[WM_KEYDOWN] : d,D키 입력 \n");
+				//printf("[WM_KEYDOWN] : d,D키 입력 \n");
 				server_mgr.SendPacket(CS_KEY_PRESS_RIGHT);
+				m_pPlayer->SetPosition(server_mgr.ReturnXMFLOAT3());
+
 				is_pushed[CS_KEY_PRESS_RIGHT] = true;
 			}
 			break;
 
 		case '1':
 			if (is_pushed[CS_KEY_PRESS_1] == false) {
-				printf("[WM_KEYDOWN] : 1키 입력 \n");
+				//printf("[WM_KEYDOWN] : 1키 입력 \n");
 				server_mgr.SendPacket(CS_KEY_PRESS_1);
 				is_pushed[CS_KEY_PRESS_1] = true;
 			}
 			break;
 		case '2':
 			if (is_pushed[CS_KEY_PRESS_2] == false) {
-				printf("[WM_KEYDOWN] : 2키 입력 \n");
+				//printf("[WM_KEYDOWN] : 2키 입력 \n");
 				server_mgr.SendPacket(CS_KEY_PRESS_2);
 				is_pushed[CS_KEY_PRESS_2] = true;
 			}
@@ -409,6 +417,7 @@ void CGameFramework::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPA
 			printf("[WM_KEYUP] : Shift 키 놓음\n");
 			server_mgr.SendPacket(CS_KEY_RELEASE_SHIFT);
 			is_pushed[CS_KEY_PRESS_SHIFT] = false;
+
 		}
 		else if (wParam == VK_SPACE) {
 			printf("[WM_KEYUP] : Space 키 놓음\n");

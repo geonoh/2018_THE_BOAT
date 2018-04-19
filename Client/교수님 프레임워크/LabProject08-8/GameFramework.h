@@ -16,6 +16,9 @@ private:
 	// 서버 관련 
 	ServerMgr server_mgr;
 	bool is_pushed[11] = { 0 };
+
+	XMFLOAT3 sc_player_pos[4];
+
 public:
 	CGameFramework();
 	~CGameFramework();
