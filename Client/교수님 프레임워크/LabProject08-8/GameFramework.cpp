@@ -269,7 +269,7 @@ void CGameFramework::CreateDepthStencilView()
 	d3dDepthStencilViewDesc.Flags = D3D12_DSV_FLAG_NONE;
 
 	m_pd3dDevice->CreateDepthStencilView(m_pd3dDepthStencilBuffer, NULL, d3dDsvCPUDescriptorHandle);
-//	m_pd3dDevice->CreateDepthStencilView(m_pd3dDepthStencilBuffer, &d3dDepthStencilViewDesc, d3dDsvCPUDescriptorHandle);
+	//	m_pd3dDevice->CreateDepthStencilView(m_pd3dDepthStencilBuffer, &d3dDepthStencilViewDesc, d3dDsvCPUDescriptorHandle);
 }
 
 void CGameFramework::OnResizeBackBuffers()
@@ -308,68 +308,203 @@ void CGameFramework::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM
 	if (m_pScene) m_pScene->OnProcessingMouseMessage(hWnd, nMessageID, wParam, lParam);
 	switch (nMessageID)
 	{
-		case WM_LBUTTONDOWN:
-		case WM_RBUTTONDOWN:
-			::SetCapture(hWnd);
-			::GetCursorPos(&m_ptOldCursorPos);
-			break;
-		case WM_LBUTTONUP:
-		case WM_RBUTTONUP:
-			::ReleaseCapture();
-			break;
-		case WM_MOUSEMOVE:
-			break;
-		default:
-			break;
+	case WM_LBUTTONDOWN:
+	case WM_RBUTTONDOWN:
+		::SetCapture(hWnd);
+		::GetCursorPos(&m_ptOldCursorPos);
+		break;
+	case WM_LBUTTONUP:
+	case WM_RBUTTONUP:
+		::ReleaseCapture();
+		break;
+	case WM_MOUSEMOVE:
+		break;
+	default:
+		break;
 	}
 }
 
 void CGameFramework::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)
 {
+	int key_buffer = wParam;
 	if (m_pScene) m_pScene->OnProcessingKeyboardMessage(hWnd, nMessageID, wParam, lParam);
 	switch (nMessageID)
 	{
-		case WM_KEYUP:
-			switch (wParam)
-			{
-				case VK_ESCAPE:
-					exit(-1);
-					break;
-				case VK_RETURN:
-					break;
-				case VK_F1:
-				case VK_F2:
-				case VK_F3:
-					m_pCamera = m_pPlayer->ChangeCamera((DWORD)(wParam - VK_F1 + 1), m_GameTimer.GetTimeElapsed());
-					break;
-				case VK_F9:
-				{
-					BOOL bFullScreenState = FALSE;
-					m_pdxgiSwapChain->GetFullscreenState(&bFullScreenState, NULL);
-					m_pdxgiSwapChain->SetFullscreenState(!bFullScreenState, NULL);
+	case WM_KEYDOWN: {
 
-					DXGI_MODE_DESC dxgiTargetParameters;
-					dxgiTargetParameters.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-					dxgiTargetParameters.Width = m_nWndClientWidth;
-					dxgiTargetParameters.Height = m_nWndClientHeight;
-					dxgiTargetParameters.RefreshRate.Numerator = 60;
-					dxgiTargetParameters.RefreshRate.Denominator = 1;
-					dxgiTargetParameters.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
-					dxgiTargetParameters.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
-					m_pdxgiSwapChain->ResizeTarget(&dxgiTargetParameters);
-
-					OnResizeBackBuffers();
-
-					break;
-				}
-				case VK_F10:
-					break;
-				default:
-					break;
+		if (wParam == VK_SHIFT) {
+			if (is_pushed[CS_KEY_PRESS_SHIFT] == false) {
+				printf("[WM_KEYUP] : Shift 키 입력\n");
+				server_mgr.SendPacket(CS_KEY_PRESS_SHIFT);
+				is_pushed[CS_KEY_PRESS_SHIFT] = true;
 			}
+		}
+		if (wParam == VK_SPACE) {
+			if (is_pushed[CS_KEY_PRESS_SPACE] == false) {
+				printf("[WM_KEYUP] : Space 키 입력\n");
+				server_mgr.SendPacket(CS_KEY_PRESS_SPACE);
+				is_pushed[CS_KEY_PRESS_SPACE] = true;
+			}
+		}
+
+		// char 형 key들 입력 처리 
+		switch (key_buffer) {
+		case 'w':
+		case 'W':
+			if (is_pushed[CS_KEY_PRESS_UP] == false) {
+				printf("[WM_KEYDOWN] : w,W키 입력 \n");
+				server_mgr.SendPacket(CS_KEY_PRESS_UP);
+				is_pushed[CS_KEY_PRESS_UP] = true;
+			}
+			break;
+		case 'a':
+		case 'A':
+			if (is_pushed[CS_KEY_PRESS_LEFT] == false) {
+				printf("[WM_KEYDOWN] : a,A키 입력 \n");
+				server_mgr.SendPacket(CS_KEY_PRESS_LEFT);
+				is_pushed[CS_KEY_PRESS_LEFT] = true;
+			}
+			break;
+		case 's':
+		case 'S':
+			if (is_pushed[CS_KEY_PRESS_DOWN] == false) {
+				printf("[WM_KEYDOWN] : s,S키 입력 \n");
+				server_mgr.SendPacket(CS_KEY_PRESS_DOWN);
+				is_pushed[CS_KEY_PRESS_DOWN] = true;
+			}
+			break;
+		case 'd':
+		case 'D':
+			if (is_pushed[CS_KEY_PRESS_RIGHT] == false) {
+				printf("[WM_KEYDOWN] : d,D키 입력 \n");
+				server_mgr.SendPacket(CS_KEY_PRESS_RIGHT);
+				is_pushed[CS_KEY_PRESS_RIGHT] = true;
+			}
+			break;
+
+		case '1':
+			if (is_pushed[CS_KEY_PRESS_1] == false) {
+				printf("[WM_KEYDOWN] : 1키 입력 \n");
+				server_mgr.SendPacket(CS_KEY_PRESS_1);
+				is_pushed[CS_KEY_PRESS_1] = true;
+			}
+			break;
+		case '2':
+			if (is_pushed[CS_KEY_PRESS_2] == false) {
+				printf("[WM_KEYDOWN] : 2키 입력 \n");
+				server_mgr.SendPacket(CS_KEY_PRESS_2);
+				is_pushed[CS_KEY_PRESS_2] = true;
+			}
+			break;
+		}
+
+		break;
+	}
+	case WM_KEYUP:
+		// Shift 
+		if (wParam == VK_ESCAPE) {
+			exit(-1);
+		}
+		else if (wParam == VK_SHIFT) {
+			printf("[WM_KEYUP] : Shift 키 놓음\n");
+			server_mgr.SendPacket(CS_KEY_RELEASE_SHIFT);
+			is_pushed[CS_KEY_PRESS_SHIFT] = false;
+		}
+		else if (wParam == VK_SPACE) {
+			printf("[WM_KEYUP] : Space 키 놓음\n");
+			server_mgr.SendPacket(CS_KEY_RELEASE_SPACE);
+			is_pushed[CS_KEY_PRESS_SPACE] = false;
+		}
+
+		switch (key_buffer) {
+		case 'w':
+		case 'W':
+			if (is_pushed[CS_KEY_PRESS_UP] == true) {
+				printf("[WM_KEYDOWN] : w,W키 놓음 \n");
+				server_mgr.SendPacket(CS_KEY_RELEASE_UP);
+				is_pushed[CS_KEY_PRESS_UP] = false;
+			}
+			break;
+		case 'a':
+		case 'A':
+			if (is_pushed[CS_KEY_PRESS_LEFT] == true) {
+				printf("[WM_KEYDOWN] : a,A키 놓음 \n");
+				server_mgr.SendPacket(CS_KEY_RELEASE_LEFT);
+				is_pushed[CS_KEY_PRESS_LEFT] = false;
+			}
+			break;
+		case 's':
+		case 'S':
+			if (is_pushed[CS_KEY_PRESS_DOWN] == true) {
+				printf("[WM_KEYDOWN] : s,S키 놓음 \n");
+				server_mgr.SendPacket(CS_KEY_RELEASE_DOWN);
+				is_pushed[CS_KEY_PRESS_DOWN] = false;
+			}
+			break;
+		case 'd':
+		case 'D':
+			if (is_pushed[CS_KEY_PRESS_RIGHT] == true) {
+				printf("[WM_KEYDOWN] : d,D키 놓음 \n");
+				server_mgr.SendPacket(CS_KEY_RELEASE_RIGHT);
+				is_pushed[CS_KEY_PRESS_RIGHT] = false;
+			}
+			break;
+
+		case '1':
+			if (is_pushed[CS_KEY_PRESS_1] == true) {
+				printf("[WM_KEYDOWN] : 1키 놓음 \n");
+				server_mgr.SendPacket(CS_KEY_RELEASE_1);
+				is_pushed[CS_KEY_PRESS_1] = false;
+			}
+			break;
+		case '2':
+			if (is_pushed[CS_KEY_PRESS_2] == true) {
+				printf("[WM_KEYDOWN] : 2키 놓음 \n");
+				server_mgr.SendPacket(CS_KEY_RELEASE_2);
+				is_pushed[CS_KEY_PRESS_2] = false;
+			}
+			break;
+		}
+		switch (wParam)
+		{
+		case VK_ESCAPE:
+			exit(-1);
+			break;
+		case VK_RETURN:
+			break;
+		case VK_F1:
+		case VK_F2:
+		case VK_F3:
+			m_pCamera = m_pPlayer->ChangeCamera((DWORD)(wParam - VK_F1 + 1), m_GameTimer.GetTimeElapsed());
+			break;
+		case VK_F9:
+		{
+			BOOL bFullScreenState = FALSE;
+			m_pdxgiSwapChain->GetFullscreenState(&bFullScreenState, NULL);
+			m_pdxgiSwapChain->SetFullscreenState(!bFullScreenState, NULL);
+
+			DXGI_MODE_DESC dxgiTargetParameters;
+			dxgiTargetParameters.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+			dxgiTargetParameters.Width = m_nWndClientWidth;
+			dxgiTargetParameters.Height = m_nWndClientHeight;
+			dxgiTargetParameters.RefreshRate.Numerator = 60;
+			dxgiTargetParameters.RefreshRate.Denominator = 1;
+			dxgiTargetParameters.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
+			dxgiTargetParameters.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
+			m_pdxgiSwapChain->ResizeTarget(&dxgiTargetParameters);
+
+			OnResizeBackBuffers();
+
+			break;
+		}
+		case VK_F10:
 			break;
 		default:
 			break;
+		}
+		break;
+	default:
+		break;
 	}
 }
 
@@ -377,40 +512,58 @@ LRESULT CALLBACK CGameFramework::OnProcessingWindowMessage(HWND hWnd, UINT nMess
 {
 	switch (nMessageID)
 	{
-		case WM_ACTIVATE:
-		{
-			if (LOWORD(wParam) == WA_INACTIVE)
-				m_GameTimer.Stop();
-			else
-				m_GameTimer.Start();
-			break;
-		}
-		case WM_SIZE:
-		{
-			m_nWndClientWidth = LOWORD(lParam);
-			m_nWndClientHeight = HIWORD(lParam);
+	case WM_ACTIVATE:
+	{
+		if (LOWORD(wParam) == WA_INACTIVE)
+			m_GameTimer.Stop();
+		else
+			m_GameTimer.Start();
+		break;
+	}
+	case WM_SIZE:
+	{
+		m_nWndClientWidth = LOWORD(lParam);
+		m_nWndClientHeight = HIWORD(lParam);
 
-			OnResizeBackBuffers();
+		OnResizeBackBuffers();
+		break;
+	}
+	// 소켓 관련 처리 필요
+	case WM_SOCKET: {
+		if (WSAGETSELECTERROR(lParam)) {
+			closesocket((SOCKET)wParam);
+			server_mgr.ClientError();
 			break;
 		}
-		case WM_LBUTTONDOWN:
-        case WM_RBUTTONDOWN:
-        case WM_LBUTTONUP:
-        case WM_RBUTTONUP:
-        case WM_MOUSEMOVE:
-			OnProcessingMouseMessage(hWnd, nMessageID, wParam, lParam);
-            break;
-        case WM_KEYDOWN:
-        case WM_KEYUP:
-			OnProcessingKeyboardMessage(hWnd, nMessageID, wParam, lParam);
+		switch (WSAGETSELECTEVENT(lParam)) {
+		case FD_READ:
+			server_mgr.ReadPacket();
 			break;
+		case FD_CLOSE:
+			closesocket((SOCKET)wParam);
+			server_mgr.ClientError();
+			break;
+		}
+		break;
+	}
+	case WM_LBUTTONDOWN:
+	case WM_RBUTTONDOWN:
+	case WM_LBUTTONUP:
+	case WM_RBUTTONUP:
+	case WM_MOUSEMOVE:
+		OnProcessingMouseMessage(hWnd, nMessageID, wParam, lParam);
+		break;
+	case WM_KEYDOWN:
+	case WM_KEYUP:
+		OnProcessingKeyboardMessage(hWnd, nMessageID, wParam, lParam);
+		break;
 	}
 	return(0);
 }
 
 void CGameFramework::OnDestroy()
 {
-    ReleaseObjects();
+	ReleaseObjects();
 
 	::CloseHandle(m_hFenceEvent);
 
@@ -432,7 +585,7 @@ void CGameFramework::OnDestroy()
 
 	m_pdxgiSwapChain->SetFullscreenState(FALSE, NULL);
 	if (m_pdxgiSwapChain) m_pdxgiSwapChain->Release();
-    if (m_pd3dDevice) m_pd3dDevice->Release();
+	if (m_pd3dDevice) m_pd3dDevice->Release();
 	if (m_pdxgiFactory) m_pdxgiFactory->Release();
 }
 
@@ -452,9 +605,9 @@ void CGameFramework::BuildObjects()
 #endif
 #ifdef _WITH_GUNSHIP_MODEL
 	m_pPlayer->SetPosition(XMFLOAT3(200.0f, 200.0f, 1500.0f));
-//	m_pPlayer->Rotate(0.0f, 0.0f, 0.0f);
+	//	m_pPlayer->Rotate(0.0f, 0.0f, 0.0f);
 #endif
-	
+
 	m_pd3dCommandList->Close();
 	ID3D12CommandList *ppd3dCommandLists[] = { m_pd3dCommandList };
 	m_pd3dCommandQueue->ExecuteCommandLists(1, ppd3dCommandLists);
@@ -497,7 +650,7 @@ void CGameFramework::ProcessInput()
 			CShader::shootBullet = 0;
 
 		float cxDelta = 0.0f, cyDelta = 0.0f;
-		
+
 		POINT ptCursorPos;
 		if (GetCapture() == m_hWnd)
 		{
@@ -560,12 +713,12 @@ void CGameFramework::MoveToNextFrame()
 //#define _WITH_PLAYER_TOP
 
 void CGameFramework::FrameAdvance()
-{    
+{
 	m_GameTimer.Tick(0.0f);
-	
+
 	ProcessInput();
 
-    AnimateObjects(m_pCamera);
+	AnimateObjects(m_pCamera);
 
 	HRESULT hResult = m_pd3dCommandAllocator->Reset();
 	hResult = m_pd3dCommandList->Reset(m_pd3dCommandAllocator, NULL);
@@ -605,7 +758,7 @@ void CGameFramework::FrameAdvance()
 	m_pd3dCommandList->ResourceBarrier(1, &d3dResourceBarrier);
 
 	hResult = m_pd3dCommandList->Close();
-	
+
 	ID3D12CommandList *ppd3dCommandLists[] = { m_pd3dCommandList };
 	m_pd3dCommandQueue->ExecuteCommandLists(1, ppd3dCommandLists);
 
@@ -626,7 +779,7 @@ void CGameFramework::FrameAdvance()
 #endif
 #endif
 
-//	m_nSwapChainBufferIndex = m_pdxgiSwapChain->GetCurrentBackBufferIndex();
+	//	m_nSwapChainBufferIndex = m_pdxgiSwapChain->GetCurrentBackBufferIndex();
 	MoveToNextFrame();
 
 	m_GameTimer.GetFrameRate(m_pszFrameRate + 12, 37);

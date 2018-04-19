@@ -13,7 +13,9 @@
 class CGameFramework
 {
 private:
+	// 서버 관련 
 	ServerMgr server_mgr;
+	bool is_pushed[11] = { 0 };
 public:
 	CGameFramework();
 	~CGameFramework();

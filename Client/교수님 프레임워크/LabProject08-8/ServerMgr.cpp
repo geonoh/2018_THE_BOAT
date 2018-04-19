@@ -88,7 +88,7 @@ void ServerMgr::ProcessPacket(char* ptr) {
 		SC_PACKET_POS* packets = reinterpret_cast<SC_PACKET_POS*>(ptr);
 
 		//cout << "[SC_PACKET_POS] : " << packets->id << "플레이어 이동" << endl;
-		printf("[SC_PACKET_POS] : %d 플레이어 입장\n", packets->id);
+		printf("[SC_PACKET_POS] : %d 플레이어 이동\n", packets->id);
 
 		break; }
 	}

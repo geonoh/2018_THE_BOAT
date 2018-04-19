@@ -111,9 +111,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_RBUTTONDOWN:
 	case WM_RBUTTONUP:
 	case WM_MOUSEMOVE:
-	case WM_KEYDOWN: {
-
-	}
+	case WM_KEYDOWN: 
+	case WM_SOCKET:		// 소켓 관련도 OnProcessingWindowMessage
+						// 를 이용해서 처리한다. 
 	case WM_KEYUP:
 		gGameFramework.OnProcessingWindowMessage(hWnd, message, wParam, lParam);
 		break;
