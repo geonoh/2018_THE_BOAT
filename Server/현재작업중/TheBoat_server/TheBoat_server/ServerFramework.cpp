@@ -97,7 +97,7 @@ void ServerFramework::AcceptPlayer() {
 		printf("최대 유저 초과\n");
 	}
 	// Accept 하고 나서 아래 코드 실행
-	printf("[%d] 플레이어 입장\n",client_id);
+	printf("[%d] 플레이어 입장\n", client_id);
 	clients[client_id].s = client_socket;
 	clients[client_id].ar_mag = 0;
 	clients[client_id].sub_mag = 0;
@@ -137,15 +137,15 @@ void ServerFramework::AcceptPlayer() {
 	for (int i = 0; i < 4; ++i) {
 		packet.player_in[i] = player_entered[i];
 		// 이거 뿐 아니라 플레이어의 레디 상태도 당사자에게 보내야함.
-		packet.player_ready[i] = player_ready[i]; 
+		packet.player_ready[i] = player_ready[i];
 	}
 
 	for (int i = 0; i < MAXIMUM_PLAYER; ++i) {
 
-		if(clients[i].in_use)
+		if (clients[i].in_use)
 			SendPacket(i, &packet);	// 모든 플레이어에게 입장정보 보내야함
 	}
-	
+
 }
 
 void ServerFramework::ProcessPacket(int cl_id, char* packet) {
@@ -273,39 +273,14 @@ void ServerFramework::ProcessPacket(int cl_id, char* packet) {
 			//printf("걷기 패킷 보내야함\n");
 
 		}
-
 		// 키 입력했을때 Moving 패킷을 전 클라이언트에게 보내준다. 
-
 	}
+
 	// 내가 볼때 그냥 누를때마다 보내줘야할거같다 ㅠㅠㅠ
 	if (CS_KEY_PRESS_UP <= packet_buffer->type&&packet_buffer->type <= CS_KEY_PRESS_RIGHT) {
-		SC_PACKET_POS packets;
-		packets.id = cl_id;
-		packets.size = sizeof(SC_PACKET_POS);
-		packets.type = SC_POS;		// 키를 떄도 포지션 관련 패킷이 보내진다.
-		packets.x = clients[cl_id].x;
-		packets.y = clients[cl_id].y;
-		packets.z = clients[cl_id].z;
-		printf("x = %f, y = %f, z = %f \n", packets.x, packets.y, packets.z);
-		// 포지션 패킷 
-		for (int i = 0; i < MAXIMUM_PLAYER; ++i) {
-			if (clients[i].in_use == true) {
-				SendPacket(i, &packets);
-			}
-		}
-	}
 
-
-	// 달리기 버튼을 눌렀을때 
-	if (CS_KEY_PRESS_SHIFT == packet_buffer->type) {
-		// 움직이고 있는 상태면 
-		if (clients[cl_id].is_move_foward || clients[cl_id].is_move_backward || clients[cl_id].is_move_right || clients[cl_id].is_move_left ) {
-			printf("러닝 패킷 보내야함\n");
-		}
-	}
-
-	// 이동을 하다가 key를 때서 이동을 정지하는것도 플레이어에게 알려줘야한다. 
-	else if (CS_KEY_RELEASE_UP <= packet_buffer->type && packet_buffer->type <= CS_KEY_RELEASE_SPACE) {
+		// 여기서는 해당플레이어가 뛰고 있다는 사실만 보내고 
+		// Update에서 계속
 		SC_PACKET_POS packets;
 		packets.id = cl_id;
 		packets.size = sizeof(SC_PACKET_POS);
@@ -322,9 +297,38 @@ void ServerFramework::ProcessPacket(int cl_id, char* packet) {
 		}
 	}
 
+
+	// 달리기 버튼을 눌렀을때 
+	if (CS_KEY_PRESS_SHIFT == packet_buffer->type) {
+		// 움직이고 있는 상태면 
+		if (clients[cl_id].is_move_foward || clients[cl_id].is_move_backward || clients[cl_id].is_move_right || clients[cl_id].is_move_left) {
+			printf("러닝 패킷 보내야함\n");
+		}
+	}
+
+	// 이동을 하다가 key를 때서 이동을 정지하는것도 플레이어에게 알려줘야한다. 
+	else if (CS_KEY_RELEASE_UP <= packet_buffer->type && packet_buffer->type <= CS_KEY_RELEASE_SPACE) {
+		send_locker.lock();
+		SC_PACKET_POS packets;
+		packets.id = cl_id;
+		packets.size = sizeof(SC_PACKET_POS);
+		packets.type = SC_POS;		// 키를 떄도 포지션 관련 패킷이 보내진다.
+		packets.x = clients[cl_id].x;
+		packets.y = clients[cl_id].y;
+		packets.z = clients[cl_id].z;
+		//printf("x = %f, y = %f, z = %f \n", packets.x, packets.y, packets.z);
+		// 포지션 패킷 
+		for (int i = 0; i < MAXIMUM_PLAYER; ++i) {
+			if (clients[i].in_use == true) {
+				SendPacket(i, &packets);
+			}
+		}
+		send_locker.unlock();
+	}
+
 	// 현재 클라이언트의 Look 벡터 같이 해서 보내야함.
 	else if (CS_MOUSE_MOVE == packet_buffer->type) {
-		printf("여기서 마우스 움직임 처리한 패킷 보내줘야햔디ㅏ\n"); 
+		printf("여기서 마우스 움직임 처리한 패킷 보내줘야햔디ㅏ\n");
 
 
 	}
@@ -480,26 +484,27 @@ bool ServerFramework::IsStartGame() {
 		return false;
 }
 
-void ServerFramework::TimerFunc() {
-	while (true) {
-		time_point<system_clock> cur_time = system_clock::now();
-		duration<float> elapsed_time = cur_time - prev_time;
-		Update(elapsed_time);
-		prev_time = cur_time;
-	}
-}
+//void ServerFramework::TimerFunc() {
+//	// elapsedTime을 바끙
+//	while (true) {
+//		time_point<system_clock> cur_time = system_clock::now();
+//		duration<float> elapsed_time = cur_time - prev_time;
+//		Update(elapsed_time);
+//		prev_time = cur_time;
+//	}
+//}
+
 void ServerFramework::Update(duration<float>& elapsed_time) {
 	//printf("%lf\n", elapsed_time);// 단위 세컨드인듯 ?
 	// 맞다
 	// 여기서 넘어오는 elapsed_time은 s단위이다. 
+	Sleep(1);
 	float elapsed_double = elapsed_time.count();
 	for (int i = 0; i < MAXIMUM_PLAYER; ++i) {
 		// 총알 발사 부분 업데이트
 
-
-
-
 		// 이동부분 업데이트 
+		send_locker.lock();
 		if (clients[i].is_move_foward) {
 			if (clients[i].is_running) {
 				clients[i].z += (10000.f * elapsed_double / 3600.f);
@@ -541,5 +546,34 @@ void ServerFramework::Update(duration<float>& elapsed_time) {
 			}
 
 		}
+		send_locker.unlock();
+	}
+}
+
+void ServerFramework::TimerSend(duration<float>& elapsed_time) {
+	sender_time += elapsed_time.count();
+	if (sender_time >= 0.017) {	// 1/60 초마다 데이터 송신
+		for (int i = 0; i < MAXIMUM_PLAYER; ++i) {
+			if (clients[i].is_move_backward || clients[i].is_move_foward || clients[i].is_move_left || clients[i].is_move_right) {
+				send_locker.lock();
+				SC_PACKET_POS packets;
+				packets.id = i;
+				packets.size = sizeof(SC_PACKET_POS);
+				packets.type = SC_POS;		// 키를 떄도 포지션 관련 패킷이 보내진다.
+				packets.x = clients[i].x;
+				packets.y = clients[i].y;
+				packets.z = clients[i].z;
+				//printf("x = %f, y = %f, z = %f \n", packets.x, packets.y, packets.z);
+				// 포지션 패킷 
+				for (int i = 0; i < MAXIMUM_PLAYER; ++i) {
+					if (clients[i].in_use == true) {
+						SendPacket(i, &packets);
+					}
+				}
+				send_locker.unlock();
+
+			}
+		}
+		sender_time = 0;
 	}
 }

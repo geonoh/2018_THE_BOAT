@@ -90,7 +90,6 @@ void ServerMgr::ProcessPacket(char* ptr) {
 		sc_vec_buff.x = packets->x;
 		sc_vec_buff.y = packets->y;
 		sc_vec_buff.z = packets->z;
-		printf("x = %f, y = %f, z = %f \n", sc_vec_buff.x, sc_vec_buff.y, sc_vec_buff.z);
 		//printf("[SC_PACKET_POS] : %d 플레이어 이동\n", packets->id);
 
 		break; }

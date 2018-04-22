@@ -351,20 +351,18 @@ void CGameFramework::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPA
 		switch (key_buffer) {
 		case 'w':
 		case 'W':
-			//if (is_pushed[CS_KEY_PRESS_UP] == false) {
+			if (is_pushed[CS_KEY_PRESS_UP] == false) {
 				//printf("[WM_KEYDOWN] : w,W키 입력 \n");
 				server_mgr.SendPacket(CS_KEY_PRESS_UP);
-				m_pPlayer->SetPosition(server_mgr.ReturnXMFLOAT3());
 
 				is_pushed[CS_KEY_PRESS_UP] = true;
-			//}
+			}
 			break;
 		case 'a':
 		case 'A':
 			if (is_pushed[CS_KEY_PRESS_LEFT] == false) {
 				//printf("[WM_KEYDOWN] : a,A키 입력 \n");
 				server_mgr.SendPacket(CS_KEY_PRESS_LEFT);
-				m_pPlayer->SetPosition(server_mgr.ReturnXMFLOAT3());
 
 				is_pushed[CS_KEY_PRESS_LEFT] = true;
 			}
@@ -374,7 +372,6 @@ void CGameFramework::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPA
 			if (is_pushed[CS_KEY_PRESS_DOWN] == false) {
 				//printf("[WM_KEYDOWN] : s,S키 입력 \n");
 				server_mgr.SendPacket(CS_KEY_PRESS_DOWN);
-				m_pPlayer->SetPosition(server_mgr.ReturnXMFLOAT3());
 
 				is_pushed[CS_KEY_PRESS_DOWN] = true;
 			}
@@ -384,7 +381,6 @@ void CGameFramework::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPA
 			if (is_pushed[CS_KEY_PRESS_RIGHT] == false) {
 				//printf("[WM_KEYDOWN] : d,D키 입력 \n");
 				server_mgr.SendPacket(CS_KEY_PRESS_RIGHT);
-				m_pPlayer->SetPosition(server_mgr.ReturnXMFLOAT3());
 
 				is_pushed[CS_KEY_PRESS_RIGHT] = true;
 			}
@@ -546,7 +542,11 @@ LRESULT CALLBACK CGameFramework::OnProcessingWindowMessage(HWND hWnd, UINT nMess
 		}
 		switch (WSAGETSELECTEVENT(lParam)) {
 		case FD_READ:
+			XMFLOAT3 read_buf;
 			server_mgr.ReadPacket();
+			m_pPlayer->SetPosition(server_mgr.ReturnXMFLOAT3());
+			read_buf = server_mgr.ReturnXMFLOAT3();
+			printf("x = %f, y = %f, z = %f \n", read_buf.x, read_buf.y, read_buf.z);
 			break;
 		case FD_CLOSE:
 			closesocket((SOCKET)wParam);

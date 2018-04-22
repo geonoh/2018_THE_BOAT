@@ -15,9 +15,9 @@ class ServerFramework
 										// Client_ID에 맞는 배열 true
 										// 모두 true가 되면 게임 시작 함수 실행
 	HeightMap* height_map;
-	time_point<system_clock> start_time, end_time;
 	time_point<system_clock> prev_time = system_clock::now();
-
+	float sender_time = 0;
+	mutex send_locker;
 public:
 	void InitServer();
 	void AcceptPlayer();
@@ -28,7 +28,8 @@ public:
 	bool IsStartGame();
 
 	// 이 함수는 ElaspsedTime을 측정하는 스레드 함수이다.
-	void TimerFunc();
+	//void TimerFunc();
+	void TimerSend(duration<float>& elapsed_time);
 	// ElapsedTime을 받아와서 업데이트 하는 함수이다. 
 	void Update(duration<float>& elapsed_time);
 	ServerFramework();
