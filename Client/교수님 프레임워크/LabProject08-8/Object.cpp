@@ -5,7 +5,7 @@
 #include "stdafx.h"
 #include "Object.h"
 #include "Shader.h"
-
+#include "FBXLoader.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
@@ -435,7 +435,7 @@ void CGameObject::Rotate(XMFLOAT4 *pxmf4Quaternion)
 
 #define _WITH_DEBUG_FRAME_HIERARCHY
 
-void CGameObject::LoadFrameHierarchyFromFile(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, ID3D12RootSignature *pd3dGraphicsRootSignature, wifstream& InFile, UINT nFrame)
+void CGameObject::LoadFrameHierarchyFromFile(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, ID3D12RootSignature *pd3dGraphicsRootSignature, VertexDataArray g_vertexDataArray, UINT nFrame)
 {
 	XMFLOAT3 *pxmf3Positions = NULL, *pxmf3Normals = NULL;
 	XMFLOAT2 *pxmf3TextureCoords0 = NULL, *pxmf3TextureCoords1 = NULL;
@@ -450,199 +450,105 @@ void CGameObject::LoadFrameHierarchyFromFile(ID3D12Device *pd3dDevice, ID3D12Gra
 	XMFLOAT4 xmf4FrameLocalQuaternion, xmf4MaterialAlbedo;
 	int nVertices = 0, nNormals = 0, nTextureCoords = 0, nIndices = 0;
 
-	for ( ; ; )
+
+	nVertices = nNormals = nTextureCoords = nIndices = 0;
+	xmf4MaterialAlbedo = XMFLOAT4(-1.0f, -1.0f, -1.0f, -1.0f);
+	pxmf3Positions = pxmf3Normals = NULL;
+	pxmf3TextureCoords0 = pxmf3TextureCoords1 = NULL;
+	pstrAlbedoTextureName[0] = '\0';
+	pnIndices = NULL;
+
+	nVertices = 1590;
+	pxmf3Positions = new XMFLOAT3[nVertices];
+	for (int i = 0; i < nVertices; i++)
 	{
-		InFile >> pstrToken;
-		if (!InFile) break;
-
-		if (!_tcscmp(pstrToken, _T("FrameName:")))
-		{
-			InFile >> m_pstrFrameName;
-
-			nVertices = nNormals = nTextureCoords = nIndices = 0;
-			xmf4MaterialAlbedo = XMFLOAT4(-1.0f, -1.0f, -1.0f, -1.0f);
-			pxmf3Positions = pxmf3Normals = NULL;
-			pxmf3TextureCoords0 = pxmf3TextureCoords1 = NULL;
-			pstrAlbedoTextureName[0] = '\0';
-			pnIndices = NULL;
-		}
-		else if (!_tcscmp(pstrToken, _T("Transform:")))
-		{
-			InFile >> xmf3FrameLocalPosition.x >> xmf3FrameLocalPosition.y >> xmf3FrameLocalPosition.z;
-			InFile >> xmf3FrameLocalRotation.x >> xmf3FrameLocalRotation.y >> xmf3FrameLocalRotation.z;
-			InFile >> xmf4FrameLocalQuaternion.x >> xmf4FrameLocalQuaternion.y >> xmf4FrameLocalQuaternion.z >> xmf4FrameLocalQuaternion.w;
-			InFile >> xmf3FrameLocalScale.x >> xmf3FrameLocalScale.y >> xmf3FrameLocalScale.z;
-			InFile >> xmf3FrameScale.x >> xmf3FrameScale.y >> xmf3FrameScale.z;
-		}
-		else if (!_tcscmp(pstrToken, _T("TransformMatrix:")))
-		{
-			InFile >> m_xmf4x4ToRootTransform._11 >> m_xmf4x4ToRootTransform._12 >> m_xmf4x4ToRootTransform._13 >> m_xmf4x4ToRootTransform._14;
-			InFile >> m_xmf4x4ToRootTransform._21 >> m_xmf4x4ToRootTransform._22 >> m_xmf4x4ToRootTransform._23 >> m_xmf4x4ToRootTransform._24;
-			InFile >> m_xmf4x4ToRootTransform._31 >> m_xmf4x4ToRootTransform._32 >> m_xmf4x4ToRootTransform._33 >> m_xmf4x4ToRootTransform._34;
-			InFile >> m_xmf4x4ToRootTransform._41 >> m_xmf4x4ToRootTransform._42 >> m_xmf4x4ToRootTransform._43 >> m_xmf4x4ToRootTransform._44;
-
-			InFile >> m_xmf4x4ToParentTransform._11 >> m_xmf4x4ToParentTransform._12 >> m_xmf4x4ToParentTransform._13 >> m_xmf4x4ToParentTransform._14;
-			InFile >> m_xmf4x4ToParentTransform._21 >> m_xmf4x4ToParentTransform._22 >> m_xmf4x4ToParentTransform._23 >> m_xmf4x4ToParentTransform._24;
-			InFile >> m_xmf4x4ToParentTransform._31 >> m_xmf4x4ToParentTransform._32 >> m_xmf4x4ToParentTransform._33 >> m_xmf4x4ToParentTransform._34;
-			InFile >> m_xmf4x4ToParentTransform._41 >> m_xmf4x4ToParentTransform._42 >> m_xmf4x4ToParentTransform._43 >> m_xmf4x4ToParentTransform._44;
-		}
-		else if (!_tcscmp(pstrToken, _T("MeshName:")))
-		{
-			InFile >> pstrMeshName;
-		}
-		else if (!_tcscmp(pstrToken, _T("Vertices:")))
-		{
-			InFile >> nVertices;
-			pxmf3Positions = new XMFLOAT3[nVertices];
-			for (int i = 0; i < nVertices; i++)
-			{
-				InFile >> pxmf3Positions[i].x >> pxmf3Positions[i].y >> pxmf3Positions[i].z;
-			}
-		}
-		else if (!_tcscmp(pstrToken, _T("Normals:")))
-		{
-			InFile >> nNormals;
-			pxmf3Normals = new XMFLOAT3[nNormals];
-			for (int i = 0; i < nNormals; i++)
-			{
-				InFile >> pxmf3Normals[i].x >> pxmf3Normals[i].y >> pxmf3Normals[i].z;
-			}
-		}
-		else if (!_tcscmp(pstrToken, _T("TextureCoordinates0:")))
-		{
-			InFile >> nTextureCoords;
-			pxmf3TextureCoords0 = new XMFLOAT2[nTextureCoords];
-			for (int i = 0; i < nTextureCoords; i++)
-			{
-				InFile >> pxmf3TextureCoords0[i].x >> pxmf3TextureCoords0[i].y;
-			}
-		}
-		else if (!_tcscmp(pstrToken, _T("TextureCoordinates1:")))
-		{
-			InFile >> nTextureCoords;
-			pxmf3TextureCoords1 = new XMFLOAT2[nTextureCoords];
-			for (int i = 0; i < nTextureCoords; i++)
-			{
-				InFile >> pxmf3TextureCoords1[i].x >> pxmf3TextureCoords1[i].y;
-			}
-		}
-		else if (!_tcscmp(pstrToken, _T("Indices:")))
-		{
-			InFile >> nIndices;
-			pnIndices = new UINT[nIndices];
-			for (int i = 0; i < nIndices; i++)
-			{
-				InFile >> pnIndices[i];
-			}
-		}
-		else if (!_tcscmp(pstrToken, _T("AlbedoColor:")))
-		{
-			InFile >> xmf4MaterialAlbedo.x >> xmf4MaterialAlbedo.y >> xmf4MaterialAlbedo.z >> xmf4MaterialAlbedo.w;
-		}
-		else if (!_tcscmp(pstrToken, _T("AlbedoTextureName:")))
-		{
-			InFile >> pstrAlbedoTextureName;
-		}
-		else if (!_tcscmp(pstrToken, _T("Children:")))
-		{
-			int nChilds = 0;
-			InFile >> nChilds;
-			if (nChilds > 0)
-			{
-				for (int i = 0; i < nChilds; i++)
-				{
-					CGameObject *pChild = new CGameObject(1);
-					pChild->LoadFrameHierarchyFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, InFile, nFrame+1);
-					SetChild(pChild);
-#ifdef _WITH_DEBUG_FRAME_HIERARCHY
-					_stprintf_s(pstrDebug, 128, _T("(Frame: %p) (Parent: %p)\n"), pChild, this);
-					OutputDebugString(pstrDebug);
-#endif
-				}
-			}
-		}
-		else if (!_tcscmp(pstrToken, _T("EndOfFrame")))
-		{
-			CMesh *pMesh = NULL;
-			CMaterial *pMaterial = NULL;
-			if ((nNormals > 0) && (nTextureCoords > 0) && (pstrAlbedoTextureName[0] != '\0'))
-			{
-				if (nVertices > 0) pMesh = new CMeshIlluminatedTextured(pd3dDevice, pd3dCommandList, nVertices, pxmf3Positions, pxmf3Normals, pxmf3TextureCoords0, nIndices, pnIndices);
-
-				TCHAR pstrPathName[128] = { '\0' };
-				_tcscpy_s(pstrPathName, 128, _T("../Assets/Model/"));
-				_tcscat_s(pstrPathName, 128, pstrAlbedoTextureName);
-				_tcscat_s(pstrPathName, 128, _T(".dds"));
-
-				CTexture *pTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0);
-				pTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, pstrPathName, 0);
-
-				pMaterial = new CMaterial();
-				pMaterial->m_xmf4Albedo = xmf4MaterialAlbedo;
-
-				pMaterial->SetTexture(pTexture);
-
-				UINT ncbElementBytes = ((sizeof(CB_GAMEOBJECT_INFO) + 255) & ~255);
-
-				ID3D12Resource *pd3dcbResource = CreateShaderVariables(pd3dDevice, pd3dCommandList);
-
-				CIlluminatedTexturedShader *pShader = new CIlluminatedTexturedShader();
-				pShader->CreateShader(pd3dDevice, pd3dGraphicsRootSignature);
-				pShader->CreateShaderVariables(pd3dDevice, pd3dCommandList);
-				pShader->CreateCbvAndSrvDescriptorHeaps(pd3dDevice, pd3dCommandList, 1, 1);
-				pShader->CreateConstantBufferViews(pd3dDevice, pd3dCommandList, 1, pd3dcbResource, ncbElementBytes);
-				pShader->CreateShaderResourceViews(pd3dDevice, pd3dCommandList, pTexture, 5, true);
-
-				SetCbvGPUDescriptorHandle(pShader->GetGPUCbvDescriptorStartHandle());
-
-				pMaterial->SetShader(pShader);
-			}
-			else if (nNormals > 0)
-			{
-				if (nVertices > 0) pMesh = new CMeshIlluminated(pd3dDevice, pd3dCommandList, nVertices, pxmf3Positions, pxmf3Normals, nIndices, pnIndices);
-
-				pMaterial = new CMaterial();
-				pMaterial->m_xmf4Albedo = xmf4MaterialAlbedo;
-
-				UINT ncbElementBytes = ((sizeof(CB_GAMEOBJECT_INFO) + 255) & ~255);
-
-				ID3D12Resource *pd3dcbResource = CreateShaderVariables(pd3dDevice, pd3dCommandList);
-
-				CIlluminatedShader *pShader = new CIlluminatedShader();
-				pShader->CreateShader(pd3dDevice, pd3dGraphicsRootSignature);
-				pShader->CreateShaderVariables(pd3dDevice, pd3dCommandList);
-				pShader->CreateCbvAndSrvDescriptorHeaps(pd3dDevice, pd3dCommandList, 1, 0);
-				pShader->CreateConstantBufferViews(pd3dDevice, pd3dCommandList, 1, pd3dcbResource, ncbElementBytes);
-
-				SetCbvGPUDescriptorHandle(pShader->GetGPUCbvDescriptorStartHandle());
-
-				pMaterial->SetShader(pShader);
-			}
-			else if (nTextureCoords > 0)
-			{
-				if (nVertices > 0) pMesh = new CMeshTextured(pd3dDevice, pd3dCommandList, nVertices, pxmf3Positions, pxmf3TextureCoords0, nIndices, pnIndices);
-			}
-			else 
-			{
-				if (nVertices > 0) pMesh = new CMesh(pd3dDevice, pd3dCommandList, nVertices, pxmf3Positions, nIndices, pnIndices);
-			}
-					
-			if (pMesh) 
-				SetMesh(0, pMesh);
-			else 
-				ResizeMeshes(0);
-
-			if (pMaterial) SetMaterial(pMaterial);
-
-			if (pxmf3Positions) delete[] pxmf3Positions;
-			if (pxmf3Normals) delete[] pxmf3Normals;
-			if (pxmf3TextureCoords0) delete[] pxmf3TextureCoords0;
-			if (pxmf3TextureCoords1) delete[] pxmf3TextureCoords1;
-			if (pnIndices) delete[] pnIndices;
-
-			break;
-		}
+		pxmf3Positions[i] = g_vertexDataArray[i].pos;
 	}
+
+	nNormals = 1590;
+	pxmf3Normals = new XMFLOAT3[nNormals];
+	for (int i = 0; i < nNormals; i++)
+	{
+		pxmf3Normals[i].x = g_vertexDataArray[i].normal.x;
+		pxmf3Normals[i].y = g_vertexDataArray[i].normal.y;
+		pxmf3Normals[i].z = g_vertexDataArray[i].normal.z;
+	}
+	CMesh *pMesh = NULL;
+	CMaterial *pMaterial = NULL;
+	if ((nNormals > 0) && (nTextureCoords > 0) && (pstrAlbedoTextureName[0] != '\0'))
+	{
+		if (nVertices > 0) pMesh = new CMeshIlluminatedTextured(pd3dDevice, pd3dCommandList, nVertices, pxmf3Positions, pxmf3Normals, pxmf3TextureCoords0, nIndices, pnIndices);
+
+		TCHAR pstrPathName[128] = { '\0' };
+		_tcscpy_s(pstrPathName, 128, _T("../Assets/Model/"));
+		_tcscat_s(pstrPathName, 128, pstrAlbedoTextureName);
+		_tcscat_s(pstrPathName, 128, _T(".dds"));
+
+		CTexture *pTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0);
+		pTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, pstrPathName, 0);
+
+		pMaterial = new CMaterial();
+		pMaterial->m_xmf4Albedo = xmf4MaterialAlbedo;
+
+		pMaterial->SetTexture(pTexture);
+
+		UINT ncbElementBytes = ((sizeof(CB_GAMEOBJECT_INFO) + 255) & ~255);
+
+		ID3D12Resource *pd3dcbResource = CreateShaderVariables(pd3dDevice, pd3dCommandList);
+
+		CIlluminatedTexturedShader *pShader = new CIlluminatedTexturedShader();
+		pShader->CreateShader(pd3dDevice, pd3dGraphicsRootSignature);
+		pShader->CreateShaderVariables(pd3dDevice, pd3dCommandList);
+		pShader->CreateCbvAndSrvDescriptorHeaps(pd3dDevice, pd3dCommandList, 1, 1);
+		pShader->CreateConstantBufferViews(pd3dDevice, pd3dCommandList, 1, pd3dcbResource, ncbElementBytes);
+		pShader->CreateShaderResourceViews(pd3dDevice, pd3dCommandList, pTexture, 5, true);
+
+		SetCbvGPUDescriptorHandle(pShader->GetGPUCbvDescriptorStartHandle());
+
+		pMaterial->SetShader(pShader);
+	}
+	else if (nNormals > 0)
+	{
+		if (nVertices > 0) pMesh = new CMeshIlluminated(pd3dDevice, pd3dCommandList, nVertices, pxmf3Positions, pxmf3Normals, nIndices, pnIndices);
+
+		pMaterial = new CMaterial();
+		pMaterial->m_xmf4Albedo = xmf4MaterialAlbedo;
+
+		UINT ncbElementBytes = ((sizeof(CB_GAMEOBJECT_INFO) + 255) & ~255);
+
+		ID3D12Resource *pd3dcbResource = CreateShaderVariables(pd3dDevice, pd3dCommandList);
+
+		CIlluminatedShader *pShader = new CIlluminatedShader();
+		pShader->CreateShader(pd3dDevice, pd3dGraphicsRootSignature);
+		pShader->CreateShaderVariables(pd3dDevice, pd3dCommandList);
+		pShader->CreateCbvAndSrvDescriptorHeaps(pd3dDevice, pd3dCommandList, 1, 0);
+		pShader->CreateConstantBufferViews(pd3dDevice, pd3dCommandList, 1, pd3dcbResource, ncbElementBytes);
+
+		SetCbvGPUDescriptorHandle(pShader->GetGPUCbvDescriptorStartHandle());
+
+		pMaterial->SetShader(pShader);
+	}
+	else if (nTextureCoords > 0)
+	{
+		if (nVertices > 0) pMesh = new CMeshTextured(pd3dDevice, pd3dCommandList, nVertices, pxmf3Positions, pxmf3TextureCoords0, nIndices, pnIndices);
+	}
+	else
+	{
+		if (nVertices > 0) pMesh = new CMesh(pd3dDevice, pd3dCommandList, nVertices, pxmf3Positions, nIndices, pnIndices);
+	}
+
+	if (pMesh)
+		SetMesh(0, pMesh);
+	else
+		ResizeMeshes(0);
+
+	if (pMaterial) SetMaterial(pMaterial);
+
+	if (pxmf3Positions) delete[] pxmf3Positions;
+	if (pxmf3Normals) delete[] pxmf3Normals;
+	if (pxmf3TextureCoords0) delete[] pxmf3TextureCoords0;
+	if (pxmf3TextureCoords1) delete[] pxmf3TextureCoords1;
+	if (pnIndices) delete[] pnIndices;
 }
 
 void CGameObject::PrintFrameInfo(CGameObject *pGameObject, CGameObject *pParent)
@@ -658,15 +564,15 @@ void CGameObject::PrintFrameInfo(CGameObject *pGameObject, CGameObject *pParent)
 
 void CGameObject::LoadGeometryFromFile(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, ID3D12RootSignature *pd3dGraphicsRootSignature, TCHAR *pstrFileName)
 {
-	wifstream InFile(pstrFileName);
-	LoadFrameHierarchyFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, InFile, 0);
+	LoadFBXConvertToVertexData("../Assets/Model/Soldier.fbx", g_vertexDataArray);
+	LoadFrameHierarchyFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, g_vertexDataArray, 0);
+
 
 #ifdef _WITH_DEBUG_FRAME_HIERARCHY
-	TCHAR pstrDebug[128] ={ 0 };
+	TCHAR pstrDebug[128] = { 0 };
 	_stprintf_s(pstrDebug, 128, _T("Frame Hierarchy\n"));
 	OutputDebugString(pstrDebug);
 
-	PrintFrameInfo(this, NULL);
 #endif
 }
 

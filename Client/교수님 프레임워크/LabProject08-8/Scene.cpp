@@ -407,6 +407,12 @@ void CScene::AnimateObjects(float fTimeElapsed, CCamera *pCamera)
 		m_pLights->m_pLights[1].m_xmf3Position = m_pPlayer->GetPosition();
 		m_pLights->m_pLights[1].m_xmf3Direction = m_pPlayer->GetLookVector();
 	}
+
+	m_pPlayer->SetScale(0.1, 0.1, 0.1);	// 캐릭터 크기 조정
+
+	CHeightMapTerrain *pTerrain = (CHeightMapTerrain *)m_pTerrain;
+	float fHeight = pTerrain->GetHeight(m_pPlayer->GetPosition().x, m_pPlayer->GetPosition().z);
+	m_pPlayer->SetPosition(XMFLOAT3(m_pPlayer->GetPosition().x, fHeight, m_pPlayer->GetPosition().z));			// 플레이어가 지형 위로 움직이게.
 }
 
 void CScene::Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera)
