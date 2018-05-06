@@ -1071,7 +1071,7 @@ void CBulletShader::BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommand
 	m_nBullet = 100;
 
 	CTexture *pTexture = new CTexture(1, RESOURCE_TEXTURE2D_ARRAY, 0);
-	pTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Image/Bullets/Cloud.dds", 0);
+	pTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Image/Bullets/Bullet.dds", 0);
 
 	UINT ncbElementBytes = ((sizeof(CB_GAMEOBJECT_INFO) + 255) & ~255);
 
@@ -1088,7 +1088,7 @@ void CBulletShader::BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommand
 	pCubeMaterial->SetTexture(pTexture);
 #endif
 
-	CBillboardMesh *pCubeMesh = new CBillboardMesh(pd3dDevice, pd3dCommandList, 6.0f, 6.0f, 6.0f);
+	CBillboardMesh *pCubeMesh = new CBillboardMesh(pd3dDevice, pd3dCommandList, 1.0f, 1.0f, 1.0f);
 
 	m_ppBullet = new CBillboard*[m_nBullet];
 
@@ -1147,7 +1147,7 @@ void CBulletShader::AnimateObjects(float fTimeElapsed, CCamera *pCamera)
 	if (shootBullet == 1)
 	{
 		m_ppBullet[BulletCount]->render = 1;
-		m_ppBullet[BulletCount]->SetPosition(XMFLOAT3(CGameFramework::m_pPlayer->GetPosition().x, CGameFramework::m_pPlayer->GetPosition().y, CGameFramework::m_pPlayer->GetPosition().z));
+		m_ppBullet[BulletCount]->SetPosition(XMFLOAT3(CGameFramework::m_pPlayer->GetPosition().x, CGameFramework::m_pPlayer->GetPosition().y + 15, CGameFramework::m_pPlayer->GetPosition().z));
 		m_ppBullet[BulletCount]->SetPlayerLook(CGameFramework::m_pPlayer->GetLook());
 		++BulletCount;
 		if (BulletCount > 99)
@@ -1157,7 +1157,7 @@ void CBulletShader::AnimateObjects(float fTimeElapsed, CCamera *pCamera)
 
 	for (int i = 0; i < 100; ++i) {
 		if (m_ppBullet[i]->render == 1)
-			m_ppBullet[i]->SetPosition(XMFLOAT3(m_ppBullet[i]->GetPosition().x + m_ppBullet[i]->objectLook.x, m_ppBullet[i]->GetPosition().y + m_ppBullet[i]->objectLook.y, m_ppBullet[i]->GetPosition().z + m_ppBullet[i]->objectLook.z));
+			m_ppBullet[i]->SetPosition(XMFLOAT3(m_ppBullet[i]->GetPosition().x + 3 * m_ppBullet[i]->objectLook.x, m_ppBullet[i]->GetPosition().y + 3 *  m_ppBullet[i]->objectLook.y, m_ppBullet[i]->GetPosition().z + 3* m_ppBullet[i]->objectLook.z));
 	}
 }
 
