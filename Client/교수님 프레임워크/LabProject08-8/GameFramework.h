@@ -49,7 +49,7 @@ public:
 	void OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam);
 	LRESULT CALLBACK OnProcessingWindowMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam);
 
-	static CPlayer				*m_pPlayer;
+	static CPlayer				*m_pPlayer[4];
 
 private:
 	HINSTANCE					m_hInstance;

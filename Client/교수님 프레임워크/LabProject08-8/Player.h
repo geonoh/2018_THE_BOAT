@@ -89,8 +89,6 @@ public:
 	virtual void Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera = NULL);
 	virtual void Animate(float fTimeElapsed);
 
-	//VertexDataArray				g_vertexDataArray;
-
 protected:
 	ID3D12Resource					*m_pd3dcbPlayer = NULL;
 	CB_PLAYER_INFO					*m_pcbMappedPlayer = NULL;
@@ -103,4 +101,6 @@ public:
 	virtual ~CAirplanePlayer();
 
 	virtual CCamera *ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed);
+	virtual void OnPlayerUpdateCallback(float fTimeElapsed);
+	virtual void OnCameraUpdateCallback(float fTimeElapsed);
 };
