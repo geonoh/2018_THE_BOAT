@@ -7,12 +7,15 @@
 #define MAXIMUM_PLAYER	4
 #define	WM_SOCKET				WM_USER + 1
 #define CLIENT_BUF_SIZE	1024
- 
+#define PIXER_PER_METER	40
 // Server To Client
 #define SC_ENTER_PLAYER		1
 #define SC_POS				2
 #define SC_REMOVE_PLAYER	3
-
+// 이 패킷은 다른 플레이어가 움직이게되면
+// PQCS를 호출해서 WorkerThread가 Update하게 하는
+// Packet종류이다.
+#define SC_PLAYER_MOVE				4
 
 // Client To Server
 #define CS_KEY_PRESS_UP			1
@@ -65,6 +68,7 @@ struct SC_PACKET_ENTER_PLAYER {
 	BYTE size;
 	BYTE type;
 	WORD id;
+	float init_x, init_y, init_z;
 	bool player_in[4];
 	bool player_ready[4];
 };
@@ -106,18 +110,22 @@ struct CS_PACKET_BIGGEST {
 struct CS_PACKET_KEYUP {
 	BYTE size;
 	BYTE type;
+	DirectX::XMFLOAT3 look_vec;
 };
 struct CS_PACKET_KEYDOWN {
 	BYTE size;
 	BYTE type;
+	DirectX::XMFLOAT3 look_vec;
 };
 struct CS_PACKET_KEYLEFT {
 	BYTE size;
 	BYTE type;
+	DirectX::XMFLOAT3 look_vec;
 };
 struct CS_PACKET_KEYRIGHT {
 	BYTE size;
 	BYTE type;
+	DirectX::XMFLOAT3 look_vec;
 };
 struct CS_PACKET_KEY1 {
 	BYTE size;

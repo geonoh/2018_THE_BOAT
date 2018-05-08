@@ -11,6 +11,7 @@ class ServerMgr
 	bool first_set_id = true;
 
 	char send_buffer[CLIENT_BUF_SIZE] = { 0 };
+	//char send_buffer_vector[CLIENT_BUF_SIZE] = { 0 };
 	char recv_buffer[CLIENT_BUF_SIZE] = { 0 };
 
 	char packet_buffer[CLIENT_BUF_SIZE] = { 0 };
@@ -23,6 +24,7 @@ public:
 	void ClientError();
 	void ReadPacket();
 	void SendPacket(int type);
+	void SendPacket(int type, XMFLOAT3& xmvector);
 	void ProcessPacket(char* ptr);
 	void ErrorDisplay(const char* msg, int err_no);
 	XMFLOAT3 ReturnXMFLOAT3();

@@ -318,6 +318,8 @@ void CGameFramework::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM
 		::ReleaseCapture();
 		break;
 	case WM_MOUSEMOVE:
+		// lookVector 전송
+		server_mgr.SendPacket(CS_MOUSE_MOVE);
 		break;
 	default:
 		break;
@@ -352,17 +354,17 @@ void CGameFramework::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPA
 		case 'w':
 		case 'W':
 			if (is_pushed[CS_KEY_PRESS_UP] == false) {
-				//printf("[WM_KEYDOWN] : w,W키 입력 \n");
-				server_mgr.SendPacket(CS_KEY_PRESS_UP);
-
+				//server_mgr.SendPacket(CS_KEY_PRESS_UP);
+				server_mgr.SendPacket(CS_KEY_PRESS_UP, m_pPlayer->GetLook());
+				printf("Look Vector : %lf, %lf, %lf\n", m_pPlayer->GetLook().x, m_pPlayer->GetLook().y, m_pPlayer->GetLook().z);
 				is_pushed[CS_KEY_PRESS_UP] = true;
 			}
 			break;
 		case 'a':
 		case 'A':
 			if (is_pushed[CS_KEY_PRESS_LEFT] == false) {
-				//printf("[WM_KEYDOWN] : a,A키 입력 \n");
-				server_mgr.SendPacket(CS_KEY_PRESS_LEFT);
+				//server_mgr.SendPacket(CS_KEY_PRESS_LEFT);
+				server_mgr.SendPacket(CS_KEY_PRESS_LEFT, m_pPlayer->GetLook());
 
 				is_pushed[CS_KEY_PRESS_LEFT] = true;
 			}
@@ -370,8 +372,8 @@ void CGameFramework::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPA
 		case 's':
 		case 'S':
 			if (is_pushed[CS_KEY_PRESS_DOWN] == false) {
-				//printf("[WM_KEYDOWN] : s,S키 입력 \n");
-				server_mgr.SendPacket(CS_KEY_PRESS_DOWN);
+				//server_mgr.SendPacket(CS_KEY_PRESS_DOWN);
+				server_mgr.SendPacket(CS_KEY_PRESS_DOWN, m_pPlayer->GetLook());
 
 				is_pushed[CS_KEY_PRESS_DOWN] = true;
 			}
@@ -379,8 +381,8 @@ void CGameFramework::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPA
 		case 'd':
 		case 'D':
 			if (is_pushed[CS_KEY_PRESS_RIGHT] == false) {
-				//printf("[WM_KEYDOWN] : d,D키 입력 \n");
-				server_mgr.SendPacket(CS_KEY_PRESS_RIGHT);
+				//server_mgr.SendPacket(CS_KEY_PRESS_RIGHT);
+				server_mgr.SendPacket(CS_KEY_PRESS_RIGHT, m_pPlayer->GetLook());
 
 				is_pushed[CS_KEY_PRESS_RIGHT] = true;
 			}
@@ -388,14 +390,12 @@ void CGameFramework::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPA
 
 		case '1':
 			if (is_pushed[CS_KEY_PRESS_1] == false) {
-				//printf("[WM_KEYDOWN] : 1키 입력 \n");
 				server_mgr.SendPacket(CS_KEY_PRESS_1);
 				is_pushed[CS_KEY_PRESS_1] = true;
 			}
 			break;
 		case '2':
 			if (is_pushed[CS_KEY_PRESS_2] == false) {
-				//printf("[WM_KEYDOWN] : 2키 입력 \n");
 				server_mgr.SendPacket(CS_KEY_PRESS_2);
 				is_pushed[CS_KEY_PRESS_2] = true;
 			}
@@ -545,8 +545,8 @@ LRESULT CALLBACK CGameFramework::OnProcessingWindowMessage(HWND hWnd, UINT nMess
 			XMFLOAT3 read_buf;
 			server_mgr.ReadPacket();
 			m_pPlayer->SetPosition(server_mgr.ReturnXMFLOAT3());
-			read_buf = server_mgr.ReturnXMFLOAT3();
-			printf("x = %f, y = %f, z = %f \n", read_buf.x, read_buf.y, read_buf.z);
+			//read_buf = server_mgr.ReturnXMFLOAT3();
+			//printf("x = %f, y = %f, z = %f \n", read_buf.x, read_buf.y, read_buf.z);
 			break;
 		case FD_CLOSE:
 			closesocket((SOCKET)wParam);

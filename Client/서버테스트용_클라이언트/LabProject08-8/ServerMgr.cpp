@@ -171,7 +171,6 @@ void ServerMgr::SendPacket(int type) {
 		retval = WSASend(sock, &send_wsabuf, 1, &iobytes, 0, NULL, NULL);
 		break;
 
-
 	case CS_LEFT_BUTTON_DOWN:
 		packet_buffer->type = CS_LEFT_BUTTON_DOWN;
 		retval = WSASend(sock, &send_wsabuf, 1, &iobytes, 0, NULL, NULL);

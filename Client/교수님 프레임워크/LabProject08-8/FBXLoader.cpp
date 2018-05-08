@@ -153,8 +153,8 @@ void GetFBXVertexData(FbxMesh* pMesh, VertexDataArray& outVertexData)
 		fbxsdk::FbxVector4& pos = positions[i];
 		fbxsdk::FbxVector4& normal = normals[i];
 
-		outVertexData[i].pos = DirectX::XMFLOAT3(pos.mData[0], pos.mData[1], pos.mData[2]);
-		outVertexData[i].normal = DirectX::XMFLOAT4(normal.mData[0], normal.mData[1], normal.mData[2], normal.mData[3]);
+		outVertexData[i].pos = DirectX::XMFLOAT3(pos.mData[0], pos.mData[2], pos.mData[1] * (-1));
+		outVertexData[i].normal = DirectX::XMFLOAT4(normal.mData[0], normal.mData[2], normal.mData[1] * (-1), normal.mData[3]);
 	}
 
 	// UVセットの名前配列獲得

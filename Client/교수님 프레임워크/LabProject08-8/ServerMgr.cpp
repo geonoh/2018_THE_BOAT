@@ -76,11 +76,16 @@ void ServerMgr::ProcessPacket(char* ptr) {
 	switch (ptr[1]) {
 	case SC_ENTER_PLAYER: {
 		SC_PACKET_ENTER_PLAYER * packets = reinterpret_cast<SC_PACKET_ENTER_PLAYER*>(ptr);
+		//SC_PACKET_POS* packets = reinterpret_cast<SC_PACKET_POS*>(ptr);
+
 		// 최초 수신 했다는 정보를 받게 되면 my_client_id에 
 		// 수신한 client_id 정보를 넣는다.
 		if (first_set_id)
 			my_client_id = packets->id;
-		
+		sc_vec_buff.x = packets->init_x;
+		sc_vec_buff.y = packets->init_y;
+		sc_vec_buff.z = packets->init_z;
+
 		//cout << "[SC_ENTER_PLAYER] : " << packets->id << "플레이어 입장" << endl;
 		printf("[SC_ENTER_PLAYER] : %d 플레이어 입장\n", packets->id);
 		break; }
@@ -97,8 +102,8 @@ void ServerMgr::ProcessPacket(char* ptr) {
 }
 void ServerMgr::SendPacket(int type) {
 	CS_PACKET_KEYUP* packet_buffer = reinterpret_cast<CS_PACKET_KEYUP*>(send_buffer);
-	packet_buffer->size = sizeof(packet_buffer);
-	send_wsabuf.len = sizeof(packet_buffer);
+	packet_buffer->size = sizeof(CS_PACKET_KEYUP);
+	send_wsabuf.len = sizeof(CS_PACKET_KEYUP);
 	int retval = 0;
 	DWORD iobytes;
 	switch (type) {
@@ -201,7 +206,116 @@ void ServerMgr::SendPacket(int type) {
 	}
 	
 }
+void ServerMgr::SendPacket(int type, XMFLOAT3& xmvector) {
+	CS_PACKET_KEYUP* packet_buffer = reinterpret_cast<CS_PACKET_KEYUP*>(send_buffer);
+	packet_buffer->size = sizeof(CS_PACKET_KEYUP);
+	send_wsabuf.len = sizeof(CS_PACKET_KEYUP);
+	int retval = 0;
+	DWORD iobytes;
+	switch (type) {
+	case CS_KEY_PRESS_UP:
+		packet_buffer->type = CS_KEY_PRESS_UP;
+		packet_buffer->look_vec = xmvector;
+		retval = WSASend(sock, &send_wsabuf, 1, &iobytes, 0, NULL, NULL);
+		break;
+	case CS_KEY_PRESS_DOWN:
+		packet_buffer->type = CS_KEY_PRESS_DOWN;
+		packet_buffer->look_vec = xmvector;
+		retval = WSASend(sock, &send_wsabuf, 1, &iobytes, 0, NULL, NULL);
+		break;
+	case CS_KEY_PRESS_RIGHT:
+		packet_buffer->type = CS_KEY_PRESS_RIGHT;
+		packet_buffer->look_vec = xmvector;
+		retval = WSASend(sock, &send_wsabuf, 1, &iobytes, 0, NULL, NULL);
+		break;
+	case CS_KEY_PRESS_LEFT:
+		packet_buffer->type = CS_KEY_PRESS_LEFT;
+		packet_buffer->look_vec = xmvector;
+		retval = WSASend(sock, &send_wsabuf, 1, &iobytes, 0, NULL, NULL);
+		break;
 
+	case CS_KEY_PRESS_SHIFT:
+		packet_buffer->type = CS_KEY_PRESS_SHIFT;
+		retval = WSASend(sock, &send_wsabuf, 1, &iobytes, 0, NULL, NULL);
+		break;
+	case CS_KEY_PRESS_SPACE:
+		packet_buffer->type = CS_KEY_PRESS_SPACE;
+		retval = WSASend(sock, &send_wsabuf, 1, &iobytes, 0, NULL, NULL);
+		break;
+	case CS_KEY_PRESS_1:
+		packet_buffer->type = CS_KEY_PRESS_1;
+		retval = WSASend(sock, &send_wsabuf, 1, &iobytes, 0, NULL, NULL);
+		break;
+	case CS_KEY_PRESS_2:
+		packet_buffer->type = CS_KEY_PRESS_2;
+		retval = WSASend(sock, &send_wsabuf, 1, &iobytes, 0, NULL, NULL);
+		break;
+
+
+	case CS_KEY_RELEASE_UP:
+		packet_buffer->type = CS_KEY_RELEASE_UP;
+		retval = WSASend(sock, &send_wsabuf, 1, &iobytes, 0, NULL, NULL);
+		break;
+	case CS_KEY_RELEASE_DOWN:
+		packet_buffer->type = CS_KEY_RELEASE_DOWN;
+		retval = WSASend(sock, &send_wsabuf, 1, &iobytes, 0, NULL, NULL);
+		break;
+	case CS_KEY_RELEASE_RIGHT:
+		packet_buffer->type = CS_KEY_RELEASE_RIGHT;
+		retval = WSASend(sock, &send_wsabuf, 1, &iobytes, 0, NULL, NULL);
+		break;
+	case CS_KEY_RELEASE_LEFT:
+		packet_buffer->type = CS_KEY_RELEASE_LEFT;
+		retval = WSASend(sock, &send_wsabuf, 1, &iobytes, 0, NULL, NULL);
+		break;
+
+	case CS_KEY_RELEASE_SHIFT:
+		packet_buffer->type = CS_KEY_RELEASE_SHIFT;
+		retval = WSASend(sock, &send_wsabuf, 1, &iobytes, 0, NULL, NULL);
+		break;
+	case CS_KEY_RELEASE_SPACE:
+		packet_buffer->type = CS_KEY_RELEASE_SPACE;
+		retval = WSASend(sock, &send_wsabuf, 1, &iobytes, 0, NULL, NULL);
+		break;
+	case CS_KEY_RELEASE_1:
+		packet_buffer->type = CS_KEY_RELEASE_1;
+		retval = WSASend(sock, &send_wsabuf, 1, &iobytes, 0, NULL, NULL);
+		break;
+	case CS_KEY_RELEASE_2:
+		packet_buffer->type = CS_KEY_RELEASE_2;
+		retval = WSASend(sock, &send_wsabuf, 1, &iobytes, 0, NULL, NULL);
+		break;
+
+
+	case CS_LEFT_BUTTON_DOWN:
+		packet_buffer->type = CS_LEFT_BUTTON_DOWN;
+		retval = WSASend(sock, &send_wsabuf, 1, &iobytes, 0, NULL, NULL);
+		break;
+	case CS_RIGHT_BUTTON_DOWN:
+		packet_buffer->type = CS_RIGHT_BUTTON_DOWN;
+		retval = WSASend(sock, &send_wsabuf, 1, &iobytes, 0, NULL, NULL);
+		break;
+
+	case CS_LEFT_BUTTON_UP:
+		packet_buffer->type = CS_LEFT_BUTTON_UP;
+		retval = WSASend(sock, &send_wsabuf, 1, &iobytes, 0, NULL, NULL);
+		break;
+	case CS_RIGHT_BUTTON_UP:
+		packet_buffer->type = CS_RIGHT_BUTTON_UP;
+		retval = WSASend(sock, &send_wsabuf, 1, &iobytes, 0, NULL, NULL);
+		break;
+
+	case CS_MOUSE_MOVE:
+		packet_buffer->type = CS_MOUSE_MOVE;
+		// 여기에 추가적으로 player의 look 벡터를 같이 해서 보내줘야한다. 
+		retval = WSASend(sock, &send_wsabuf, 1, &iobytes, 0, NULL, NULL);
+	}
+	if (retval == 1) {
+		int error_code = WSAGetLastError();
+		ErrorDisplay("[WSASend] 에러 : ", error_code);
+	}
+
+}
 
 void ServerMgr::ClientError() {
 	exit(-1);
