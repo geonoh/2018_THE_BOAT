@@ -137,7 +137,7 @@ void CScene::BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *p
 	XMFLOAT3 xmf3Scale(8.0f, 2.f, 8.0f);
 	XMFLOAT4 xmf4Color(0.0f, 0.5f, 0.0f, 0.0f);
 #ifdef _WITH_TERRAIN_PARTITION
-	m_pTerrain = new CHeightMapTerrain(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, _T("../Assets/Image/Terrain/HeightMap.raw"), 257, 257, 17, 17, xmf3Scale, xmf4Color);
+	m_pTerrain = new CHeightMapTerrain(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, _T("../Assets/Image/Terrain/HeightMap.raw"), 513, 513, 17, 17, xmf3Scale, xmf4Color);
 #else
 	m_pTerrain = new CHeightMapTerrain(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, _T("../Assets/Image/Terrain/terrain17.raw"), 513, 513, 513, 513, xmf3Scale, xmf4Color);
 #endif
@@ -404,15 +404,20 @@ void CScene::AnimateObjects(float fTimeElapsed, CCamera *pCamera)
 
 	if (m_pLights)
 	{
-		m_pLights->m_pLights[1].m_xmf3Position = m_pPlayer->GetPosition();
-		m_pLights->m_pLights[1].m_xmf3Direction = m_pPlayer->GetLookVector();
+		for (int i = 0; i < 4; ++i) {
+			m_pLights->m_pLights[1].m_xmf3Position = m_pPlayer[i]->GetPosition();
+			m_pLights->m_pLights[1].m_xmf3Direction = m_pPlayer[i]->GetLookVector();
+		}
 	}
 
-	m_pPlayer->SetScale(0.1, 0.1, 0.1);	// 캐릭터 크기 조정
+	for (int i = 0; i < 4; ++i) {
+		m_pPlayer[i]->SetScale(0.1, 0.1, 0.1);	// 캐릭터 크기 조정
 
-	CHeightMapTerrain *pTerrain = (CHeightMapTerrain *)m_pTerrain;
-	float fHeight = pTerrain->GetHeight(m_pPlayer->GetPosition().x, m_pPlayer->GetPosition().z);
-	m_pPlayer->SetPosition(XMFLOAT3(m_pPlayer->GetPosition().x, fHeight, m_pPlayer->GetPosition().z));			// 플레이어가 지형 위로 움직이게.
+		//CHeightMapTerrain *pTerrain = (CHeightMapTerrain *)m_pTerrain;
+		//float fHeight = pTerrain->GetHeight(m_pPlayer[i]->GetPosition().x, m_pPlayer[i]->GetPosition().z);
+		//m_pPlayer[i]->SetPosition(XMFLOAT3(m_pPlayer[i]->GetPosition().x, fHeight, m_pPlayer[i]->GetPosition().z));			// 플레이어가 지형 위로 움직이게.
+	
+	}
 }
 
 void CScene::Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera)
@@ -430,7 +435,6 @@ void CScene::Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera
 	D3D12_GPU_VIRTUAL_ADDRESS d3dcbMaterialsGpuVirtualAddress = m_pd3dcbMaterials->GetGPUVirtualAddress();
 	pd3dCommandList->SetGraphicsRootConstantBufferView(3, d3dcbMaterialsGpuVirtualAddress); //Materials
 
-	
 	
 	if (m_pSkyBox) m_pSkyBox->Render(pd3dCommandList, pCamera);
 	if (m_pTerrain) m_pTerrain->Render(pd3dCommandList, pCamera);

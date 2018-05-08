@@ -34,7 +34,8 @@ CGameFramework::CGameFramework()
 	m_nWndClientHeight = FRAME_BUFFER_HEIGHT;
 
 	m_pScene = NULL;
-	m_pPlayer = NULL;
+	for(int i=0;i<4;++i)
+		m_pPlayer[i] = NULL;
 
 	_tcscpy_s(m_pszFrameRate, _T("LabProject ("));
 
@@ -309,14 +310,15 @@ void CGameFramework::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM
 	switch (nMessageID)
 	{
 	case WM_LBUTTONDOWN:
+		if (CShader::shootBullet == 0)
+			CShader::shootBullet = 1;
+		else
+			CShader::shootBullet = 0;
 	case WM_RBUTTONDOWN:
 		::SetCapture(hWnd);
 		::GetCursorPos(&m_ptOldCursorPos);
-		break;
 	case WM_LBUTTONUP:
 	case WM_RBUTTONUP:
-		::ReleaseCapture();
-		break;
 	case WM_MOUSEMOVE:
 		// lookVector 전송
 		server_mgr.SendPacket(CS_MOUSE_MOVE);
@@ -355,8 +357,8 @@ void CGameFramework::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPA
 		case 'W':
 			if (is_pushed[CS_KEY_PRESS_UP] == false) {
 				//server_mgr.SendPacket(CS_KEY_PRESS_UP);
-				server_mgr.SendPacket(CS_KEY_PRESS_UP, m_pPlayer->GetLook());
-				printf("Look Vector : %lf, %lf, %lf\n", m_pPlayer->GetLook().x, m_pPlayer->GetLook().y, m_pPlayer->GetLook().z);
+				server_mgr.SendPacket(CS_KEY_PRESS_UP, m_pPlayer[3]->GetLook());
+				printf("Look Vector : %lf, %lf, %lf\n", m_pPlayer[3]->GetLook().x, m_pPlayer[3]->GetLook().y, m_pPlayer[3]->GetLook().z);
 				is_pushed[CS_KEY_PRESS_UP] = true;
 			}
 			break;
@@ -364,7 +366,7 @@ void CGameFramework::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPA
 		case 'A':
 			if (is_pushed[CS_KEY_PRESS_LEFT] == false) {
 				//server_mgr.SendPacket(CS_KEY_PRESS_LEFT);
-				server_mgr.SendPacket(CS_KEY_PRESS_LEFT, m_pPlayer->GetLook());
+				server_mgr.SendPacket(CS_KEY_PRESS_LEFT, m_pPlayer[3]->GetLook());
 
 				is_pushed[CS_KEY_PRESS_LEFT] = true;
 			}
@@ -373,7 +375,7 @@ void CGameFramework::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPA
 		case 'S':
 			if (is_pushed[CS_KEY_PRESS_DOWN] == false) {
 				//server_mgr.SendPacket(CS_KEY_PRESS_DOWN);
-				server_mgr.SendPacket(CS_KEY_PRESS_DOWN, m_pPlayer->GetLook());
+				server_mgr.SendPacket(CS_KEY_PRESS_DOWN, m_pPlayer[3]->GetLook());
 
 				is_pushed[CS_KEY_PRESS_DOWN] = true;
 			}
@@ -382,7 +384,7 @@ void CGameFramework::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPA
 		case 'D':
 			if (is_pushed[CS_KEY_PRESS_RIGHT] == false) {
 				//server_mgr.SendPacket(CS_KEY_PRESS_RIGHT);
-				server_mgr.SendPacket(CS_KEY_PRESS_RIGHT, m_pPlayer->GetLook());
+				server_mgr.SendPacket(CS_KEY_PRESS_RIGHT, m_pPlayer[3]->GetLook());
 
 				is_pushed[CS_KEY_PRESS_RIGHT] = true;
 			}
@@ -480,7 +482,7 @@ void CGameFramework::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPA
 		case VK_F1:
 		case VK_F2:
 		case VK_F3:
-			m_pCamera = m_pPlayer->ChangeCamera((DWORD)(wParam - VK_F1 + 1), m_GameTimer.GetTimeElapsed());
+			m_pCamera = m_pPlayer[3]->ChangeCamera((DWORD)(wParam - VK_F1 + 1), m_GameTimer.GetTimeElapsed());
 			break;
 		case VK_F9:
 		{
@@ -544,7 +546,12 @@ LRESULT CALLBACK CGameFramework::OnProcessingWindowMessage(HWND hWnd, UINT nMess
 		case FD_READ:
 			XMFLOAT3 read_buf;
 			server_mgr.ReadPacket();
-			m_pPlayer->SetPosition(server_mgr.ReturnXMFLOAT3());
+			m_pPlayer[3]->SetPosition(server_mgr.ReturnXMFLOAT3());
+			//read_buf = server_mgr.ReturnXMFLOAT3();
+			//printf("x = %f, y = %f, z = %f \n", read_buf.x, read_buf.y, read_buf.z);
+
+			// 상우 커밋 부분
+			//m_pPlayer[3]->SetPosition(server_mgr.ReturnXMFLOAT3());
 			//read_buf = server_mgr.ReturnXMFLOAT3();
 			//printf("x = %f, y = %f, z = %f \n", read_buf.x, read_buf.y, read_buf.z);
 			break;
@@ -605,15 +612,17 @@ void CGameFramework::BuildObjects()
 	m_pScene = new CScene();
 	m_pScene->BuildObjects(m_pd3dDevice, m_pd3dCommandList);
 
-	m_pScene->m_pPlayer = m_pPlayer = new CAirplanePlayer(m_pd3dDevice, m_pd3dCommandList, m_pScene->GetGraphicsRootSignature(), NULL, 1);
-	m_pCamera = m_pPlayer->GetCamera();
+	for(int i=0;i<4;++i)
+		m_pScene->m_pPlayer[i] = m_pPlayer[i] = new CAirplanePlayer(m_pd3dDevice, m_pd3dCommandList, m_pScene->GetGraphicsRootSignature(), m_pScene->GetTerrain(), 1);
+	m_pCamera = m_pPlayer[3]->GetCamera();
 
 #ifdef _WITH_APACHE_MODEL
 	m_pPlayer->SetPosition(XMFLOAT3(0.0f, 350.0f, -300.0f));
 	m_pPlayer->Rotate(0.0f, -45.0f, 0.0f);
 #endif
 #ifdef _WITH_GUNSHIP_MODEL
-	m_pPlayer->SetPosition(XMFLOAT3(200.0f, 200.0f, 1500.0f));
+	for(int i=0;i<4;++i)
+		m_pPlayer[i]->SetPosition(XMFLOAT3(200.0f + 30 * i, 200.0f, 1500.0f));
 	//	m_pPlayer->Rotate(0.0f, 0.0f, 0.0f);
 #endif
 
@@ -623,7 +632,8 @@ void CGameFramework::BuildObjects()
 
 	WaitForGpuComplete();
 
-	if (m_pPlayer) m_pPlayer->ReleaseUploadBuffers();
+	for(int i=0;i<4;++i)
+		if (m_pPlayer[i]) m_pPlayer[i]->ReleaseUploadBuffers();
 	if (m_pScene) m_pScene->ReleaseUploadBuffers();
 
 	m_GameTimer.Reset();
@@ -631,7 +641,8 @@ void CGameFramework::BuildObjects()
 
 void CGameFramework::ReleaseObjects()
 {
-	if (m_pPlayer) delete m_pPlayer;
+	for (int i = 0; i<4; ++i)
+		if (m_pPlayer[i]) delete m_pPlayer[i];
 
 	if (m_pScene) m_pScene->ReleaseObjects();
 	if (m_pScene) delete m_pScene;
@@ -651,12 +662,12 @@ void CGameFramework::ProcessInput()
 		if (pKeysBuffer[0x44] & 0xF0) dwDirection |= DIR_RIGHT;
 		if (pKeysBuffer[VK_PRIOR] & 0xF0) dwDirection |= DIR_UP;
 		if (pKeysBuffer[VK_NEXT] & 0xF0) dwDirection |= DIR_DOWN;
-		if (pKeysBuffer[VK_SPACE] & 0xF0) {
+		/*if (pKeysBuffer[VK_SPACE] & 0xF0) {	// 총알발사
 			if (CShader::shootBullet == 0)
 				CShader::shootBullet = 1;
 		}
 		else
-			CShader::shootBullet = 0;
+			CShader::shootBullet = 0;*/
 
 		float cxDelta = 0.0f, cyDelta = 0.0f;
 
@@ -675,20 +686,21 @@ void CGameFramework::ProcessInput()
 			if (cxDelta || cyDelta)
 			{
 				if (pKeysBuffer[VK_RBUTTON] & 0xF0)
-					m_pPlayer->Rotate(cyDelta, 0.0f, -cxDelta);
+					m_pPlayer[3]->Rotate(cyDelta, 0.0f, -cxDelta);
 				else
-					m_pPlayer->Rotate(cyDelta, cxDelta, 0.0f);
+					m_pPlayer[3]->Rotate(cyDelta, cxDelta, 0.0f);
 			}
-			if (dwDirection) m_pPlayer->Move(dwDirection, 50.0f * m_GameTimer.GetTimeElapsed(), true);
+			if (dwDirection) m_pPlayer[3]->Move(dwDirection, 50.0f * m_GameTimer.GetTimeElapsed(), true);
 		}
 	}
-	m_pPlayer->Update(m_GameTimer.GetTimeElapsed());
+	m_pPlayer[3]->Update(m_GameTimer.GetTimeElapsed());
 }
 
 void CGameFramework::AnimateObjects(CCamera *pCamera)
 {
 	float fTimeElapsed = m_GameTimer.GetTimeElapsed();
-	if (m_pPlayer) m_pPlayer->Animate(fTimeElapsed);
+	for (int i = 0; i<4; ++i)
+		if (m_pPlayer) m_pPlayer[i]->Animate(fTimeElapsed);
 	if (m_pScene) m_pScene->AnimateObjects(fTimeElapsed, pCamera);
 }
 
@@ -758,8 +770,10 @@ void CGameFramework::FrameAdvance()
 #ifdef _WITH_PLAYER_TOP
 	m_pd3dCommandList->ClearDepthStencilView(d3dDsvCPUDescriptorHandle, D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, NULL);
 #endif
-	m_pPlayer->UpdateTransform(NULL);
-	m_pPlayer->Render(m_pd3dCommandList, m_pCamera);
+	for (int i = 0; i < 4; ++i) {
+		m_pPlayer[i]->UpdateTransform(NULL);
+		m_pPlayer[i]->Render(m_pd3dCommandList, m_pCamera);
+	}
 
 	d3dResourceBarrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
 	d3dResourceBarrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;
