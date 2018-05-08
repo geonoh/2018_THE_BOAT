@@ -16,6 +16,9 @@
 // PQCS를 호출해서 WorkerThread가 Update하게 하는
 // Packet종류이다.
 #define SC_PLAYER_MOVE				4
+#define SC_PLAYER_LOOKVEC		5
+
+
 
 // Client To Server
 #define CS_KEY_PRESS_UP			1
@@ -87,7 +90,12 @@ struct SC_PACKET_RUNNING {
 	WORD id;
 };
 
-
+struct SC_PACKET_LOOCVEC {
+	BYTE size;
+	BYTE type;
+	WORD id;
+	DirectX::XMFLOAT3 look_vec;
+};
 
 struct SC_PACKET_POS {
 	BYTE size;

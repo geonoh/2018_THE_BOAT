@@ -58,10 +58,10 @@ void ServerFramework::InitServer() {
 
 
 	// HeightMap 불러오기
-	XMFLOAT3 xmf_3_scale(1.f, 0.2f, 1.f);
+	XMFLOAT3 xmf_3_scale(8.0f, 2.f, 8.0f);
 	//LPCTSTR file_name = _T("MapResource/HeightMap.raw"); 
-	LPCTSTR file_name = _T("HeightMap.raw");
-	height_map = new HeightMap(file_name, 257, 257, xmf_3_scale);
+	LPCTSTR file_name = _T("terrain17.raw");
+	height_map = new HeightMap(file_name, 513, 513, xmf_3_scale);
 
 
 	// 플레이어의 위치 초기화 해주기;
@@ -148,8 +148,10 @@ void ServerFramework::AcceptPlayer() {
 
 	for (int i = 0; i < MAXIMUM_PLAYER; ++i) {
 
-		if (clients[i].in_use)
+		if (clients[i].in_use) {
+			printf("%d 플레이어 입장 정보 전송\n", client_id);
 			SendPacket(i, &packet);	// 모든 플레이어에게 입장정보 보내야함
+		}
 	}
 
 }
@@ -243,7 +245,8 @@ void ServerFramework::ProcessPacket(int cl_id, char* packet) {
 
 		// 마우스 움직임에도 Player의 Look 벡터를 보내줘야한다. 
 	case CS_MOUSE_MOVE:
-		printf("마우스 움직임 서버에서 감지\n");
+		//printf("마우스 움직임 서버에서 감지\n");
+		clients[cl_id].look_vec = packet_buffer->look_vec;
 		break;
 
 
@@ -254,63 +257,28 @@ void ServerFramework::ProcessPacket(int cl_id, char* packet) {
 	case CS_PLAYER_TEAM_SELECT:
 		break;
 	}
+
 	// 이 아래 모든 패킷 다 보내줘야한다.
 	// 모든 플레이어에게 해당 플레이어가 이동한것만 보내주면 된다.
-
-
-	// 이동 관련된 패킷 처리 (점프 포함)
-	if (CS_KEY_PRESS_UP <= packet_buffer->type && packet_buffer->type <= CS_KEY_PRESS_SPACE) {
-		if (clients[cl_id].is_running) {
-			//printf("달리기 패킷 보내야함\n");
-
-		}
-		else {
-			//printf("걷기 패킷 보내야함\n");
-
-		}
-		// 키 입력했을때 Moving 패킷을 전 클라이언트에게 보내준다. 
-	}
-
-	// 내가 볼때 그냥 누를때마다 보내줘야할거같다 ㅠㅠㅠ
 	if (CS_KEY_PRESS_UP <= packet_buffer->type&&packet_buffer->type <= CS_KEY_PRESS_RIGHT) {
-
-		// 여기서는 해당플레이어가 뛰고 있다는 사실만 보내고 
-		// Update에서 계속
 		SC_PACKET_POS packets;
-		//XMFLOAT3 look_vector = packet_buffer->look_vec;
-		//printf("Look Vector : %lf, %lf, %lf\n", look_vector.x, look_vector.y, look_vector.z);
-		printf("[%d]Look Vector : %lf, %lf, %lf\n", cl_id, packet_buffer->look_vec.x, packet_buffer->look_vec.y, packet_buffer->look_vec.z);
+		//printf("[%d]Look Vector : %lf, %lf, %lf\n", cl_id, packet_buffer->look_vec.x, packet_buffer->look_vec.y, packet_buffer->look_vec.z);
 		packets.id = cl_id;
 		packets.size = sizeof(SC_PACKET_POS);
 		packets.type = SC_POS;		// 키를 떄도 포지션 관련 패킷이 보내진다.
 
-
 		clients[cl_id].look_vec = packet_buffer->look_vec;
 
 		packets.x = clients[cl_id].x;
-		//packets.x += packet_buffer->look_vec.x;
 		packets.y = height_map->GetHeight(clients[cl_id].x, clients[cl_id].z);
 		packets.z = clients[cl_id].z;
 
-
-		//printf("x = %f, y = %f, z = %f \n", packets.x, packets.y, packets.z);
-		// 포지션 패킷 
 		for (int i = 0; i < MAXIMUM_PLAYER; ++i) {
 			if (clients[i].in_use == true) {
 				SendPacket(i, &packets);
 			}
 		}
 	}
-
-
-	// 달리기 버튼을 눌렀을때 
-	if (CS_KEY_PRESS_SHIFT == packet_buffer->type) {
-		// 움직이고 있는 상태면 
-		if (clients[cl_id].is_move_foward || clients[cl_id].is_move_backward || clients[cl_id].is_move_right || clients[cl_id].is_move_left) {
-			printf("러닝 패킷 보내야함\n");
-		}
-	}
-
 	// 이동을 하다가 key를 때서 이동을 정지하는것도 플레이어에게 알려줘야한다. 
 	else if (CS_KEY_RELEASE_UP <= packet_buffer->type && packet_buffer->type <= CS_KEY_RELEASE_SPACE) {
 		send_locker.lock();
@@ -319,14 +287,10 @@ void ServerFramework::ProcessPacket(int cl_id, char* packet) {
 		packets.size = sizeof(SC_PACKET_POS);
 		packets.type = SC_POS;		// 키를 떄도 포지션 관련 패킷이 보내진다.
 
-
 		packets.x = clients[cl_id].x;
 		packets.y = height_map->GetHeight(clients[cl_id].x, clients[cl_id].z);
 		packets.z = clients[cl_id].z;
 
-
-		//printf("키 놨음 : x = %f, y = %f, z = %f \n", packets.x, packets.y, packets.z);
-		// 포지션 패킷 
 		for (int i = 0; i < MAXIMUM_PLAYER; ++i) {
 			if (clients[i].in_use == true) {
 				SendPacket(i, &packets);
@@ -334,17 +298,23 @@ void ServerFramework::ProcessPacket(int cl_id, char* packet) {
 		}
 		send_locker.unlock();
 	}
-
 	// 현재 클라이언트의 Look 벡터 같이 해서 보내야함.
 	else if (CS_MOUSE_MOVE == packet_buffer->type) {
-		printf("여기서 마우스 움직임 처리한 패킷 보내줘야햔디ㅏ\n");
+		//printf("여기서 마우스 움직임 처리한 패킷 보내줘야햔디ㅏ\n");
+		SC_PACKET_LOOCVEC packets;
+		packets.id = cl_id;
+		packets.size = sizeof(SC_PACKET_POS);
+		packets.type = SC_PLAYER_LOOKVEC;		// 키를 떄도 포지션 관련 패킷이 보내진다.
 
+		packets.look_vec = clients[cl_id].look_vec;
 
+		//printf("룩벡터 : x = %f, y = %f, z = %f \n", packets.x, packets.y, packets.z);
+		for (int i = 0; i < MAXIMUM_PLAYER; ++i) {
+			if (clients[i].in_use == true) {
+				SendPacket(i, &packets);
+			}
+		}
 	}
-
-	// 플레이어 총알 발사 관련 예외 처리 해야함
-
-
 	// 플레이어 상태 변화 _ Ready, Team 변경, Mode 변경등
 	else if (100 <= packet_buffer->type) {
 		for (int i = 0; i < MAXIMUM_PLAYER; ++i) {
@@ -352,7 +322,6 @@ void ServerFramework::ProcessPacket(int cl_id, char* packet) {
 
 			}
 		}
-
 	}
 
 }
@@ -533,49 +502,63 @@ void ServerFramework::Update(duration<float>& elapsed_time) {
 		// 총알 발사 부분 업데이트
 
 		// 이동부분 업데이트 
-		send_locker.lock();
+		//send_locker.lock();
 		if (clients[i].is_move_foward) {
 			if (clients[i].is_running) {
+				//clients[i].z += PIXER_PER_METER * clients[i].look_vec.z * (10000.f * elapsed_double / 3600.f);
 				clients[i].z += PIXER_PER_METER * clients[i].look_vec.z * (10000.f * elapsed_double / 3600.f);
-				printf("%d 번 앞으로 뛴다 %lf\n", i, clients[i].look_vec.z);
+				clients[i].x += PIXER_PER_METER * clients[i].look_vec.x * (10000.f * elapsed_double / 3600.f);
 			}
 			else {
-				clients[i].z += PIXER_PER_METER * clients[i].look_vec.z * (6000.f * elapsed_double / 3600.f);
-				printf("%d 번 앞으로 간다! %lf\n", i, clients[i].z);
+				//clients[i].z += PIXER_PER_METER * clients[i].look_vec.z * (6000.f * elapsed_double / 3600.f);
+				clients[i].z += PIXER_PER_METER * clients[i].look_vec.z * (6000 * elapsed_double / 3600.f);
+				clients[i].x += PIXER_PER_METER * clients[i].look_vec.x * (6000 * elapsed_double / 3600.f);
 			}
 		}
 		if (clients[i].is_move_backward) {
 			if (clients[i].is_running) {
-				clients[i].z -= PIXER_PER_METER * clients[i].look_vec.z * (10000.f * elapsed_double / 3600.f);
+				//clients[i].z -= PIXER_PER_METER * clients[i].look_vec.z * (10000.f * elapsed_double / 3600.f);
+				clients[i].z += PIXER_PER_METER * clients[i].look_vec.z * (10000.f * elapsed_double / 3600.f);
+				clients[i].x += PIXER_PER_METER * clients[i].look_vec.x * (10000.f * elapsed_double / 3600.f);
 				//printf("%d 번 뒤로 뛴다 %lf\n", i, clients[i].z);
 			}
 			else {
-				clients[i].z -= PIXER_PER_METER * clients[i].look_vec.z * (6000.f * elapsed_double / 3600.f);
-				//printf("%d 번 뒤로 간다! %lf\n", i, clients[i].z);
+				//clients[i].z -= PIXER_PER_METER * clients[i].look_vec.z * (6000.f * elapsed_double / 3600.f);
+				clients[i].z += PIXER_PER_METER * clients[i].look_vec.z * (6000 * elapsed_double / 3600.f);
+				clients[i].x += PIXER_PER_METER * clients[i].look_vec.x * (6000 * elapsed_double / 3600.f);
+				
 			}
 		}
 		if (clients[i].is_move_left) {
 			if (clients[i].is_running) {
-				clients[i].x -= PIXER_PER_METER * clients[i].look_vec.x * (10000.f * elapsed_double / 3600.f);
+				//clients[i].x -= PIXER_PER_METER * clients[i].look_vec.x * (10000.f * elapsed_double / 3600.f);
+				clients[i].z += PIXER_PER_METER * clients[i].look_vec.z * (10000.f * elapsed_double / 3600.f);
+				clients[i].x += PIXER_PER_METER * clients[i].look_vec.x * (10000.f * elapsed_double / 3600.f);
 				//printf("%d 번 왼쪽으로 뛴다 %lf\n", i, clients[i].x);
 			}
 			else {
-				clients[i].x -= PIXER_PER_METER * clients[i].look_vec.x * (6000.f * elapsed_double / 3600.f);
+				//clients[i].x -= PIXER_PER_METER * clients[i].look_vec.x * (6000.f * elapsed_double / 3600.f);
+				clients[i].z += PIXER_PER_METER * clients[i].look_vec.z * (6000 * elapsed_double / 3600.f);
+				clients[i].x += PIXER_PER_METER * clients[i].look_vec.x * (6000 * elapsed_double / 3600.f);
 				//printf("%d 번 왼쪽으로 간다! %lf\n", i, clients[i].x);
 			}
 		}
 		if (clients[i].is_move_right) {
 			if (clients[i].is_running) {
+				//clients[i].x += PIXER_PER_METER * clients[i].look_vec.x * (10000.f * elapsed_double / 3600.f);
+				clients[i].z += PIXER_PER_METER * clients[i].look_vec.z * (10000.f * elapsed_double / 3600.f);
 				clients[i].x += PIXER_PER_METER * clients[i].look_vec.x * (10000.f * elapsed_double / 3600.f);
 				//printf("%d 번 오른쪽으로 뛴다 %lf\n", i, clients[i].x);
 			}
 			else {
-				clients[i].x += PIXER_PER_METER * clients[i].look_vec.x * (6000.f * elapsed_double / 3600.f);
+				//clients[i].x += PIXER_PER_METER * clients[i].look_vec.x * (6000.f * elapsed_double / 3600.f);
+				clients[i].z += PIXER_PER_METER * clients[i].look_vec.z * (6000 * elapsed_double / 3600.f);
+				clients[i].x += PIXER_PER_METER * clients[i].look_vec.x * (6000 * elapsed_double / 3600.f);
 				//printf("%d 번 오른쪽으로 간다! %lf\n", i, clients[i].x);
 			}
 
 		}
-		send_locker.unlock();
+		//send_locker.unlock();
 	}
 }
 

@@ -321,7 +321,7 @@ void CGameFramework::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM
 	case WM_RBUTTONUP:
 	case WM_MOUSEMOVE:
 		// lookVector 전송
-		server_mgr.SendPacket(CS_MOUSE_MOVE);
+		server_mgr.SendPacket(CS_MOUSE_MOVE, m_pPlayer[3]->GetLook());
 		break;
 	default:
 		break;
@@ -547,6 +547,7 @@ LRESULT CALLBACK CGameFramework::OnProcessingWindowMessage(HWND hWnd, UINT nMess
 			XMFLOAT3 read_buf;
 			server_mgr.ReadPacket();
 			m_pPlayer[3]->SetPosition(server_mgr.ReturnXMFLOAT3());
+			//server_mgr.ReturnLookVector();
 			//read_buf = server_mgr.ReturnXMFLOAT3();
 			//printf("x = %f, y = %f, z = %f \n", read_buf.x, read_buf.y, read_buf.z);
 
@@ -656,10 +657,11 @@ void CGameFramework::ProcessInput()
 	if (!bProcessedByScene)
 	{
 		DWORD dwDirection = 0;
-		if (pKeysBuffer[0x57] & 0xF0) dwDirection |= DIR_FORWARD;
-		if (pKeysBuffer[0x53] & 0xF0) dwDirection |= DIR_BACKWARD;
-		if (pKeysBuffer[0x41] & 0xF0) dwDirection |= DIR_LEFT;
-		if (pKeysBuffer[0x44] & 0xF0) dwDirection |= DIR_RIGHT;
+		// 플레이어 움직임 (중요)
+		//if (pKeysBuffer[0x57] & 0xF0) dwDirection |= DIR_FORWARD;
+		//if (pKeysBuffer[0x53] & 0xF0) dwDirection |= DIR_BACKWARD;
+		//if (pKeysBuffer[0x41] & 0xF0) dwDirection |= DIR_LEFT;
+		//if (pKeysBuffer[0x44] & 0xF0) dwDirection |= DIR_RIGHT;
 		if (pKeysBuffer[VK_PRIOR] & 0xF0) dwDirection |= DIR_UP;
 		if (pKeysBuffer[VK_NEXT] & 0xF0) dwDirection |= DIR_DOWN;
 		/*if (pKeysBuffer[VK_SPACE] & 0xF0) {	// 총알발사

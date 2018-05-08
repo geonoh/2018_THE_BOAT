@@ -98,6 +98,13 @@ void ServerMgr::ProcessPacket(char* ptr) {
 		//printf("[SC_PACKET_POS] : %d 플레이어 이동\n", packets->id);
 
 		break; }
+	case SC_PLAYER_LOOKVEC: {
+		SC_PACKET_LOOCVEC* packets = reinterpret_cast<SC_PACKET_LOOCVEC*>(ptr);
+		//cout << "[SC_PACKET_POS] : " << packets->id << "플레이어 이동" << endl;
+		sc_look_vec = packets->look_vec;
+		//printf("[SC_PACKET_POS] : %d 플레이어의 LookVec\n", packets->id);
+
+		break;}
 	}
 }
 void ServerMgr::SendPacket(int type) {
@@ -295,7 +302,7 @@ void ServerMgr::SendPacket(int type, XMFLOAT3& xmvector) {
 		packet_buffer->type = CS_RIGHT_BUTTON_DOWN;
 		retval = WSASend(sock, &send_wsabuf, 1, &iobytes, 0, NULL, NULL);
 		break;
-
+		 
 	case CS_LEFT_BUTTON_UP:
 		packet_buffer->type = CS_LEFT_BUTTON_UP;
 		retval = WSASend(sock, &send_wsabuf, 1, &iobytes, 0, NULL, NULL);
@@ -307,7 +314,8 @@ void ServerMgr::SendPacket(int type, XMFLOAT3& xmvector) {
 
 	case CS_MOUSE_MOVE:
 		packet_buffer->type = CS_MOUSE_MOVE;
-		// 여기에 추가적으로 player의 look 벡터를 같이 해서 보내줘야한다. 
+		// 여기에 추가적으로 player의 look 벡터를 같이 해서 보내줘야한다.
+		packet_buffer->look_vec = xmvector;
 		retval = WSASend(sock, &send_wsabuf, 1, &iobytes, 0, NULL, NULL);
 	}
 	if (retval == 1) {
@@ -323,4 +331,8 @@ void ServerMgr::ClientError() {
 
 XMFLOAT3 ServerMgr::ReturnXMFLOAT3() {
 	return sc_vec_buff;
+}
+
+XMFLOAT3 ServerMgr::ReturnLookVector() {
+	return sc_look_vec;
 }
