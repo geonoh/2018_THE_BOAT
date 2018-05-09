@@ -71,6 +71,11 @@ void ServerMgr::ReadPacket() {
 
 	}
 }
+
+int ServerMgr::GetMyClinetID() {
+	return my_client_id;
+}
+
 void ServerMgr::ProcessPacket(char* ptr) {
 	static bool first_time = true;
 	switch (ptr[1]) {
@@ -80,14 +85,17 @@ void ServerMgr::ProcessPacket(char* ptr) {
 
 		// 최초 수신 했다는 정보를 받게 되면 my_client_id에 
 		// 수신한 client_id 정보를 넣는다.
-		if (first_set_id)
+		if (first_set_id) {
 			my_client_id = packets->id;
+			first_set_id = false;
+		}
 		sc_vec_buff.x = packets->init_x;
 		sc_vec_buff.y = packets->init_y;
 		sc_vec_buff.z = packets->init_z;
 
 		//cout << "[SC_ENTER_PLAYER] : " << packets->id << "플레이어 입장" << endl;
 		printf("[SC_ENTER_PLAYER] : %d 플레이어 입장\n", packets->id);
+		printf("나는 %d \n", my_client_id);
 		break; }
 	case SC_POS: {
 		SC_PACKET_POS* packets = reinterpret_cast<SC_PACKET_POS*>(ptr);

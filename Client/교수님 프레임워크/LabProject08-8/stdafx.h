@@ -46,8 +46,7 @@ using namespace std;
 #include <memory.h>
 #include <fbxsdk.h>
 
-#include "..\..\..\Server\현재작업중\TheBoat_server\TheBoat_server\protocol.h"
-
+#include "..\..\..\Server\TheBoat_server\TheBoat_server\protocol.h"
 using namespace DirectX;
 using namespace DirectX::PackedVector;
 

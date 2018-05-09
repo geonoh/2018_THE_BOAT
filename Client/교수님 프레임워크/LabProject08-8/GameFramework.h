@@ -9,6 +9,7 @@
 #include "Shader.h"
 #include "ServerMgr.h"
 
+static int my_client_id;
 
 class CGameFramework
 {
@@ -18,7 +19,7 @@ private:
 	bool is_pushed[11] = { 0 };
 
 	XMFLOAT3 sc_player_pos[4];
-
+	bool first_recv = true;
 public:
 	CGameFramework();
 	~CGameFramework();

@@ -493,72 +493,52 @@ bool ServerFramework::IsStartGame() {
 //}
 
 void ServerFramework::Update(duration<float>& elapsed_time) {
-	//printf("%lf\n", elapsed_time);// 단위 세컨드인듯 ?
-	// 맞다
-	// 여기서 넘어오는 elapsed_time은 s단위이다. 
-	Sleep(1);	// 여기서 Sleep해줘야 정상작동 하는 이유를 모르겠음.
+	//Sleep(1);
 	float elapsed_double = elapsed_time.count();
 	for (int i = 0; i < MAXIMUM_PLAYER; ++i) {
-		// 총알 발사 부분 업데이트
-
-		// 이동부분 업데이트 
-		//send_locker.lock();
+		send_locker.lock();
 		if (clients[i].is_move_foward) {
 			if (clients[i].is_running) {
-				//clients[i].z += PIXER_PER_METER * clients[i].look_vec.z * (10000.f * elapsed_double / 3600.f);
 				clients[i].z += PIXER_PER_METER * clients[i].look_vec.z * (10000.f * elapsed_double / 3600.f);
 				clients[i].x += PIXER_PER_METER * clients[i].look_vec.x * (10000.f * elapsed_double / 3600.f);
 			}
 			else {
-				//clients[i].z += PIXER_PER_METER * clients[i].look_vec.z * (6000.f * elapsed_double / 3600.f);
 				clients[i].z += PIXER_PER_METER * clients[i].look_vec.z * (6000 * elapsed_double / 3600.f);
 				clients[i].x += PIXER_PER_METER * clients[i].look_vec.x * (6000 * elapsed_double / 3600.f);
 			}
 		}
 		if (clients[i].is_move_backward) {
 			if (clients[i].is_running) {
-				//clients[i].z -= PIXER_PER_METER * clients[i].look_vec.z * (10000.f * elapsed_double / 3600.f);
-				clients[i].z += PIXER_PER_METER * clients[i].look_vec.z * (10000.f * elapsed_double / 3600.f);
-				clients[i].x += PIXER_PER_METER * clients[i].look_vec.x * (10000.f * elapsed_double / 3600.f);
-				//printf("%d 번 뒤로 뛴다 %lf\n", i, clients[i].z);
+				clients[i].z += (-1) * PIXER_PER_METER * clients[i].look_vec.z * (10000.f * elapsed_double / 3600.f);
+				clients[i].x += (-1) * PIXER_PER_METER * clients[i].look_vec.x * (10000.f * elapsed_double / 3600.f);
 			}
 			else {
-				//clients[i].z -= PIXER_PER_METER * clients[i].look_vec.z * (6000.f * elapsed_double / 3600.f);
-				clients[i].z += PIXER_PER_METER * clients[i].look_vec.z * (6000 * elapsed_double / 3600.f);
-				clients[i].x += PIXER_PER_METER * clients[i].look_vec.x * (6000 * elapsed_double / 3600.f);
-				
+				clients[i].z += (-1) * PIXER_PER_METER * clients[i].look_vec.z * (6000 * elapsed_double / 3600.f);
+				clients[i].x += (-1) * PIXER_PER_METER * clients[i].look_vec.x * (6000 * elapsed_double / 3600.f);
 			}
 		}
 		if (clients[i].is_move_left) {
 			if (clients[i].is_running) {
-				//clients[i].x -= PIXER_PER_METER * clients[i].look_vec.x * (10000.f * elapsed_double / 3600.f);
-				clients[i].z += PIXER_PER_METER * clients[i].look_vec.z * (10000.f * elapsed_double / 3600.f);
-				clients[i].x += PIXER_PER_METER * clients[i].look_vec.x * (10000.f * elapsed_double / 3600.f);
-				//printf("%d 번 왼쪽으로 뛴다 %lf\n", i, clients[i].x);
+				clients[i].z += PIXER_PER_METER * clients[i].look_vec.x * (10000.f * elapsed_double / 3600.f);
+				clients[i].x += (-1) *  PIXER_PER_METER * clients[i].look_vec.z * (10000.f * elapsed_double / 3600.f);
 			}
 			else {
-				//clients[i].x -= PIXER_PER_METER * clients[i].look_vec.x * (6000.f * elapsed_double / 3600.f);
-				clients[i].z += PIXER_PER_METER * clients[i].look_vec.z * (6000 * elapsed_double / 3600.f);
-				clients[i].x += PIXER_PER_METER * clients[i].look_vec.x * (6000 * elapsed_double / 3600.f);
-				//printf("%d 번 왼쪽으로 간다! %lf\n", i, clients[i].x);
+				clients[i].z += PIXER_PER_METER * clients[i].look_vec.x * (6000 * elapsed_double / 3600.f);
+				clients[i].x += (-1) * PIXER_PER_METER * clients[i].look_vec.z * (6000 * elapsed_double / 3600.f);
 			}
 		}
 		if (clients[i].is_move_right) {
 			if (clients[i].is_running) {
-				//clients[i].x += PIXER_PER_METER * clients[i].look_vec.x * (10000.f * elapsed_double / 3600.f);
-				clients[i].z += PIXER_PER_METER * clients[i].look_vec.z * (10000.f * elapsed_double / 3600.f);
-				clients[i].x += PIXER_PER_METER * clients[i].look_vec.x * (10000.f * elapsed_double / 3600.f);
-				//printf("%d 번 오른쪽으로 뛴다 %lf\n", i, clients[i].x);
+				clients[i].z += (-1) * PIXER_PER_METER * clients[i].look_vec.x * (10000.f * elapsed_double / 3600.f);
+				clients[i].x += PIXER_PER_METER * clients[i].look_vec.z * (10000.f * elapsed_double / 3600.f);
 			}
 			else {
-				//clients[i].x += PIXER_PER_METER * clients[i].look_vec.x * (6000.f * elapsed_double / 3600.f);
-				clients[i].z += PIXER_PER_METER * clients[i].look_vec.z * (6000 * elapsed_double / 3600.f);
-				clients[i].x += PIXER_PER_METER * clients[i].look_vec.x * (6000 * elapsed_double / 3600.f);
-				//printf("%d 번 오른쪽으로 간다! %lf\n", i, clients[i].x);
+				clients[i].z += (-1) * PIXER_PER_METER * clients[i].look_vec.x * (6000 * elapsed_double / 3600.f);
+				clients[i].x += PIXER_PER_METER * clients[i].look_vec.z * (6000 * elapsed_double / 3600.f);
 			}
 
 		}
-		//send_locker.unlock();
+		send_locker.unlock();
 	}
 }
 

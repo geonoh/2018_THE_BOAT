@@ -321,7 +321,7 @@ void CGameFramework::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM
 	case WM_RBUTTONUP:
 	case WM_MOUSEMOVE:
 		// lookVector 전송
-		server_mgr.SendPacket(CS_MOUSE_MOVE, m_pPlayer[3]->GetLook());
+		server_mgr.SendPacket(CS_MOUSE_MOVE, m_pPlayer[my_client_id]->GetLook());
 		break;
 	default:
 		break;
@@ -357,8 +357,8 @@ void CGameFramework::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPA
 		case 'W':
 			if (is_pushed[CS_KEY_PRESS_UP] == false) {
 				//server_mgr.SendPacket(CS_KEY_PRESS_UP);
-				server_mgr.SendPacket(CS_KEY_PRESS_UP, m_pPlayer[3]->GetLook());
-				printf("Look Vector : %lf, %lf, %lf\n", m_pPlayer[3]->GetLook().x, m_pPlayer[3]->GetLook().y, m_pPlayer[3]->GetLook().z);
+				server_mgr.SendPacket(CS_KEY_PRESS_UP, m_pPlayer[my_client_id]->GetLook());
+				printf("Look Vector : %lf, %lf, %lf\n", m_pPlayer[my_client_id]->GetLook().x, m_pPlayer[my_client_id]->GetLook().y, m_pPlayer[my_client_id]->GetLook().z);
 				is_pushed[CS_KEY_PRESS_UP] = true;
 			}
 			break;
@@ -366,7 +366,7 @@ void CGameFramework::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPA
 		case 'A':
 			if (is_pushed[CS_KEY_PRESS_LEFT] == false) {
 				//server_mgr.SendPacket(CS_KEY_PRESS_LEFT);
-				server_mgr.SendPacket(CS_KEY_PRESS_LEFT, m_pPlayer[3]->GetLook());
+				server_mgr.SendPacket(CS_KEY_PRESS_LEFT, m_pPlayer[my_client_id]->GetLook());
 
 				is_pushed[CS_KEY_PRESS_LEFT] = true;
 			}
@@ -375,7 +375,7 @@ void CGameFramework::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPA
 		case 'S':
 			if (is_pushed[CS_KEY_PRESS_DOWN] == false) {
 				//server_mgr.SendPacket(CS_KEY_PRESS_DOWN);
-				server_mgr.SendPacket(CS_KEY_PRESS_DOWN, m_pPlayer[3]->GetLook());
+				server_mgr.SendPacket(CS_KEY_PRESS_DOWN, m_pPlayer[my_client_id]->GetLook());
 
 				is_pushed[CS_KEY_PRESS_DOWN] = true;
 			}
@@ -384,7 +384,7 @@ void CGameFramework::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPA
 		case 'D':
 			if (is_pushed[CS_KEY_PRESS_RIGHT] == false) {
 				//server_mgr.SendPacket(CS_KEY_PRESS_RIGHT);
-				server_mgr.SendPacket(CS_KEY_PRESS_RIGHT, m_pPlayer[3]->GetLook());
+				server_mgr.SendPacket(CS_KEY_PRESS_RIGHT, m_pPlayer[my_client_id]->GetLook());
 
 				is_pushed[CS_KEY_PRESS_RIGHT] = true;
 			}
@@ -482,7 +482,7 @@ void CGameFramework::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPA
 		case VK_F1:
 		case VK_F2:
 		case VK_F3:
-			m_pCamera = m_pPlayer[3]->ChangeCamera((DWORD)(wParam - VK_F1 + 1), m_GameTimer.GetTimeElapsed());
+			m_pCamera = m_pPlayer[my_client_id]->ChangeCamera((DWORD)(wParam - VK_F1 + 1), m_GameTimer.GetTimeElapsed());
 			break;
 		case VK_F9:
 		{
@@ -545,14 +545,19 @@ LRESULT CALLBACK CGameFramework::OnProcessingWindowMessage(HWND hWnd, UINT nMess
 		switch (WSAGETSELECTEVENT(lParam)) {
 		case FD_READ:
 			XMFLOAT3 read_buf;
+			// 첫번째 읽을때 아이디 저장
 			server_mgr.ReadPacket();
-			m_pPlayer[3]->SetPosition(server_mgr.ReturnXMFLOAT3());
+			if (first_recv) {
+				my_client_id = server_mgr.GetMyClinetID();
+				first_recv = false;
+			}
+			m_pPlayer[my_client_id]->SetPosition(server_mgr.ReturnXMFLOAT3());
 			//server_mgr.ReturnLookVector();
 			//read_buf = server_mgr.ReturnXMFLOAT3();
 			//printf("x = %f, y = %f, z = %f \n", read_buf.x, read_buf.y, read_buf.z);
 
 			// 상우 커밋 부분
-			//m_pPlayer[3]->SetPosition(server_mgr.ReturnXMFLOAT3());
+			//m_pPlayer[my_client_id]->SetPosition(server_mgr.ReturnXMFLOAT3());
 			//read_buf = server_mgr.ReturnXMFLOAT3();
 			//printf("x = %f, y = %f, z = %f \n", read_buf.x, read_buf.y, read_buf.z);
 			break;
@@ -615,7 +620,7 @@ void CGameFramework::BuildObjects()
 
 	for(int i=0;i<4;++i)
 		m_pScene->m_pPlayer[i] = m_pPlayer[i] = new CAirplanePlayer(m_pd3dDevice, m_pd3dCommandList, m_pScene->GetGraphicsRootSignature(), m_pScene->GetTerrain(), 1);
-	m_pCamera = m_pPlayer[3]->GetCamera();
+	m_pCamera = m_pPlayer[my_client_id]->GetCamera();
 
 #ifdef _WITH_APACHE_MODEL
 	m_pPlayer->SetPosition(XMFLOAT3(0.0f, 350.0f, -300.0f));
@@ -688,14 +693,15 @@ void CGameFramework::ProcessInput()
 			if (cxDelta || cyDelta)
 			{
 				if (pKeysBuffer[VK_RBUTTON] & 0xF0)
-					m_pPlayer[3]->Rotate(cyDelta, 0.0f, -cxDelta);
+
+					m_pPlayer[my_client_id]->Rotate(cyDelta, 0.0f, -cxDelta);
 				else
-					m_pPlayer[3]->Rotate(cyDelta, cxDelta, 0.0f);
+					m_pPlayer[my_client_id]->Rotate(cyDelta, cxDelta, 0.0f);
 			}
-			if (dwDirection) m_pPlayer[3]->Move(dwDirection, 50.0f * m_GameTimer.GetTimeElapsed(), true);
+			if (dwDirection) m_pPlayer[my_client_id]->Move(dwDirection, 50.0f * m_GameTimer.GetTimeElapsed(), true);
 		}
 	}
-	m_pPlayer[3]->Update(m_GameTimer.GetTimeElapsed());
+	m_pPlayer[my_client_id]->Update(m_GameTimer.GetTimeElapsed());
 }
 
 void CGameFramework::AnimateObjects(CCamera *pCamera)
