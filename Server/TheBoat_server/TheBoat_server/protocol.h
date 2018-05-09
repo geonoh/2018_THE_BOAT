@@ -66,6 +66,8 @@ enum SubWeapons {
 	NON_SUB = 0
 };
 
+// 서버에서 보낸 정보를 클라이언트에서 
+// ID와 위치 정보를 분리해서 업데이트 시켜줘야한다.
 // Server To Client packet
 struct SC_PACKET_ENTER_PLAYER {
 	BYTE size;

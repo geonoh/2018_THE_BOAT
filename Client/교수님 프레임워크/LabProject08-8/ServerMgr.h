@@ -28,7 +28,7 @@ public:
 	void SendPacket(int type, XMFLOAT3& xmvector);
 	void ProcessPacket(char* ptr);
 	void ErrorDisplay(const char* msg, int err_no);
-	int GetMyClinetID();
+	int GetClientID();
 	XMFLOAT3 ReturnXMFLOAT3();
 	XMFLOAT3 ReturnLookVector();
 };

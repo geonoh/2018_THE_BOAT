@@ -20,6 +20,7 @@ private:
 
 	XMFLOAT3 sc_player_pos[4];
 	bool first_recv = true;
+	int recvd_client_id;
 public:
 	CGameFramework();
 	~CGameFramework();

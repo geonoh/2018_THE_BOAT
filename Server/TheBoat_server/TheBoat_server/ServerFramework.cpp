@@ -1,7 +1,7 @@
 #include "stdafx.h"
-#include "HeightMap.h"
+//#include "HeightMap.h"
 #include "ServerFramework.h"
-
+#include "CHeightMapImage.h"
 
 void ErrorDisplay(const char* msg, int err_no) {
 	WCHAR *lpMsgBuf;
@@ -17,15 +17,13 @@ void ErrorDisplay(const char* msg, int err_no) {
 
 }
 
-
 ServerFramework::ServerFramework()
 {
 }
 
-
 ServerFramework::~ServerFramework()
 {
-	delete height_map;
+	delete height_map2;
 }
 
 void ServerFramework::InitServer() {
@@ -56,21 +54,16 @@ void ServerFramework::InitServer() {
 	if (retval == SOCKET_ERROR)
 		printf("listen 에러\n");
 
-
-	// HeightMap 불러오기
-	XMFLOAT3 xmf_3_scale(8.0f, 2.f, 8.0f);
-	//LPCTSTR file_name = _T("MapResource/HeightMap.raw"); 
+	XMFLOAT3 xmf_3_scale(4.0f, 2.f, 4.0f);
 	LPCTSTR file_name = _T("terrain17.raw");
-	height_map = new HeightMap(file_name, 513, 513, xmf_3_scale);
-
+	height_map2 = new CHeightMapImage(file_name, 513, 513, xmf_3_scale);
 
 	// 플레이어의 위치 초기화 해주기;
 	for (int i = 0; i < MAXIMUM_PLAYER; ++i) {
-		clients[i].x = 200.f;
-		clients[i].y = height_map->GetHeight(200.f, 100.f);
-		clients[i].z = 100.f;
+		clients[i].x = 0;
+		clients[i].z = 0;
+		clients[i].y = height_map2->GetHeight(clients[i].x, clients[i].z);
 	}
-	printf("%f\n", height_map->GetHeight(30.f, 30.f));
 }
 
 void ServerFramework::AcceptPlayer() {
@@ -157,20 +150,12 @@ void ServerFramework::AcceptPlayer() {
 }
 
 void ServerFramework::ProcessPacket(int cl_id, char* packet) {
-	// 내생각으로는 이 모든 패킷을 아우를수 있는걸로
-	// 일단 reinterpret 해주고, type만 확인한다음에 다시 
-	// reinterpret해주면 되지않을까? 이런식으로 패킷 구분하면 좋을듯?
-	// 형변환 오버헤드 큼?
-	// NO! 작은거에서 큰걸로 reinterpret해줘도 가능하다
-
 	CS_PACKET_KEYUP* packet_buffer = reinterpret_cast<CS_PACKET_KEYUP*>(packet);
-	//printf("Look Vector : %lf, %lf, %lf\n", packet_buffer->look_vec.x, packet_buffer->look_vec.y, packet_buffer->look_vec.z);
 
 	switch (packet_buffer->type) {
-
-		// <단순>플레이어 키 입력 부분
 	case CS_KEY_PRESS_UP:
 		clients[cl_id].is_move_foward = true;
+		printf("%d플레이어의 현 위치 x : %f, y : %f, z : %f\n", cl_id, clients[cl_id].x, clients[cl_id].y, clients[cl_id].z);
 		break;
 	case CS_KEY_PRESS_DOWN:
 		clients[cl_id].is_move_backward = true;
@@ -182,13 +167,11 @@ void ServerFramework::ProcessPacket(int cl_id, char* packet) {
 		clients[cl_id].is_move_right = true;
 		break;
 
-		// 무기 변경하기
 	case CS_KEY_PRESS_1:
 		printf("[ProcessPacket] :: AR 무기 선택\n");
 		break;
 	case CS_KEY_PRESS_2:
 		printf("[ProcessPacket] :: 권총 무기 선택\n");
-
 		break;
 
 	case CS_KEY_PRESS_SHIFT:
@@ -197,9 +180,6 @@ void ServerFramework::ProcessPacket(int cl_id, char* packet) {
 	case CS_KEY_PRESS_SPACE:
 		break;
 
-
-		// 떼는 순간 모든 클라이언트에 플레이어 이동 정보를 
-		// 보내줘야한다. 
 	case CS_KEY_RELEASE_UP:
 		clients[cl_id].is_move_foward = false;
 		break;
@@ -222,35 +202,24 @@ void ServerFramework::ProcessPacket(int cl_id, char* packet) {
 	case CS_KEY_RELEASE_SPACE:
 		break;
 
-
-		// 마우스 입력 처리 해주기
 	case CS_RIGHT_BUTTON_DOWN:
-		printf("우측 클릭했음\n");
 		clients[cl_id].is_right_click = true;
 		break;
 	case CS_RIGHT_BUTTON_UP:
-		printf("우측 클릭 땜\n");
 		clients[cl_id].is_right_click = false;
 		break;
 
-
 	case CS_LEFT_BUTTON_DOWN:
-		printf("좌측 클릭했음\n");
 		clients[cl_id].is_left_click = true;
 		break;
 	case CS_LEFT_BUTTON_UP:
-		printf("좌측 클릭 땜\n");
 		clients[cl_id].is_left_click = false;
 		break;
 
-		// 마우스 움직임에도 Player의 Look 벡터를 보내줘야한다. 
 	case CS_MOUSE_MOVE:
-		//printf("마우스 움직임 서버에서 감지\n");
 		clients[cl_id].look_vec = packet_buffer->look_vec;
 		break;
 
-
-		// 레디, 팀선택
 	case CS_PLAYER_READY:
 		player_ready[cl_id] = true;
 		break;
@@ -258,72 +227,18 @@ void ServerFramework::ProcessPacket(int cl_id, char* packet) {
 		break;
 	}
 
-	// 이 아래 모든 패킷 다 보내줘야한다.
-	// 모든 플레이어에게 해당 플레이어가 이동한것만 보내주면 된다.
-	if (CS_KEY_PRESS_UP <= packet_buffer->type&&packet_buffer->type <= CS_KEY_PRESS_RIGHT) {
-		SC_PACKET_POS packets;
-		//printf("[%d]Look Vector : %lf, %lf, %lf\n", cl_id, packet_buffer->look_vec.x, packet_buffer->look_vec.y, packet_buffer->look_vec.z);
-		packets.id = cl_id;
-		packets.size = sizeof(SC_PACKET_POS);
-		packets.type = SC_POS;		// 키를 떄도 포지션 관련 패킷이 보내진다.
-
-		clients[cl_id].look_vec = packet_buffer->look_vec;
-
-		packets.x = clients[cl_id].x;
-		packets.y = height_map->GetHeight(clients[cl_id].x, clients[cl_id].z);
-		packets.z = clients[cl_id].z;
-
-		for (int i = 0; i < MAXIMUM_PLAYER; ++i) {
-			if (clients[i].in_use == true) {
-				SendPacket(i, &packets);
-			}
-		}
-	}
-	// 이동을 하다가 key를 때서 이동을 정지하는것도 플레이어에게 알려줘야한다. 
-	else if (CS_KEY_RELEASE_UP <= packet_buffer->type && packet_buffer->type <= CS_KEY_RELEASE_SPACE) {
-		send_locker.lock();
-		SC_PACKET_POS packets;
-		packets.id = cl_id;
-		packets.size = sizeof(SC_PACKET_POS);
-		packets.type = SC_POS;		// 키를 떄도 포지션 관련 패킷이 보내진다.
-
-		packets.x = clients[cl_id].x;
-		packets.y = height_map->GetHeight(clients[cl_id].x, clients[cl_id].z);
-		packets.z = clients[cl_id].z;
-
-		for (int i = 0; i < MAXIMUM_PLAYER; ++i) {
-			if (clients[i].in_use == true) {
-				SendPacket(i, &packets);
-			}
-		}
-		send_locker.unlock();
-	}
-	// 현재 클라이언트의 Look 벡터 같이 해서 보내야함.
-	else if (CS_MOUSE_MOVE == packet_buffer->type) {
-		//printf("여기서 마우스 움직임 처리한 패킷 보내줘야햔디ㅏ\n");
+	if (CS_MOUSE_MOVE == packet_buffer->type) {
 		SC_PACKET_LOOCVEC packets;
 		packets.id = cl_id;
 		packets.size = sizeof(SC_PACKET_POS);
-		packets.type = SC_PLAYER_LOOKVEC;		// 키를 떄도 포지션 관련 패킷이 보내진다.
-
+		packets.type = SC_PLAYER_LOOKVEC;
 		packets.look_vec = clients[cl_id].look_vec;
-
-		//printf("룩벡터 : x = %f, y = %f, z = %f \n", packets.x, packets.y, packets.z);
 		for (int i = 0; i < MAXIMUM_PLAYER; ++i) {
 			if (clients[i].in_use == true) {
 				SendPacket(i, &packets);
 			}
 		}
 	}
-	// 플레이어 상태 변화 _ Ready, Team 변경, Mode 변경등
-	else if (100 <= packet_buffer->type) {
-		for (int i = 0; i < MAXIMUM_PLAYER; ++i) {
-			if (clients[i].in_use == true) {
-
-			}
-		}
-	}
-
 }
 
 void ServerFramework::WorkerThread() {
@@ -335,32 +250,14 @@ void ServerFramework::WorkerThread() {
 	while (true) {
 		bool retval = GetQueuedCompletionStatus(iocp_handle, &data_size,
 			&client_id, &overlapped, INFINITE);
-
-		////송수신 확인 용 
-		//OverlappedExtensionSet* is_recv_or_send = reinterpret_cast<OverlappedExtensionSet*>(overlapped);
-		//if(is_recv_or_send->is_recv==true)
-		//	printf("[WorkerThread::GQCS] 수신 ClientID : %d, Size : %d\n", client_id, data_size);
-		//else
-		//	printf("[WorkerThread::GQCS] 송신 ClientID : %d, Size : %d\n", client_id, data_size);
-
 		if (retval == FALSE) {
 			printf("[WorkerThread::GQCS] 에러 ClientID : %d\n", client_id);
 			if (data_size == 0) {
 				DisconnectPlayer(client_id);
 				continue;
 			}
-			//DisconnectPlayer(client_id);
-			//continue;
 		}
-		// 플레이어가 접속을 해지했을 때 
-		/*if (data_size == 0) {
-			DisconnectPlayer(client_id);
-			continue;
-		}*/
-
 		OverlappedExtensionSet* overlapped_buffer = reinterpret_cast<OverlappedExtensionSet*>(overlapped);
-
-		// Data 수신 시작
 		if (overlapped_buffer->is_recv == true) {
 			int recved_size = data_size;
 			char* ptr = overlapped_buffer->io_buffer;
@@ -369,25 +266,22 @@ void ServerFramework::WorkerThread() {
 					clients[client_id].packet_size = ptr[0];
 				}
 				int remain = clients[client_id].packet_size - clients[client_id].prev_packet_size;
-				// (받아야 하는 데이터 中) 받은데이터가 남은데이터보다 더 많을 때
 				if (remain <= recved_size) {
 					memcpy(clients[client_id].prev_packet + clients[client_id].prev_packet_size,
 						ptr,
 						remain);
-					// 패킷 재조립 후 모든 클라이언트에 패킷 내용 처리 후 전송해주기
 					ProcessPacket(static_cast<int>(client_id), clients[client_id].prev_packet);
 					recved_size -= remain;
 					ptr += remain;
 					clients[client_id].packet_size = 0;
 					clients[client_id].prev_packet_size = 0;
 				}
-				// (받아야 하는 데이터 中) 남은 데이터가 더 클 경우
 				else {
 					memcpy(clients[client_id].prev_packet + clients[client_id].prev_packet_size,
 						ptr,
 						recved_size);
 					recved_size -= recved_size;
-					ptr += recved_size;	// 이것도 의미가 없는 코드
+					ptr += recved_size;
 				}
 			}
 
@@ -396,23 +290,22 @@ void ServerFramework::WorkerThread() {
 			int retval = WSARecv(clients[client_id].s, &overlapped_buffer->wsabuf, 1, NULL, &rflag, &overlapped_buffer->wsa_over, NULL);
 			if (retval != 0) {
 				int err_no = WSAGetLastError();
-				// 이 함수에 대한 설명은 Send 부분 참조
 				if (err_no != WSA_IO_PENDING) {
 					ErrorDisplay("Error in WorkerThread(Recv) : ", err_no);
 				}
 			}
 
 		}
+		// TimerThread에서 호출
 		else if (overlapped_buffer->command == SC_PLAYER_MOVE) {
-			// 모든플레이어에게 위치 정보를 보내줘야함.
 			SC_PACKET_POS packets;
 			packets.id = client_id;
 			packets.size = sizeof(SC_PACKET_POS);
-			packets.type = SC_POS;		// 키를 떄도 포지션 관련 패킷이 보내진다.
+			packets.type = SC_POS;
+			clients[client_id].y = height_map2->GetHeight(clients[client_id].x, clients[client_id].z);
 			packets.x = clients[client_id].x;
-			packets.y = height_map->GetHeight(clients[client_id].x, clients[client_id].z);
+			packets.y = clients[client_id].y;
 			packets.z = clients[client_id].z;
-			// 포지션 패킷 
 			for (int i = 0; i < MAXIMUM_PLAYER; ++i) {
 				if (clients[i].in_use == true) {
 					SendPacket(i, &packets);
@@ -482,16 +375,6 @@ bool ServerFramework::IsStartGame() {
 		return false;
 }
 
-//void ServerFramework::TimerFunc() {
-//	// elapsedTime을 바끙
-//	while (true) {
-//		time_point<system_clock> cur_time = system_clock::now();
-//		duration<float> elapsed_time = cur_time - prev_time;
-//		Update(elapsed_time);
-//		prev_time = cur_time;
-//	}
-//}
-
 void ServerFramework::Update(duration<float>& elapsed_time) {
 	//Sleep(1);
 	float elapsed_double = elapsed_time.count();
@@ -520,7 +403,7 @@ void ServerFramework::Update(duration<float>& elapsed_time) {
 		if (clients[i].is_move_left) {
 			if (clients[i].is_running) {
 				clients[i].z += PIXER_PER_METER * clients[i].look_vec.x * (10000.f * elapsed_double / 3600.f);
-				clients[i].x += (-1) *  PIXER_PER_METER * clients[i].look_vec.z * (10000.f * elapsed_double / 3600.f);
+				clients[i].x += (-1) * PIXER_PER_METER * clients[i].look_vec.z * (10000.f * elapsed_double / 3600.f);
 			}
 			else {
 				clients[i].z += PIXER_PER_METER * clients[i].look_vec.x * (6000 * elapsed_double / 3600.f);
