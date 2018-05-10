@@ -562,6 +562,7 @@ LRESULT CALLBACK CGameFramework::OnProcessingWindowMessage(HWND hWnd, UINT nMess
 			server_mgr.ReadPacket();
 			if (first_recv) {
 				my_client_id = server_mgr.GetClientID();
+				m_pCamera = m_pPlayer[my_client_id]->GetCamera();
 				first_recv = false;
 			}
 			m_pPlayer[server_mgr.GetClientID()]->SetPosition(server_mgr.ReturnXMFLOAT3());
@@ -627,7 +628,8 @@ void CGameFramework::BuildObjects()
 
 	for(int i=0;i<4;++i)
 		m_pScene->m_pPlayer[i] = m_pPlayer[i] = new CAirplanePlayer(m_pd3dDevice, m_pd3dCommandList, m_pScene->GetGraphicsRootSignature(), m_pScene->GetTerrain(), 1);
-	m_pCamera = m_pPlayer[my_client_id]->GetCamera();
+
+	//m_pCamera = m_pPlayer[my_client_id]->GetCamera();
 
 #ifdef _WITH_APACHE_MODEL
 	m_pPlayer->SetPosition(XMFLOAT3(0.0f, 350.0f, -300.0f));

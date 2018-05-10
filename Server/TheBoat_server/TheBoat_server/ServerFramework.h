@@ -1,5 +1,4 @@
 #pragma once
-class HeightMap;
 class CHeightMapImage;
 class ServerFramework
 {
@@ -15,7 +14,6 @@ class ServerFramework
 	bool player_ready[4] = { 0 };		// Player_Ready 패킷 도착하면 해당 
 										// Client_ID에 맞는 배열 true
 										// 모두 true가 되면 게임 시작 함수 실행
-	HeightMap* height_map;
 	CHeightMapImage* height_map2;
 	time_point<system_clock> prev_time = system_clock::now();
 	float sender_time = 0;

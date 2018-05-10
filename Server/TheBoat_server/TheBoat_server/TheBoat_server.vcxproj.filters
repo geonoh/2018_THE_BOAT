@@ -19,9 +19,6 @@
     <Filter Include="stdafx">
       <UniqueIdentifier>{89bbbe9f-145b-4cc2-8eaa-ea8b5452ce93}</UniqueIdentifier>
     </Filter>
-    <Filter Include="HeightMap">
-      <UniqueIdentifier>{75a11a1a-1e53-4abf-9b30-f415616b3553}</UniqueIdentifier>
-    </Filter>
     <Filter Include="CHeightMapImage">
       <UniqueIdentifier>{56ed8f75-cd54-481e-911c-0d332ca60e4d}</UniqueIdentifier>
     </Filter>
@@ -39,9 +36,6 @@
     <ClInclude Include="stdafx.h">
       <Filter>stdafx</Filter>
     </ClInclude>
-    <ClInclude Include="HeightMap.h">
-      <Filter>HeightMap</Filter>
-    </ClInclude>
     <ClInclude Include="CHeightMapImage.h">
       <Filter>CHeightMapImage</Filter>
     </ClInclude>
@@ -55,9 +49,6 @@
     </ClCompile>
     <ClCompile Include="stdafx.cpp">
       <Filter>stdafx</Filter>
-    </ClCompile>
-    <ClCompile Include="HeightMap.cpp">
-      <Filter>HeightMap</Filter>
     </ClCompile>
     <ClCompile Include="CHeightMapImage.cpp">
       <Filter>CHeightMapImage</Filter>

@@ -1,21 +1,19 @@
 #pragma once
 
-#define SERVER_IP	127.0.0.1
-#define SERVER_PORT 4000
-#define MAX_BUFFER_SIZE 4000
-#define MAX_PACKET_SIZE 256
-#define MAXIMUM_PLAYER	4
-#define	WM_SOCKET				WM_USER + 1
-#define CLIENT_BUF_SIZE	1024
-#define PIXER_PER_METER	40
+#define SERVER_IP			127.0.0.1
+#define SERVER_PORT			4000
+#define MAX_BUFFER_SIZE		4000
+#define MAX_PACKET_SIZE		256
+#define MAXIMUM_PLAYER		4
+#define	WM_SOCKET			WM_USER + 1
+#define CLIENT_BUF_SIZE		1024
+#define PIXER_PER_METER		40
+
 // Server To Client
-#define SC_ENTER_PLAYER		1
-#define SC_POS				2
-#define SC_REMOVE_PLAYER	3
-// 이 패킷은 다른 플레이어가 움직이게되면
-// PQCS를 호출해서 WorkerThread가 Update하게 하는
-// Packet종류이다.
-#define SC_PLAYER_MOVE				4
+#define SC_ENTER_PLAYER			1
+#define SC_POS					2
+#define SC_REMOVE_PLAYER		3
+#define SC_PLAYER_MOVE			4
 #define SC_PLAYER_LOOKVEC		5
 
 
@@ -41,18 +39,13 @@
 #define CS_KEY_RELEASE_SHIFT		16
 #define CS_KEY_RELEASE_1			17
 #define CS_KEY_RELEASE_2			18
-#define CS_LEFT_BUTTON_UP		19
-#define CS_RIGHT_BUTTON_UP		20
-
-#define CS_MOUSE_MOVE			0
+#define CS_LEFT_BUTTON_UP			19
+#define CS_RIGHT_BUTTON_UP			20
+#define CS_MOUSE_MOVE				0
 
 #define CS_PLAYER_READY		100
 #define CS_PLAYER_TEAM_SELECT	101
 
-
-
-// MODE가 2:2의 경우 TEAM 1, 2
-// MODE가 Melee의 경우 모두 사용
 enum GameMode {
 	TEAM_MODE, MELEE
 };
@@ -66,9 +59,7 @@ enum SubWeapons {
 	NON_SUB = 0
 };
 
-// 서버에서 보낸 정보를 클라이언트에서 
-// ID와 위치 정보를 분리해서 업데이트 시켜줘야한다.
-// Server To Client packet
+// 서버->클라
 struct SC_PACKET_ENTER_PLAYER {
 	BYTE size;
 	BYTE type;
@@ -78,14 +69,12 @@ struct SC_PACKET_ENTER_PLAYER {
 	bool player_ready[4];
 };
 
-// 걷기 패킷
 struct SC_PACKET_MOVING {
 	BYTE size;
 	BYTE type;
 	WORD id;
 };
 
-// 달리기 패킷
 struct SC_PACKET_RUNNING {
 	BYTE size;
 	BYTE type;
@@ -106,16 +95,14 @@ struct SC_PACKET_POS {
 	float x, y, z;
 };
 
-// 포지션 관련된 패킷 하나 더 필요
 
-// Client To Server 오직 키보드 입력 Ready
+// 클라->서버
 struct CS_PACKET_BIGGEST {
 	BYTE size;
 	BYTE type;
 	WORD id;
 	bool player_in[4];
 };
-
 
 struct CS_PACKET_KEYUP {
 	BYTE size;
@@ -154,18 +141,15 @@ struct CS_PACKET_KEYSHIFT {
 	BYTE type;
 };
 
-// 마우스 입력 
 struct CS_PACKET_MOUSEMOVE {
 	BYTE size;
 	BYTE type;
-	// 여기에 룩벡터를 받아야함..?
 };
 struct CS_PACKET_LEFTBUTTON {
 	BYTE size;
 	BYTE type;
 };
 
-//
 struct CS_PACKET_READY {
 	BYTE size;
 	BYTE type;
@@ -182,7 +166,6 @@ struct CS_PACKET_TEAM_SELECT {
 	Team team;
 };
 
-// 클라이언트에서 서버로 look 벡터를 보내줘야 한다. 
 struct CS_PACKET_LOOK_VECTOR {
 	BYTE size;
 	BYTE type;

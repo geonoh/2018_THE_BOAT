@@ -1,5 +1,4 @@
 #include "stdafx.h"
-//#include "HeightMap.h"
 #include "ServerFramework.h"
 #include "CHeightMapImage.h"
 
@@ -58,7 +57,6 @@ void ServerFramework::InitServer() {
 	LPCTSTR file_name = _T("terrain17.raw");
 	height_map2 = new CHeightMapImage(file_name, 513, 513, xmf_3_scale);
 
-	// 플레이어의 위치 초기화 해주기;
 	for (int i = 0; i < MAXIMUM_PLAYER; ++i) {
 		clients[i].x = 400.f;
 		clients[i].z = 400.f;
@@ -74,7 +72,6 @@ void ServerFramework::AcceptPlayer() {
 	c_addr.sin_addr.s_addr = INADDR_ANY;
 	int addr_len = sizeof(SOCKADDR_IN);
 
-	// 리슨소켓에서 받은 정보 클라이언트 소켓에 연결
 	int new_key = -1;
 	auto client_socket = WSAAccept(listen_socket, reinterpret_cast<SOCKADDR*>(&c_addr), &addr_len, NULL, NULL);
 
@@ -91,7 +88,6 @@ void ServerFramework::AcceptPlayer() {
 	if (client_id == -1) {
 		printf("최대 유저 초과\n");
 	}
-	// Accept 하고 나서 아래 코드 실행
 	printf("[%d] 플레이어 입장\n", client_id);
 	clients[client_id].s = client_socket;
 	clients[client_id].ar_mag = 0;
@@ -104,7 +100,6 @@ void ServerFramework::AcceptPlayer() {
 	clients[client_id].is_ready = false;
 	clients[client_id].is_running = false;
 	ZeroMemory(&clients[client_id].overlapped_ex.wsa_over, sizeof(WSAOVERLAPPED));
-	// 일단 받기로 먼저 설정
 	clients[client_id].overlapped_ex.is_recv = true;
 	clients[client_id].overlapped_ex.wsabuf.buf = clients[client_id].overlapped_ex.io_buffer;
 	clients[client_id].overlapped_ex.wsabuf.len = sizeof(clients[client_id].overlapped_ex.io_buffer);
@@ -112,13 +107,10 @@ void ServerFramework::AcceptPlayer() {
 	clients[client_id].prev_packet_size = 0;
 	clients[client_id].team = Team::NON_TEAM;
 
-	// client_id == 0 -> 방장
-
 	CreateIoCompletionPort(reinterpret_cast<HANDLE>(client_socket),
 		iocp_handle, client_id, 0);
 	// 플레이어 입장 표시
 	player_entered[client_id] = true;
-	//
 	clients[client_id].in_use = true;
 	unsigned long flag = 0;
 	WSARecv(client_socket, &clients[client_id].overlapped_ex.wsabuf, 1, NULL,
@@ -135,15 +127,13 @@ void ServerFramework::AcceptPlayer() {
 	packet.init_z = clients[client_id].z;
 	for (int i = 0; i < 4; ++i) {
 		packet.player_in[i] = player_entered[i];
-		// 이거 뿐 아니라 플레이어의 레디 상태도 당사자에게 보내야함.
 		packet.player_ready[i] = player_ready[i];
 	}
-
 	for (int i = 0; i < MAXIMUM_PLAYER; ++i) {
 
 		if (clients[i].in_use) {
 			printf("%d 플레이어 입장 정보 전송\n", client_id);
-			SendPacket(i, &packet);	// 모든 플레이어에게 입장정보 보내야함
+			SendPacket(i, &packet);	
 		}
 	}
 
