@@ -82,10 +82,6 @@ void ServerMgr::ProcessPacket(char* ptr) {
 	switch (ptr[1]) {
 	case SC_ENTER_PLAYER: {
 		SC_PACKET_ENTER_PLAYER * packets = reinterpret_cast<SC_PACKET_ENTER_PLAYER*>(ptr);
-		//SC_PACKET_POS* packets = reinterpret_cast<SC_PACKET_POS*>(ptr);
-
-		// 최초 수신 했다는 정보를 받게 되면 my_client_id에 
-		// 수신한 client_id 정보를 넣는다.
 		//if (first_set_id) {
 		my_client_id = packets->id;
 			//first_set_id = false;

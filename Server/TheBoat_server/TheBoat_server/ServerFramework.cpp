@@ -60,8 +60,8 @@ void ServerFramework::InitServer() {
 
 	// 플레이어의 위치 초기화 해주기;
 	for (int i = 0; i < MAXIMUM_PLAYER; ++i) {
-		clients[i].x = 0;
-		clients[i].z = 0;
+		clients[i].x = 400.f;
+		clients[i].z = 400.f;
 		clients[i].y = height_map2->GetHeight(clients[i].x, clients[i].z);
 	}
 }
@@ -217,6 +217,7 @@ void ServerFramework::ProcessPacket(int cl_id, char* packet) {
 		break;
 
 	case CS_MOUSE_MOVE:
+		printf("%d플레이어의 마우스 움직임\n");
 		clients[cl_id].look_vec = packet_buffer->look_vec;
 		break;
 
@@ -230,7 +231,7 @@ void ServerFramework::ProcessPacket(int cl_id, char* packet) {
 	if (CS_MOUSE_MOVE == packet_buffer->type) {
 		SC_PACKET_LOOCVEC packets;
 		packets.id = cl_id;
-		packets.size = sizeof(SC_PACKET_POS);
+		packets.size = sizeof(SC_PACKET_LOOCVEC);
 		packets.type = SC_PLAYER_LOOKVEC;
 		packets.look_vec = clients[cl_id].look_vec;
 		for (int i = 0; i < MAXIMUM_PLAYER; ++i) {
