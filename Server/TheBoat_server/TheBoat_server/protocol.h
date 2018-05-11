@@ -41,7 +41,7 @@
 #define CS_KEY_RELEASE_2			18
 #define CS_LEFT_BUTTON_UP			19
 #define CS_RIGHT_BUTTON_UP			20
-#define CS_MOUSE_MOVE				0
+#define CS_MOUSE_MOVE				21
 
 #define CS_PLAYER_READY		100
 #define CS_PLAYER_TEAM_SELECT	101
@@ -112,17 +112,14 @@ struct CS_PACKET_KEYUP {
 struct CS_PACKET_KEYDOWN {
 	BYTE size;
 	BYTE type;
-	DirectX::XMFLOAT3 look_vec;
 };
 struct CS_PACKET_KEYLEFT {
 	BYTE size;
 	BYTE type;
-	DirectX::XMFLOAT3 look_vec;
 };
 struct CS_PACKET_KEYRIGHT {
 	BYTE size;
 	BYTE type;
-	DirectX::XMFLOAT3 look_vec;
 };
 struct CS_PACKET_KEY1 {
 	BYTE size;

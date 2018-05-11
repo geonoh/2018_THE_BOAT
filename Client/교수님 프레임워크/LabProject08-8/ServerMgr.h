@@ -18,7 +18,7 @@ class ServerMgr
 	DWORD in_packet_size = 0;
 	DWORD saved_packet_size = 0;
 
-	XMFLOAT3 sc_vec_buff;
+	XMFLOAT3 sc_vec_buff[4];
 	XMFLOAT3 sc_look_vec;
 public:
 	void Initialize(HWND& hwnd);
@@ -29,6 +29,6 @@ public:
 	void ProcessPacket(char* ptr);
 	void ErrorDisplay(const char* msg, int err_no);
 	int GetClientID();
-	XMFLOAT3 ReturnXMFLOAT3();
+	XMFLOAT3 ReturnXMFLOAT3(int client_id);
 	XMFLOAT3 ReturnLookVector();
 };

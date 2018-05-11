@@ -22,7 +22,7 @@ ServerFramework::ServerFramework()
 
 ServerFramework::~ServerFramework()
 {
-	delete height_map2;
+	delete height_map;
 }
 
 void ServerFramework::InitServer() {
@@ -55,12 +55,12 @@ void ServerFramework::InitServer() {
 
 	XMFLOAT3 xmf_3_scale(4.0f, 2.f, 4.0f);
 	LPCTSTR file_name = _T("terrain17.raw");
-	height_map2 = new CHeightMapImage(file_name, 513, 513, xmf_3_scale);
+	height_map = new CHeightMapImage(file_name, 513, 513, xmf_3_scale);
 
 	for (int i = 0; i < MAXIMUM_PLAYER; ++i) {
-		clients[i].x = 400.f;
-		clients[i].z = 400.f;
-		clients[i].y = height_map2->GetHeight(clients[i].x, clients[i].z);
+		clients[i].x = 450.f;
+		clients[i].z = 800.f;
+		clients[i].y = height_map->GetHeight(clients[i].x, clients[i].z);
 	}
 }
 
@@ -136,6 +136,22 @@ void ServerFramework::AcceptPlayer() {
 			SendPacket(i, &packet);	
 		}
 	}
+	// 해당 클라이언트에게도 다른 클라이언트의 위치를 보내줘야한당!~
+	SC_PACKET_POS packets;
+	for (int i = 0; i < MAXIMUM_PLAYER; ++i) {
+		if (clients[i].in_use == true) {
+			packets.id = i;
+			packets.size = sizeof(SC_PACKET_POS);
+			packets.type = SC_POS;
+			clients[i].y = height_map->GetHeight(clients[i].x, clients[i].z);
+			packets.x = clients[i].x;
+			packets.y = clients[i].y;
+			packets.z = clients[i].z;
+			SendPacket(client_id, &packets);
+			printf("%d에게 %d의 정보를 보낸다\n", client_id, i);
+		}
+		ZeroMemory(&packets, sizeof(packets));
+	}
 
 }
 
@@ -206,19 +222,8 @@ void ServerFramework::ProcessPacket(int cl_id, char* packet) {
 		clients[cl_id].is_left_click = false;
 		break;
 
-	case CS_MOUSE_MOVE:
-		printf("%d플레이어의 마우스 움직임\n");
+	case CS_MOUSE_MOVE: {
 		clients[cl_id].look_vec = packet_buffer->look_vec;
-		break;
-
-	case CS_PLAYER_READY:
-		player_ready[cl_id] = true;
-		break;
-	case CS_PLAYER_TEAM_SELECT:
-		break;
-	}
-
-	if (CS_MOUSE_MOVE == packet_buffer->type) {
 		SC_PACKET_LOOCVEC packets;
 		packets.id = cl_id;
 		packets.size = sizeof(SC_PACKET_LOOCVEC);
@@ -229,7 +234,15 @@ void ServerFramework::ProcessPacket(int cl_id, char* packet) {
 				SendPacket(i, &packets);
 			}
 		}
+		break;
 	}
+	case CS_PLAYER_READY:
+		player_ready[cl_id] = true;
+		break;
+	case CS_PLAYER_TEAM_SELECT:
+		break;
+	}
+
 }
 
 void ServerFramework::WorkerThread() {
@@ -293,7 +306,7 @@ void ServerFramework::WorkerThread() {
 			packets.id = client_id;
 			packets.size = sizeof(SC_PACKET_POS);
 			packets.type = SC_POS;
-			clients[client_id].y = height_map2->GetHeight(clients[client_id].x, clients[client_id].z);
+			clients[client_id].y = height_map->GetHeight(clients[client_id].x, clients[client_id].z);
 			packets.x = clients[client_id].x;
 			packets.y = clients[client_id].y;
 			packets.z = clients[client_id].z;

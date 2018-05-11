@@ -34,7 +34,7 @@ CGameFramework::CGameFramework()
 	m_nWndClientHeight = FRAME_BUFFER_HEIGHT;
 
 	m_pScene = NULL;
-	for(int i=0;i<4;++i)
+	for (int i = 0; i < 4; ++i)
 		m_pPlayer[i] = NULL;
 
 	_tcscpy_s(m_pszFrameRate, _T("LabProject ("));
@@ -371,7 +371,7 @@ void CGameFramework::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPA
 				//server_mgr.SendPacket(CS_KEY_PRESS_UP);
 				server_mgr.SendPacket(CS_KEY_PRESS_UP, m_pPlayer[my_client_id]->GetLook());
 				//printf("Look Vector : %lf, %lf, %lf\n", m_pPlayer[my_client_id]->GetLook().x, m_pPlayer[my_client_id]->GetLook().y, m_pPlayer[my_client_id]->GetLook().z);
-				printf("w를 눌렀는데 my_client_id는 이거임  %d  \n", my_client_id);
+				//printf("w를 눌렀는데 my_client_id는 이거임  %d  \n", my_client_id);
 				is_pushed[CS_KEY_PRESS_UP] = true;
 			}
 			break;
@@ -563,11 +563,18 @@ LRESULT CALLBACK CGameFramework::OnProcessingWindowMessage(HWND hWnd, UINT nMess
 			if (first_recv) {
 				my_client_id = server_mgr.GetClientID();
 				m_pCamera = m_pPlayer[my_client_id]->GetCamera();
+				printf("카메라는 %d에 고정\n", my_client_id);
 				first_recv = false;
 			}
-			m_pPlayer[server_mgr.GetClientID()]->SetPosition(server_mgr.ReturnXMFLOAT3());
-			printf("%d 플레이어 : x : %f, y : %f, z : %f\n", server_mgr.GetClientID(),
-				server_mgr.ReturnXMFLOAT3().x, server_mgr.ReturnXMFLOAT3().y, server_mgr.ReturnXMFLOAT3().z);
+			m_pPlayer[server_mgr.GetClientID()]->SetPosition(server_mgr.ReturnXMFLOAT3(server_mgr.GetClientID()));
+			printf("%d번 플레이어 좌표 FD_READ, x : %f, y : %f, z : %f\n", server_mgr.GetClientID()
+				, m_pPlayer[server_mgr.GetClientID()]->GetPosition().x,
+				m_pPlayer[server_mgr.GetClientID()]->GetPosition().y,
+				m_pPlayer[server_mgr.GetClientID()]->GetPosition().z);
+
+			// 본인 플레이어 외의 플레이어가 올때만 LookVector을 셋팅해준다.
+			if (server_mgr.GetClientID() != my_client_id)
+				m_pPlayer[server_mgr.GetClientID()]->SetLook(server_mgr.ReturnLookVector());
 			break;
 		case FD_CLOSE:
 			closesocket((SOCKET)wParam);
@@ -626,17 +633,17 @@ void CGameFramework::BuildObjects()
 	m_pScene = new CScene();
 	m_pScene->BuildObjects(m_pd3dDevice, m_pd3dCommandList);
 
-	for(int i=0;i<4;++i)
+	for (int i = 0; i < 4; ++i)
 		m_pScene->m_pPlayer[i] = m_pPlayer[i] = new CAirplanePlayer(m_pd3dDevice, m_pd3dCommandList, m_pScene->GetGraphicsRootSignature(), m_pScene->GetTerrain(), 1);
 
-	//m_pCamera = m_pPlayer[my_client_id]->GetCamera();
+	m_pCamera = m_pPlayer[my_client_id]->GetCamera();
 
 #ifdef _WITH_APACHE_MODEL
 	m_pPlayer->SetPosition(XMFLOAT3(0.0f, 350.0f, -300.0f));
 	m_pPlayer->Rotate(0.0f, -45.0f, 0.0f);
 #endif
 #ifdef _WITH_GUNSHIP_MODEL
-	for(int i=0;i<4;++i)
+	for (int i = 0; i < 4; ++i)
 		m_pPlayer[i]->SetPosition(XMFLOAT3(200.0f + 30 * i, 200.0f, 1500.0f));
 	//	m_pPlayer->Rotate(0.0f, 0.0f, 0.0f);
 #endif
@@ -647,7 +654,7 @@ void CGameFramework::BuildObjects()
 
 	WaitForGpuComplete();
 
-	for(int i=0;i<4;++i)
+	for (int i = 0; i < 4; ++i)
 		if (m_pPlayer[i]) m_pPlayer[i]->ReleaseUploadBuffers();
 	if (m_pScene) m_pScene->ReleaseUploadBuffers();
 
@@ -656,7 +663,7 @@ void CGameFramework::BuildObjects()
 
 void CGameFramework::ReleaseObjects()
 {
-	for (int i = 0; i<4; ++i)
+	for (int i = 0; i < 4; ++i)
 		if (m_pPlayer[i]) delete m_pPlayer[i];
 
 	if (m_pScene) m_pScene->ReleaseObjects();
@@ -722,7 +729,7 @@ void CGameFramework::ProcessInput()
 void CGameFramework::AnimateObjects(CCamera *pCamera)
 {
 	float fTimeElapsed = m_GameTimer.GetTimeElapsed();
-	for (int i = 0; i<4; ++i)
+	for (int i = 0; i < 4; ++i)
 		if (m_pPlayer) m_pPlayer[i]->Animate(fTimeElapsed);
 	if (m_pScene) m_pScene->AnimateObjects(fTimeElapsed, pCamera);
 }

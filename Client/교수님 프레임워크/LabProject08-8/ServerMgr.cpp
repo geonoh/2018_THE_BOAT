@@ -86,9 +86,9 @@ void ServerMgr::ProcessPacket(char* ptr) {
 		my_client_id = packets->id;
 			//first_set_id = false;
 		//}
-		sc_vec_buff.x = packets->init_x;
-		sc_vec_buff.y = packets->init_y;
-		sc_vec_buff.z = packets->init_z;
+		sc_vec_buff[packets->id].x = packets->init_x;
+		sc_vec_buff[packets->id].y = packets->init_y;
+		sc_vec_buff[packets->id].z = packets->init_z;
 
 		//cout << "[SC_ENTER_PLAYER] : " << packets->id << "플레이어 입장" << endl;
 		printf("[SC_ENTER_PLAYER] : %d 플레이어 입장\n", packets->id);
@@ -98,18 +98,20 @@ void ServerMgr::ProcessPacket(char* ptr) {
 		SC_PACKET_POS* packets = reinterpret_cast<SC_PACKET_POS*>(ptr);
 		//cout << "[SC_PACKET_POS] : " << packets->id << "플레이어 이동" << endl;
 		my_client_id = packets->id;
-		sc_vec_buff.x = packets->x;
-		sc_vec_buff.y = packets->y;
-		sc_vec_buff.z = packets->z;
-		//printf("[SC_PACKET_POS] : %d 플레이어 이동\n", packets->id);
+		sc_vec_buff[packets->id].x = packets->x;
+		sc_vec_buff[packets->id].y = packets->y;
+		sc_vec_buff[packets->id].z = packets->z;
+		printf("[SC_PACKET_POS] : %d 플레이어 이동\n", packets->id);
 
 		break; }
 	case SC_PLAYER_LOOKVEC: {
 		SC_PACKET_LOOCVEC* packets = reinterpret_cast<SC_PACKET_LOOCVEC*>(ptr);
-		//cout << "[SC_PACKET_POS] : " << packets->id << "플레이어 이동" << endl;
 		my_client_id = packets->id;
 		sc_look_vec = packets->look_vec;
-		//printf("[SC_PACKET_POS] : %d 플레이어의 LookVec\n", packets->id);
+		// 플레이어 룩벡터 여기에서 추가해주면된다. 
+
+		//printf("%d 플레이어의 룩벡터 : x : %f, y : %f, z : %f\n", packets->id,
+			//packets->look_vec.x, packets->look_vec.y, packets->look_vec.z);
 
 		break;}
 	}
@@ -229,22 +231,18 @@ void ServerMgr::SendPacket(int type, XMFLOAT3& xmvector) {
 	switch (type) {
 	case CS_KEY_PRESS_UP:
 		packet_buffer->type = CS_KEY_PRESS_UP;
-		packet_buffer->look_vec = xmvector;
 		retval = WSASend(sock, &send_wsabuf, 1, &iobytes, 0, NULL, NULL);
 		break;
 	case CS_KEY_PRESS_DOWN:
 		packet_buffer->type = CS_KEY_PRESS_DOWN;
-		packet_buffer->look_vec = xmvector;
 		retval = WSASend(sock, &send_wsabuf, 1, &iobytes, 0, NULL, NULL);
 		break;
 	case CS_KEY_PRESS_RIGHT:
 		packet_buffer->type = CS_KEY_PRESS_RIGHT;
-		packet_buffer->look_vec = xmvector;
 		retval = WSASend(sock, &send_wsabuf, 1, &iobytes, 0, NULL, NULL);
 		break;
 	case CS_KEY_PRESS_LEFT:
 		packet_buffer->type = CS_KEY_PRESS_LEFT;
-		packet_buffer->look_vec = xmvector;
 		retval = WSASend(sock, &send_wsabuf, 1, &iobytes, 0, NULL, NULL);
 		break;
 
@@ -302,7 +300,6 @@ void ServerMgr::SendPacket(int type, XMFLOAT3& xmvector) {
 
 
 	case CS_LEFT_BUTTON_DOWN:
-		printf("L버튼 누름\n");
 		packet_buffer->type = CS_LEFT_BUTTON_DOWN;
 		retval = WSASend(sock, &send_wsabuf, 1, &iobytes, 0, NULL, NULL);
 		break;
@@ -337,8 +334,8 @@ void ServerMgr::ClientError() {
 	exit(-1);
 }
 
-XMFLOAT3 ServerMgr::ReturnXMFLOAT3() {
-	return sc_vec_buff;
+XMFLOAT3 ServerMgr::ReturnXMFLOAT3(int client_id) {
+	return sc_vec_buff[client_id];
 }
 
 XMFLOAT3 ServerMgr::ReturnLookVector() {
