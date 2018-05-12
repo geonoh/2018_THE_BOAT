@@ -208,6 +208,7 @@ class CTreeShader : public CTexturedShader
 protected:
 	CBillboard					**m_ppTree = 0;
 	int								m_nTree = 0;
+	int								setRedDot = 0;
 
 #ifdef _WITH_BATCH_MATERIAL
 	CMaterial						*m_pMaterial = NULL;
@@ -220,6 +221,7 @@ public:
 	CTreeShader();
 	virtual ~CTreeShader();
 
+	void		 SetRedDot(int input) { setRedDot = input; }
 	virtual void BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, void *pContext);
 	virtual void ReleaseObjects();
 	virtual void AnimateObjects(float fTimeElapsed, CCamera *pCamera);
