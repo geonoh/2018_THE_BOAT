@@ -74,7 +74,7 @@ void ServerMgr::ReadPacket() {
 }
 
 int ServerMgr::GetClientID() {
-	return my_client_id;
+	return clients_id;
 }
 
 void ServerMgr::ProcessPacket(char* ptr) {
@@ -82,38 +82,30 @@ void ServerMgr::ProcessPacket(char* ptr) {
 	switch (ptr[1]) {
 	case SC_ENTER_PLAYER: {
 		SC_PACKET_ENTER_PLAYER * packets = reinterpret_cast<SC_PACKET_ENTER_PLAYER*>(ptr);
-		//if (first_set_id) {
-		my_client_id = packets->id;
-			//first_set_id = false;
-		//}
-		sc_vec_buff[packets->id].x = packets->init_x;
-		sc_vec_buff[packets->id].y = packets->init_y;
-		sc_vec_buff[packets->id].z = packets->init_z;
-
-		//cout << "[SC_ENTER_PLAYER] : " << packets->id << "플레이어 입장" << endl;
-		printf("[SC_ENTER_PLAYER] : %d 플레이어 입장\n", packets->id);
-		//printf("나는 %d \n", my_client_id);
-		break; }
-	case SC_POS: {
-		SC_PACKET_POS* packets = reinterpret_cast<SC_PACKET_POS*>(ptr);
-		//cout << "[SC_PACKET_POS] : " << packets->id << "플레이어 이동" << endl;
-		my_client_id = packets->id;
+		if (first_set_id) {
+			clients_id = packets->id;
+			first_set_id = false;
+		}
 		sc_vec_buff[packets->id].x = packets->x;
 		sc_vec_buff[packets->id].y = packets->y;
 		sc_vec_buff[packets->id].z = packets->z;
-		printf("[SC_PACKET_POS] : %d 플레이어 이동\n", packets->id);
-
-		break; }
+		printf("[SC_ENTER_PLAYER] : %d 플레이어 입장\n", packets->id);
+		break; 
+	}
+	case SC_POS: {
+		SC_PACKET_POS* packets = reinterpret_cast<SC_PACKET_POS*>(ptr);
+		clients_id = packets->id;
+		sc_vec_buff[packets->id].x = packets->x;
+		sc_vec_buff[packets->id].y = packets->y;
+		sc_vec_buff[packets->id].z = packets->z;
+		break; 
+	}
 	case SC_PLAYER_LOOKVEC: {
 		SC_PACKET_LOOCVEC* packets = reinterpret_cast<SC_PACKET_LOOCVEC*>(ptr);
-		my_client_id = packets->id;
+		clients_id = packets->id;
 		sc_look_vec = packets->look_vec;
-		// 플레이어 룩벡터 여기에서 추가해주면된다. 
-
-		//printf("%d 플레이어의 룩벡터 : x : %f, y : %f, z : %f\n", packets->id,
-			//packets->look_vec.x, packets->look_vec.y, packets->look_vec.z);
-
-		break;}
+		break;
+	}
 	}
 }
 void ServerMgr::SendPacket(int type) {

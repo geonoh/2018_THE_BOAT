@@ -57,11 +57,13 @@ void ServerFramework::InitServer() {
 	LPCTSTR file_name = _T("terrain17.raw");
 	height_map = new CHeightMapImage(file_name, 513, 513, xmf_3_scale);
 
+	client_lock.lock();
 	for (int i = 0; i < MAXIMUM_PLAYER; ++i) {
 		clients[i].x = 450.f;
 		clients[i].z = 800.f;
 		clients[i].y = height_map->GetHeight(clients[i].x, clients[i].z);
 	}
+	client_lock.unlock();
 }
 
 void ServerFramework::AcceptPlayer() {
@@ -79,24 +81,25 @@ void ServerFramework::AcceptPlayer() {
 		inet_ntoa(c_addr.sin_addr), ntohs(c_addr.sin_port));
 
 	int client_id = -1;
+	client_lock.lock();
 	for (int i = 0; i < MAXIMUM_PLAYER; ++i) {
 		if (clients[i].in_use == false) {
 			client_id = i;
 			break;
 		}
 	}
+	client_lock.unlock();
 	if (client_id == -1) {
 		printf("최대 유저 초과\n");
 	}
 	printf("[%d] 플레이어 입장\n", client_id);
+	client_lock.lock();
 	clients[client_id].s = client_socket;
 	clients[client_id].ar_mag = 0;
 	clients[client_id].sub_mag = 0;
 	clients[client_id].ar_weapons = ARWeapons::NON_AR;
 	clients[client_id].sub_weapons = SubWeapons::NON_SUB;
-	for (int i = 0; i < 4; ++i) {
-		clients[client_id].boat_parts[i] = false;
-	}
+	client_lock.unlock();
 	clients[client_id].is_ready = false;
 	clients[client_id].is_running = false;
 	ZeroMemory(&clients[client_id].overlapped_ex.wsa_over, sizeof(WSAOVERLAPPED));
@@ -122,35 +125,32 @@ void ServerFramework::AcceptPlayer() {
 	packet.id = client_id;
 	packet.size = sizeof(SC_PACKET_ENTER_PLAYER);
 	packet.type = SC_ENTER_PLAYER;
-	packet.init_x = clients[client_id].x;
-	packet.init_y = clients[client_id].y;
-	packet.init_z = clients[client_id].z;
-	for (int i = 0; i < 4; ++i) {
-		packet.player_in[i] = player_entered[i];
-		packet.player_ready[i] = player_ready[i];
-	}
+	packet.x = clients[client_id].x;
+	packet.y = clients[client_id].y;
+	packet.z = clients[client_id].z;
 	for (int i = 0; i < MAXIMUM_PLAYER; ++i) {
-
 		if (clients[i].in_use) {
 			printf("%d 플레이어 입장 정보 전송\n", client_id);
 			SendPacket(i, &packet);	
 		}
 	}
+
 	// 해당 클라이언트에게도 다른 클라이언트의 위치를 보내줘야한당!~
-	SC_PACKET_POS packets;
 	for (int i = 0; i < MAXIMUM_PLAYER; ++i) {
-		if (clients[i].in_use == true) {
-			packets.id = i;
-			packets.size = sizeof(SC_PACKET_POS);
-			packets.type = SC_POS;
-			clients[i].y = height_map->GetHeight(clients[i].x, clients[i].z);
-			packets.x = clients[i].x;
-			packets.y = clients[i].y;
-			packets.z = clients[i].z;
-			SendPacket(client_id, &packets);
-			printf("%d에게 %d의 정보를 보낸다\n", client_id, i);
+		ZeroMemory(&packet, sizeof(packet));
+		if (i != client_id) {
+			if (clients[i].in_use == true) {
+				packet.id = i;
+				packet.size = sizeof(SC_PACKET_ENTER_PLAYER);
+				packet.type = SC_ENTER_PLAYER;
+				clients[i].y = height_map->GetHeight(clients[i].x, clients[i].z);
+				packet.x = clients[i].x;
+				packet.y = clients[i].y;
+				packet.z = clients[i].z;
+				SendPacket(client_id, &packet);
+				printf("%d에게 %d의 정보를 보낸다\n", client_id, i);
+			}
 		}
-		ZeroMemory(&packets, sizeof(packets));
 	}
 
 }
@@ -302,20 +302,22 @@ void ServerFramework::WorkerThread() {
 		}
 		// TimerThread에서 호출
 		else if (overlapped_buffer->command == SC_PLAYER_MOVE) {
-			SC_PACKET_POS packets;
-			packets.id = client_id;
-			packets.size = sizeof(SC_PACKET_POS);
-			packets.type = SC_POS;
-			clients[client_id].y = height_map->GetHeight(clients[client_id].x, clients[client_id].z);
-			packets.x = clients[client_id].x;
-			packets.y = clients[client_id].y;
-			packets.z = clients[client_id].z;
-			for (int i = 0; i < MAXIMUM_PLAYER; ++i) {
-				if (clients[i].in_use == true) {
-					SendPacket(i, &packets);
+			if (clients[client_id].in_use) {
+				SC_PACKET_POS packets;
+				packets.id = client_id;
+				packets.size = sizeof(SC_PACKET_POS);
+				packets.type = SC_POS;
+				clients[client_id].y = height_map->GetHeight(clients[client_id].x, clients[client_id].z);
+				packets.x = clients[client_id].x;
+				packets.y = clients[client_id].y;
+				packets.z = clients[client_id].z;
+				for (int i = 0; i < MAXIMUM_PLAYER; ++i) {
+					if (clients[i].in_use == true) {
+						SendPacket(i, &packets);
+					}
 				}
+				ZeroMemory(overlapped_buffer, sizeof(OverlappedExtensionSet));
 			}
-			ZeroMemory(overlapped_buffer, sizeof(OverlappedExtensionSet));
 		}
 		// Send로 인해 할당된 영역 반납
 		else {
@@ -383,7 +385,7 @@ void ServerFramework::Update(duration<float>& elapsed_time) {
 	//Sleep(1);
 	float elapsed_double = elapsed_time.count();
 	for (int i = 0; i < MAXIMUM_PLAYER; ++i) {
-		send_locker.lock();
+		client_lock.lock();
 		if (clients[i].is_move_foward) {
 			if (clients[i].is_running) {
 				clients[i].z += PIXER_PER_METER * clients[i].look_vec.z * (10000.f * elapsed_double / 3600.f);
@@ -425,7 +427,7 @@ void ServerFramework::Update(duration<float>& elapsed_time) {
 			}
 
 		}
-		send_locker.unlock();
+		client_lock.unlock();
 	}
 }
 

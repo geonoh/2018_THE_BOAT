@@ -7,7 +7,7 @@ class ServerMgr
 	HWND async_handle;
 	WSABUF send_wsabuf;
 	WSABUF recv_wsabuf;
-	int my_client_id = 0;
+	int clients_id = 0;
 	bool first_set_id = true;
 
 	char send_buffer[CLIENT_BUF_SIZE] = { 0 };

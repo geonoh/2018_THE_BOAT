@@ -64,9 +64,7 @@ struct SC_PACKET_ENTER_PLAYER {
 	BYTE size;
 	BYTE type;
 	WORD id;
-	float init_x, init_y, init_z;
-	bool player_in[4];
-	bool player_ready[4];
+	float x, y, z;
 };
 
 struct SC_PACKET_MOVING {

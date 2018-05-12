@@ -17,7 +17,7 @@ class ServerFramework
 	CHeightMapImage* height_map;
 	time_point<system_clock> prev_time = system_clock::now();
 	float sender_time = 0;
-	mutex send_locker;
+	mutex client_lock;
 
 	// TimerÀü¿ë OverlappedExtensionSetd
 	OverlappedExtensionSet ol_ex[4];

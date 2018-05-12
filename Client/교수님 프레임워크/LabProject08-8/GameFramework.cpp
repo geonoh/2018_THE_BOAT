@@ -548,7 +548,6 @@ LRESULT CALLBACK CGameFramework::OnProcessingWindowMessage(HWND hWnd, UINT nMess
 		OnResizeBackBuffers();
 		break;
 	}
-	// 소켓 관련 처리 필요
 	case WM_SOCKET: {
 		if (WSAGETSELECTERROR(lParam)) {
 			closesocket((SOCKET)wParam);
@@ -567,10 +566,10 @@ LRESULT CALLBACK CGameFramework::OnProcessingWindowMessage(HWND hWnd, UINT nMess
 				first_recv = false;
 			}
 			m_pPlayer[server_mgr.GetClientID()]->SetPosition(server_mgr.ReturnXMFLOAT3(server_mgr.GetClientID()));
-			printf("%d번 플레이어 좌표 FD_READ, x : %f, y : %f, z : %f\n", server_mgr.GetClientID()
-				, m_pPlayer[server_mgr.GetClientID()]->GetPosition().x,
-				m_pPlayer[server_mgr.GetClientID()]->GetPosition().y,
-				m_pPlayer[server_mgr.GetClientID()]->GetPosition().z);
+			//printf("%d번 플레이어 좌표 FD_READ, x : %f, y : %f, z : %f\n", server_mgr.GetClientID()
+			//	, m_pPlayer[server_mgr.GetClientID()]->GetPosition().x,
+			//	m_pPlayer[server_mgr.GetClientID()]->GetPosition().y,
+			//	m_pPlayer[server_mgr.GetClientID()]->GetPosition().z);
 
 			// 본인 플레이어 외의 플레이어가 올때만 LookVector을 셋팅해준다.
 			if (server_mgr.GetClientID() != my_client_id)
@@ -636,7 +635,7 @@ void CGameFramework::BuildObjects()
 	for (int i = 0; i < 4; ++i)
 		m_pScene->m_pPlayer[i] = m_pPlayer[i] = new CAirplanePlayer(m_pd3dDevice, m_pd3dCommandList, m_pScene->GetGraphicsRootSignature(), m_pScene->GetTerrain(), 1);
 
-	m_pCamera = m_pPlayer[my_client_id]->GetCamera();
+	//m_pCamera = m_pPlayer[my_client_id]->GetCamera();
 
 #ifdef _WITH_APACHE_MODEL
 	m_pPlayer->SetPosition(XMFLOAT3(0.0f, 350.0f, -300.0f));
