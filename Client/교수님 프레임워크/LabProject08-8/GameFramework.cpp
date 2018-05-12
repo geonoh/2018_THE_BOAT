@@ -318,7 +318,6 @@ void CGameFramework::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM
 		else
 			CShader::shootBullet = 0;
 		server_mgr.SendPacket(CS_LEFT_BUTTON_DOWN, m_pPlayer[my_client_id]->GetLook());
-		printf("시발시발 아이디%d", my_client_id);
 
 		break;
 	case WM_RBUTTONDOWN:

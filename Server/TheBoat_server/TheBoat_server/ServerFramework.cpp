@@ -64,6 +64,14 @@ void ServerFramework::InitServer() {
 		clients[i].y = height_map->GetHeight(clients[i].x, clients[i].z);
 	}
 	client_lock.unlock();
+
+	// OOBB 셋
+	for (int i = 0; i < MAXIMUM_PLAYER; ++i) {
+		//clients[i].SetOOBB(XMFLOAT3(0, 0, 0), XMFLOAT3(10.f, 10.f, 10.f), XMFLOAT4(0, 0, 0, 1));
+		clients[i].SetOOBB(XMFLOAT3(clients[i].x, clients[i].y, clients[i].z), XMFLOAT3(OBB_SCALE_X, OBB_SCALE_Y, OBB_SCALE_Z), XMFLOAT4(0, 0, 0, 1));
+		printf("client %d번의 OBB의 가로 길이 %f \n", i, clients[i].bounding_box.Extents.x);
+	}
+
 }
 
 void ServerFramework::AcceptPlayer() {
@@ -428,7 +436,76 @@ void ServerFramework::Update(duration<float>& elapsed_time) {
 			}
 
 		}
+
+		// 여기서 OBB도 업데이트 해주자
+		for (int i = 0; i < MAXIMUM_PLAYER; ++i) {
+			//printf("%d 번 진짜 마지막테스트 %f\n",i, clients[i].bounding_box.Extents.x);
+			//clients[i].x;
+			XMFLOAT4X4 danwi(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, clients[i].x, height_map->GetHeight(clients[i].x, clients[i].z), clients[i].z, 1);
+			clients[i].bounding_box.Transform(clients[i].bounding_box,
+				DirectX::XMLoadFloat4x4(&danwi)); // 어 시발? 
+			XMStoreFloat4(&clients[i].bounding_box.Orientation, XMQuaternionNormalize(XMLoadFloat4(&clients[i].bounding_box.Orientation)));
+			clients[i].bounding_box.Extents.x = OBB_SCALE_X;
+			clients[i].bounding_box.Extents.y = OBB_SCALE_Y;
+			clients[i].bounding_box.Extents.z = OBB_SCALE_Z;
+		}
 		client_lock.unlock();
+
+		//
+
+		//if (clients[0].bounding_box.Intersects(clients[1].bounding_box)) {
+		//	printf("0번(x : %f, y : %f, z : %f), 1번(x : %f, y : %f, z : %f    ",
+		//		clients[0].bounding_box.Center.x,
+		//		clients[0].bounding_box.Center.y,
+		//		clients[0].bounding_box.Center.z,
+		//		clients[1].bounding_box.Center.x,
+		//		clients[1].bounding_box.Center.y,
+		//		clients[1].bounding_box.Center.z);
+		//	clients[0].bounding_box.Extents.x;
+		//	printf("x크기는 %d   ", clients[0].bounding_box.Extents.x);
+		//	printf("충돌 해보림\n");
+		//}
+		ContainmentType containType = clients[0].bounding_box.Contains(clients[1].bounding_box);
+		switch (containType)
+		{
+		case DISJOINT:
+		{
+			printf("0번(x : %f, y : %f, z : %f), 1번(x : %f, y : %f, z : %f    ",
+				clients[0].bounding_box.Center.x,
+				clients[0].bounding_box.Center.y,
+				clients[0].bounding_box.Center.z,
+				clients[1].bounding_box.Center.x,
+				clients[1].bounding_box.Center.y,
+				clients[1].bounding_box.Center.z);
+			printf("   박스 크기 : %f    ", clients[0].bounding_box.Extents.x);
+			printf("충돌 안함ㅠ\n");
+			break;
+		}
+		case INTERSECTS:
+		{
+			printf("0번(x : %f, y : %f, z : %f), 1번(x : %f, y : %f, z : %f    ",
+				clients[0].bounding_box.Center.x,
+				clients[0].bounding_box.Center.y,
+				clients[0].bounding_box.Center.z,
+				clients[1].bounding_box.Center.x,
+				clients[1].bounding_box.Center.y,
+				clients[1].bounding_box.Center.z);
+			printf("충돌 시작\n");
+			break;
+		}
+		case CONTAINS:
+			printf("0번(x : %f, y : %f, z : %f), 1번(x : %f, y : %f, z : %f   ",
+				clients[0].bounding_box.Center.x,
+				clients[0].bounding_box.Center.y,
+				clients[0].bounding_box.Center.z,
+				clients[1].bounding_box.Center.x,
+				clients[1].bounding_box.Center.y,
+				clients[1].bounding_box.Center.z);
+			printf("   박스 크기 : %f    ", clients[0].bounding_box.Extents.x);
+
+			printf("충돌!!!!\n");
+			break;
+		}
 	}
 }
 
@@ -440,8 +517,11 @@ void ServerFramework::TimerSend(duration<float>& elapsed_time) {
 				// PQCS로 확인하자
 				ol_ex[i].command = SC_PLAYER_MOVE;
 				PostQueuedCompletionStatus(iocp_handle, 0, i, reinterpret_cast<WSAOVERLAPPED*>(&ol_ex[i]));
+				printf("%d의 바운딩박스 x : %f  y : %f  z : %f \n", i, clients[i].bounding_box.Center.x, clients[i].bounding_box.Center.y,
+					clients[i].bounding_box.Center.z);
 			}
 		}
 		sender_time = 0;
+		// 임시 :: 플레이어 OBB 찍어보기 
 	}
 }
