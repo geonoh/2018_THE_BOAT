@@ -134,8 +134,8 @@ void CScene::BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *p
 	m_ppObjects[0]->Rotate(0.0f, 90.0f, 0.0f);
 #endif*/
 
-	XMFLOAT3 xmf3Scale(4.0f, 2.f, 4.0f);
-	XMFLOAT4 xmf4Color(0.0f, 0.5f, 0.0f, 0.0f);
+	XMFLOAT3 xmf3Scale(8.0f, 2.f, 8.0f);
+	XMFLOAT4 xmf4Color(1.0f, 1.0f, 1.0f, 0.0f);
 #ifdef _WITH_TERRAIN_PARTITION
 	m_pTerrain = new CHeightMapTerrain(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, _T("../Assets/Image/Terrain/HeightMap.raw"), 513, 513, 17, 17, xmf3Scale, xmf4Color);
 #else

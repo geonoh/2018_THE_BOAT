@@ -9,7 +9,6 @@
 #include "Shader.h"
 #include "ServerMgr.h"
 
-static int my_client_id;
 
 class CGameFramework
 {
@@ -21,6 +20,8 @@ private:
 	XMFLOAT3 sc_player_pos[4];
 	bool first_recv = true;
 	int recvd_client_id;
+public:
+	static int my_client_id;
 public:
 	CGameFramework();
 	~CGameFramework();

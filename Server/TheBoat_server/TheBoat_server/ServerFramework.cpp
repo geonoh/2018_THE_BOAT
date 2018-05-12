@@ -53,9 +53,9 @@ void ServerFramework::InitServer() {
 	if (retval == SOCKET_ERROR)
 		printf("listen 에러\n");
 
-	XMFLOAT3 xmf_3_scale(4.0f, 2.f, 4.0f);
+	XMFLOAT3 xmf3Scale(8.0f, 2.f, 8.0f);
 	LPCTSTR file_name = _T("terrain17.raw");
-	height_map = new CHeightMapImage(file_name, 513, 513, xmf_3_scale);
+	height_map = new CHeightMapImage(file_name, 513, 513, xmf3Scale);
 
 	client_lock.lock();
 	for (int i = 0; i < MAXIMUM_PLAYER; ++i) {
@@ -130,7 +130,7 @@ void ServerFramework::AcceptPlayer() {
 	packet.z = clients[client_id].z;
 	for (int i = 0; i < MAXIMUM_PLAYER; ++i) {
 		if (clients[i].in_use) {
-			printf("%d 플레이어 입장 정보 전송\n", client_id);
+			printf("%d 플레이어 입장 정보 전송\n", i);
 			SendPacket(i, &packet);	
 		}
 	}
@@ -301,6 +301,7 @@ void ServerFramework::WorkerThread() {
 
 		}
 		// TimerThread에서 호출
+		// 1/20 마다 모든 플레이어에게 정보 전송
 		else if (overlapped_buffer->command == SC_PLAYER_MOVE) {
 			if (clients[client_id].in_use) {
 				SC_PACKET_POS packets;
@@ -382,7 +383,7 @@ bool ServerFramework::IsStartGame() {
 }
 
 void ServerFramework::Update(duration<float>& elapsed_time) {
-	//Sleep(1);
+	Sleep(1);
 	float elapsed_double = elapsed_time.count();
 	for (int i = 0; i < MAXIMUM_PLAYER; ++i) {
 		client_lock.lock();

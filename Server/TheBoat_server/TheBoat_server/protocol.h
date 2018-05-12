@@ -7,7 +7,7 @@
 #define MAXIMUM_PLAYER		4
 #define	WM_SOCKET			WM_USER + 1
 #define CLIENT_BUF_SIZE		1024
-#define PIXER_PER_METER		40
+#define PIXER_PER_METER		25
 
 // Server To Client
 #define SC_ENTER_PLAYER			1

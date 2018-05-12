@@ -8,6 +8,7 @@
 #include "DDSTextureLoader12.h"
 
 CPlayer* CGameFramework::m_pPlayer[];
+int CGameFramework::my_client_id;
 
 CShader::CShader()
 {
@@ -1147,8 +1148,10 @@ void CBulletShader::AnimateObjects(float fTimeElapsed, CCamera *pCamera)
 	if (shootBullet == 1)
 	{
 		m_ppBullet[BulletCount]->render = 1;
-		m_ppBullet[BulletCount]->SetPosition(XMFLOAT3(CGameFramework::m_pPlayer[0]->GetPosition().x, CGameFramework::m_pPlayer[0]->GetPosition().y + 15, CGameFramework::m_pPlayer[0]->GetPosition().z));
-		m_ppBullet[BulletCount]->SetPlayerLook(CGameFramework::m_pPlayer[0]->GetLook());
+		m_ppBullet[BulletCount]->SetPosition(XMFLOAT3(CGameFramework::m_pPlayer[CGameFramework::my_client_id]->GetPosition().x, 
+			CGameFramework::m_pPlayer[CGameFramework::my_client_id]->GetPosition().y + 15,
+			CGameFramework::m_pPlayer[CGameFramework::my_client_id]->GetPosition().z));
+		m_ppBullet[BulletCount]->SetPlayerLook(CGameFramework::m_pPlayer[CGameFramework::my_client_id]->GetLook());
 		++BulletCount;
 		if (BulletCount > 99)
 			BulletCount = 0;

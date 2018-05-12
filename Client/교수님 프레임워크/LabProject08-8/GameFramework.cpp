@@ -318,6 +318,7 @@ void CGameFramework::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM
 		else
 			CShader::shootBullet = 0;
 		server_mgr.SendPacket(CS_LEFT_BUTTON_DOWN, m_pPlayer[my_client_id]->GetLook());
+		printf("시발시발 아이디%d", my_client_id);
 
 		break;
 	case WM_RBUTTONDOWN:
@@ -566,10 +567,14 @@ LRESULT CALLBACK CGameFramework::OnProcessingWindowMessage(HWND hWnd, UINT nMess
 				first_recv = false;
 			}
 			m_pPlayer[server_mgr.GetClientID()]->SetPosition(server_mgr.ReturnXMFLOAT3(server_mgr.GetClientID()));
-			//printf("%d번 플레이어 좌표 FD_READ, x : %f, y : %f, z : %f\n", server_mgr.GetClientID()
-			//	, m_pPlayer[server_mgr.GetClientID()]->GetPosition().x,
-			//	m_pPlayer[server_mgr.GetClientID()]->GetPosition().y,
-			//	m_pPlayer[server_mgr.GetClientID()]->GetPosition().z);
+			printf("%d번 플레이어 좌표 FD_READ, x : %f, y : %f, z : %f\n", server_mgr.GetClientID()
+				, m_pPlayer[server_mgr.GetClientID()]->GetPosition().x,
+				m_pPlayer[server_mgr.GetClientID()]->GetPosition().y,
+				m_pPlayer[server_mgr.GetClientID()]->GetPosition().z);
+			//printf("%d번 플레이어 LOOKVEC FD_READ, x : %f, y : %f, z : %f\n", server_mgr.GetClientID()
+			//	, m_pPlayer[server_mgr.GetClientID()]->GetLookVector().x,
+			//	m_pPlayer[server_mgr.GetClientID()]->GetLookVector().y,
+			//	m_pPlayer[server_mgr.GetClientID()]->GetLookVector().z);
 
 			// 본인 플레이어 외의 플레이어가 올때만 LookVector을 셋팅해준다.
 			if (server_mgr.GetClientID() != my_client_id)
