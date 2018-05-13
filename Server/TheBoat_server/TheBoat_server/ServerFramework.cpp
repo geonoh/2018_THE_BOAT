@@ -178,7 +178,6 @@ void ServerFramework::ProcessPacket(int cl_id, char* packet) {
 	switch (packet_buffer->type) {
 	case CS_KEY_PRESS_UP:
 		clients[cl_id].is_move_foward = true;
-		printf("%d플레이어의 현 위치 x : %f, y : %f, z : %f\n", cl_id, clients[cl_id].x, clients[cl_id].y, clients[cl_id].z);
 		break;
 	case CS_KEY_PRESS_DOWN:
 		clients[cl_id].is_move_backward = true;
@@ -516,7 +515,6 @@ void ServerFramework::WorkerThread() {
 							printf("총알 초기화\n");
 							//break;
 						}
-						printf("화기버튼누름 %d \n", bullet_counter[i]);
 						bullets[i][bullet_counter[i]].x = clients[i].x;
 						bullets[i][bullet_counter[i]].y = clients[i].y;
 						bullets[i][bullet_counter[i]].z = clients[i].z;
@@ -610,9 +608,6 @@ void ServerFramework::SendPacket(int cl_id, void* packet) {
 			ErrorDisplay("SendPacket에서 에러 발생 : ", err_no);
 		}
 	}
-	//printf("[SendPacket] ClientID : <%d> Type[%d]\n", cl_id, (int)send_buffer[1]);
-	//cout << "[SendPacket] ClientID : <" << cl_id << "> Type [" << (int)send_buffer[1] << "] Size [" << (int)send_buffer[0] << "]\n";
-
 }
 
 void ServerFramework::DisconnectPlayer(int cl_id) {
@@ -674,14 +669,10 @@ void ServerFramework::TimerSend(duration<float>& elapsed_time) {
 	if (sender_time >= UPDATE_TIME) {   // 1/60 초마다 데이터 송신
 		for (int i = 0; i < MAXIMUM_PLAYER; ++i) {
 			if (clients[i].is_move_backward || clients[i].is_move_foward || clients[i].is_move_left || clients[i].is_move_right) {
-				// PQCS로 확인하자
 				ol_ex[i].command = SC_PLAYER_MOVE;
 				PostQueuedCompletionStatus(iocp_handle, 0, i, reinterpret_cast<WSAOVERLAPPED*>(&ol_ex[i]));
-				//printf("%d의 바운딩박스 x : %f  y : %f  z : %f \n", i, clients[i].bounding_box.Center.x, clients[i].bounding_box.Center.y,
-				//   clients[i].bounding_box.Center.z);
 			}
 		}
 		sender_time = 0;
-		// 임시 :: 플레이어 OBB 찍어보기 
 	}
 }
