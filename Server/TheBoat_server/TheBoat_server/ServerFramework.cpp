@@ -54,7 +54,7 @@ void ServerFramework::InitServer() {
 		printf("listen 에러\n");
 
 	XMFLOAT3 xmf3Scale(8.0f, 2.f, 8.0f);
-	LPCTSTR file_name = _T("terrain17.raw");
+	LPCTSTR file_name = _T("terrain18.raw");
 	height_map = new CHeightMapImage(file_name, 513, 513, xmf3Scale);
 
 	client_lock.lock();
@@ -62,16 +62,9 @@ void ServerFramework::InitServer() {
 		clients[i].x = 450.f;
 		clients[i].z = 800.f;
 		clients[i].y = height_map->GetHeight(clients[i].x, clients[i].z);
+		clients[i].hp = 100.f;
 	}
 	client_lock.unlock();
-
-	//bullet_lock.lock();
-	//for (int i = 0; i < MAX_BULLET_SIZE; ++i) {
-	//	bullets[i]->x = 0.f;
-	//	bullets[i]->y = 0.f;
-	//	bullets[i]->z = 0.f;
-	//}
-	//bullet_lock.unlock();
 
 	// OOBB 셋
 	for (int i = 0; i < MAXIMUM_PLAYER; ++i) {
@@ -348,71 +341,104 @@ void ServerFramework::WorkerThread() {
 			// OBB 충돌체크  
 			for (int j = 0; j < MAXIMUM_PLAYER - 1 ; ++j) {
 				for (int i = 0; i < MAX_BULLET_SIZE; ++i) {
-					ContainmentType containType = clients[j].bounding_box.Contains(bullets[j + 1][i].bounding_box);
-					switch (containType)
-					{
-					case DISJOINT:
-					{
-						//printf("충돌 안함ㅠ\n");
-						break;
-					}
-					case INTERSECTS:
-					{
-						SC_PACKET_COLLISION packets;
-						packets.size = sizeof(SC_PACKET_COLLISION);
-						packets.type = SC_COLLSION_PB;
-						packets.x = clients[j].bounding_box.Center.x;
-						packets.y = clients[j].bounding_box.Center.y;
-						packets.z = clients[j].bounding_box.Center.z;
-						SendPacket(j, &packets);
-						printf("충돌 시작\n");
-						break;
-					}
-					case CONTAINS:
-						SC_PACKET_COLLISION packets;
-						packets.size = sizeof(SC_PACKET_COLLISION);
-						packets.type = SC_COLLSION_PB;
-						packets.x = clients[j].bounding_box.Center.x;
-						packets.y = clients[j].bounding_box.Center.y;
-						packets.z = clients[j].bounding_box.Center.z;
-						SendPacket(j, &packets);
-						printf("충돌!!!!\n");
-						break;
-					}
+					if (bullets[j + 1][i].in_use) {
+						ContainmentType containType = clients[j].bounding_box.Contains(bullets[j + 1][i].bounding_box);
+						switch (containType)
+						{
+						case DISJOINT:
+						{
+							//printf("충돌 안함ㅠ\n");
+							break;
+						}
+						case INTERSECTS:
+						{
+							SC_PACKET_COLLISION packets;
+							packets.size = sizeof(SC_PACKET_COLLISION);
+							packets.type = SC_COLLSION_PB;
+							packets.x = clients[j].bounding_box.Center.x;
+							packets.y = clients[j].bounding_box.Center.y;
+							packets.z = clients[j].bounding_box.Center.z;
+							//
+							clients[j].hp -= 25.f;
+							//
+							packets.hp = clients[j].hp;
 
-					//ContainmentType containType_rev = clients[j].bounding_box.Contains(bullets[j + 1][i].bounding_box);
-					ContainmentType containType_rev = bullets[j][i].bounding_box.Contains(clients[j + 1].bounding_box);
-					switch (containType_rev)
-					{
-					case DISJOINT:
-					{
-						//printf("충돌 안함ㅠ\n");
-						break;
-					}
-					case INTERSECTS:
-					{
-						SC_PACKET_COLLISION packets;
-						packets.size = sizeof(SC_PACKET_COLLISION);
-						packets.type = SC_COLLSION_PB;
-						packets.x = clients[j + 1].bounding_box.Center.x;
-						packets.y = clients[j + 1].bounding_box.Center.y;
-						packets.z = clients[j + 1].bounding_box.Center.z;
-						SendPacket(j + 1, &packets);
-						printf("충돌 시작\n");
-						break;
-					}
-					case CONTAINS:
-						SC_PACKET_COLLISION packets;
-						packets.size = sizeof(SC_PACKET_COLLISION);
-						packets.type = SC_COLLSION_PB;
-						packets.x = clients[j + 1].bounding_box.Center.x;
-						packets.y = clients[j + 1].bounding_box.Center.y;
-						packets.z = clients[j + 1].bounding_box.Center.z;
-						printf("충돌!!!!\n");
-						SendPacket(j + 1, &packets);
-						break;
-					}
+							SendPacket(j, &packets);
+							SendPacket(j + 1, &packets);
+							printf("충돌 시작\n");
+							bullets[j + 1][i].in_use = false;
+							break;
+						}
+						case CONTAINS:
+							SC_PACKET_COLLISION packets;
+							packets.size = sizeof(SC_PACKET_COLLISION);
+							packets.type = SC_COLLSION_PB;
+							packets.x = clients[j].bounding_box.Center.x;
+							packets.y = clients[j].bounding_box.Center.y;
+							packets.z = clients[j].bounding_box.Center.z;
+							//
+							clients[j].hp -= 25.f;
+							//
+							packets.hp = clients[j].hp;
 
+							SendPacket(j, &packets);
+							SendPacket(j + 1, &packets);
+							printf("충돌!!!!\n");
+							bullets[j + 1][i].in_use = false;
+							break;
+						}
+					}
+					if (bullets[j][i].in_use) {
+						//ContainmentType containType_rev = clients[j].bounding_box.Contains(bullets[j + 1][i].bounding_box);
+						ContainmentType containType_rev = bullets[j][i].bounding_box.Contains(clients[j + 1].bounding_box);
+						switch (containType_rev)
+						{
+						case DISJOINT:
+						{
+							//printf("충돌 안함ㅠ\n");
+							break;
+						}
+						case INTERSECTS:
+						{
+							SC_PACKET_COLLISION packets;
+							packets.size = sizeof(SC_PACKET_COLLISION);
+							packets.type = SC_COLLSION_PB;
+							packets.x = clients[j + 1].bounding_box.Center.x;
+							packets.y = clients[j + 1].bounding_box.Center.y;
+							packets.z = clients[j + 1].bounding_box.Center.z;
+
+							//
+							clients[j + 1].hp -= 25.f;
+							//
+							packets.hp = clients[j + 1].hp;
+
+
+							SendPacket(j, &packets);
+							SendPacket(j + 1, &packets);
+							bullets[j][i].in_use = false;
+							printf("충돌 시작\n");
+							break;
+						}
+						case CONTAINS:
+							SC_PACKET_COLLISION packets;
+							packets.size = sizeof(SC_PACKET_COLLISION);
+							packets.type = SC_COLLSION_PB;
+							packets.x = clients[j + 1].bounding_box.Center.x;
+							packets.y = clients[j + 1].bounding_box.Center.y;
+							packets.z = clients[j + 1].bounding_box.Center.z;
+
+							//
+							clients[j + 1].hp -= 25.f;
+							//
+							packets.hp = clients[j + 1].hp;
+
+							SendPacket(j, &packets);
+							SendPacket(j + 1, &packets);
+							bullets[j][i].in_use = false;
+							printf("충돌!!!!\n");
+							break;
+						}
+					}
 				}
 			}
 		}
@@ -639,7 +665,6 @@ void ServerFramework::Update(duration<float>& elapsed_time) {
 	ol_ex[7].elapsed_time = elapsed_time.count();
 	PostQueuedCompletionStatus(iocp_handle, 0, 7, reinterpret_cast<WSAOVERLAPPED*>(&ol_ex[7]));
 }
-
 
 void ServerFramework::TimerSend(duration<float>& elapsed_time) {
 	sender_time += elapsed_time.count();

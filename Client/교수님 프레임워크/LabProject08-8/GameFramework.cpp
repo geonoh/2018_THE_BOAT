@@ -565,11 +565,16 @@ LRESULT CALLBACK CGameFramework::OnProcessingWindowMessage(HWND hWnd, UINT nMess
 			server_mgr.ReadPacket();
 			if (first_recv) {
 				my_client_id = server_mgr.GetClientID();
+				atomic_thread_fence(memory_order_release);
 				m_pCamera = m_pPlayer[my_client_id]->GetCamera();
+				atomic_thread_fence(memory_order_release);
 				printf("카메라는 %d에 고정\n", my_client_id);
 				first_recv = false;
+				atomic_thread_fence(memory_order_release);
 			}
 			m_pPlayer[server_mgr.GetClientID()]->SetPosition(server_mgr.ReturnXMFLOAT3(server_mgr.GetClientID()));
+			
+			//server_mgr.ReturnCollsionPosition();
 			//printf("%d번 플레이어 좌표 FD_READ, x : %f, y : %f, z : %f\n", server_mgr.GetClientID()
 			//	, m_pPlayer[server_mgr.GetClientID()]->GetPosition().x,
 			//	m_pPlayer[server_mgr.GetClientID()]->GetPosition().y,

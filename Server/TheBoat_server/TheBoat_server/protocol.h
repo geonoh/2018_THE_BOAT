@@ -112,7 +112,9 @@ struct SC_PACKET_POS {
 struct SC_PACKET_COLLISION {
 	BYTE size;
 	BYTE type;
+	WORD client_id;
 	float x, y, z;
+	float hp;
 };
 
 
