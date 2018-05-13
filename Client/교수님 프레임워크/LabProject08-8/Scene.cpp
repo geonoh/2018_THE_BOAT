@@ -4,6 +4,9 @@
 
 #include "stdafx.h"
 #include "Scene.h"
+#include "GameFramework.h"
+
+CCamera *CGameFramework::m_pCamera;
 
 CScene::CScene()
 {
@@ -144,6 +147,14 @@ void CScene::BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *p
 
 	m_pSkyBox = new CSkyBox(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
 
+	m_pBuildings = new CShader;
+
+	CObjectsShader *pBuildingShader = new CObjectsShader();
+	pBuildingShader->CreateShader(pd3dDevice, m_pd3dGraphicsRootSignature);
+	pBuildingShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pTerrain);
+
+	m_pBuildings = pBuildingShader;
+
 	m_nShaders = 3;
 	m_ppShaders = new CShader*[m_nShaders];
 
@@ -163,6 +174,7 @@ void CScene::BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *p
 	m_ppShaders[1] = pFlowerShader;
 	m_ppShaders[2] = pBulletShader;
 
+
 	BuildLightsAndMaterials();
 
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
@@ -170,6 +182,7 @@ void CScene::BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *p
 
 void CScene::ReleaseObjects()
 {
+	if (m_pBuildings) m_pBuildings->Release();
 	if (m_pd3dGraphicsRootSignature) m_pd3dGraphicsRootSignature->Release();
 
 	if (m_ppShaders)
@@ -195,16 +208,19 @@ void CScene::ReleaseObjects()
 	if (m_pSkyBox) delete m_pSkyBox;
 	if (m_pLights) delete m_pLights;
 	if (m_pMaterials) delete m_pMaterials;
+	if (m_pBuildings) delete m_pBuildings;
 }
 
 void CScene::ReleaseUploadBuffers()
 {
+	if (m_pBuildings) m_pBuildings->ReleaseUploadBuffers();
 	for (int i = 0; i < m_nShaders; i++) m_ppShaders[i]->ReleaseUploadBuffers();
 
 	for (int i = 0; i < m_nObjects; i++) m_ppObjects[i]->ReleaseUploadBuffers();
 
 	if (m_pTerrain) m_pTerrain->ReleaseUploadBuffers();
 	if (m_pSkyBox) m_pSkyBox->ReleaseUploadBuffers();
+	
 }
 
 ID3D12RootSignature *CScene::CreateGraphicsRootSignature(ID3D12Device *pd3dDevice)
@@ -300,6 +316,7 @@ ID3D12RootSignature *CScene::CreateGraphicsRootSignature(ID3D12Device *pd3dDevic
 	pd3dRootParameters[9].DescriptorTable.NumDescriptorRanges = 1;
 	pd3dRootParameters[9].DescriptorTable.pDescriptorRanges = &pd3dDescriptorRanges[5]; //Texture[6]
 	pd3dRootParameters[9].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
+
 
 	D3D12_STATIC_SAMPLER_DESC pd3dSamplerDescs[2];
 
@@ -398,6 +415,9 @@ bool CScene::ProcessInput(UCHAR *pKeysBuffer)
 
 void CScene::AnimateObjects(float fTimeElapsed, CCamera *pCamera)
 {
+	/*if(CGameFramework::m_pCamera->GetMode == SPACESHIP_CAMERA)
+		m_ppShaders[0]*/
+	m_pBuildings->AnimateObjects(fTimeElapsed, pCamera);
 	for (int i = 0; i < m_nShaders; i++) m_ppShaders[i]->AnimateObjects(fTimeElapsed, pCamera);
 
 	for (int i = 0; i < m_nObjects; i++) m_ppObjects[i]->Animate(fTimeElapsed);
@@ -439,7 +459,10 @@ void CScene::Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera
 	if (m_pSkyBox) m_pSkyBox->Render(pd3dCommandList, pCamera);
 	if (m_pTerrain) m_pTerrain->Render(pd3dCommandList, pCamera);
 	
-	for (int i = 0; i < m_nShaders; i++) m_ppShaders[i]->Render(pd3dCommandList, pCamera);
+	if (m_pBuildings) m_pBuildings->Render(pd3dCommandList, pCamera);
+	if(CGameFramework::m_pCamera->GetMode() == SPACESHIP_CAMERA)
+		m_ppShaders[0]->Render(pd3dCommandList, pCamera);
+	for (int i = 1; i < m_nShaders; i++) m_ppShaders[i]->Render(pd3dCommandList, pCamera);
 	for (int i = 0; i < m_nObjects; i++) m_ppObjects[i]->UpdateTransform(NULL);
 	for (int i = 0; i < m_nObjects; i++) m_ppObjects[i]->Render(pd3dCommandList, pCamera);
 

@@ -9,6 +9,7 @@
 
 CPlayer* CGameFramework::m_pPlayer[];
 int CGameFramework::my_client_id;
+//CCamera* CGameFramework::m_pCamera;
 
 CShader::CShader()
 {
@@ -506,31 +507,37 @@ void CObjectsShader::ReleaseShaderVariables()
 
 void CObjectsShader::BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, void *pContext)
 {
-	/*int xObjects = 10, yObjects = 10, zObjects = 10, i = 0;
+	CHeightMapTerrain *pTerrain = (CHeightMapTerrain *)pContext;
+
+	int xObjects = 1, yObjects = 1, zObjects = 1, i = 0;
 
 	m_nObjects = (xObjects * 2 + 1) * (yObjects * 2 + 1) * (zObjects * 2 + 1);
 
-	CTexture *pTexture = new CTexture(1, RESOURCE_TEXTURE2DARRAY, 0);
-	pTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Image/Miscellaneous/StonesArray.dds", 0);
+	CTexture *pTextures = new CTexture(6, RESOURCE_TEXTURE2DARRAY, 0);
+	pTextures->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Image/SkyBox/SkyBox_Front_0.dds", 0);
+	pTextures->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Image/SkyBox/SkyBox_Back_0.dds", 1);
+	pTextures->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Image/SkyBox/SkyBox_Left_0.dds", 4);
+	pTextures->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Image/SkyBox/SkyBox_Right_0.dds", 3);
+	pTextures->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Image/SkyBox/SkyBox_Top_0.dds", 5);
+	pTextures->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Image/SkyBox/SkyBox_Bottom_0.dds", 2);
 
 	UINT ncbElementBytes = ((sizeof(CB_GAMEOBJECT_INFO) + 255) & ~255);
 
-	CreateCbvAndSrvDescriptorHeaps(pd3dDevice, pd3dCommandList, m_nObjects, 1);
+	CreateCbvAndSrvDescriptorHeaps(pd3dDevice, pd3dCommandList, m_nObjects, 6);
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 	CreateConstantBufferViews(pd3dDevice, pd3dCommandList, m_nObjects, m_pd3dcbGameObjects, ncbElementBytes);
-	CreateShaderResourceViews(pd3dDevice, pd3dCommandList, pTexture, 5, false);
+	CreateShaderResourceViews(pd3dDevice, pd3dCommandList, pTextures, 9, false);
 
 #ifdef _WITH_BATCH_MATERIAL
 	m_pMaterial = new CMaterial();
-	m_pMaterial->SetTexture(pTexture);
+	m_pMaterial->SetTexture(pTextures);
 	m_pMaterial->SetReflection(1);
 #else
 	CMaterial *pCubeMaterial = new CMaterial();
 	pCubeMaterial->SetTexture(pTexture);
 	pCubeMaterial->SetReflection(1);
 #endif
-
-	CCubeMeshIlluminatedTextured *pCubeMesh = new CCubeMeshIlluminatedTextured(pd3dDevice, pd3dCommandList, 12.0f, 12.0f, 12.0f);
+	CCubeMeshIlluminatedTextured *pCubeMesh = new CCubeMeshIlluminatedTextured(pd3dDevice, pd3dCommandList, 40.0f, 100.0f, 20.0f);
 
 	m_ppObjects = new CGameObject*[m_nObjects];
 
@@ -548,14 +555,16 @@ void CObjectsShader::BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsComman
 #ifndef _WITH_BATCH_MATERIAL
 				pRotatingObject->SetMaterial(pCubeMaterial);
 #endif
-				pRotatingObject->SetPosition(fxPitch*x, fyPitch*y, fzPitch*z);
+				float xPosition = 2000, zPosition = 2000;
+				float fHeight = pTerrain->GetHeight(xPosition, zPosition);
+				pRotatingObject->SetPosition(xPosition + 1000*x, fHeight + 50, zPosition + 1000*z);
 				pRotatingObject->SetRotationAxis(XMFLOAT3(0.0f, 1.0f, 0.0f));
 				pRotatingObject->SetRotationSpeed(10.0f * (i % 10));
 				pRotatingObject->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize * i));
 				m_ppObjects[i++] = pRotatingObject;
 			}
 		}
-	}*/
+	}
 }
 
 void CObjectsShader::ReleaseObjects()
@@ -593,7 +602,7 @@ void CObjectsShader::ReleaseUploadBuffers()
 
 void CObjectsShader::Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera)
 {
-	/*CIlluminatedTexturedShader::Render(pd3dCommandList, pCamera);
+	CIlluminatedTexturedShader::Render(pd3dCommandList, pCamera);
 
 #ifdef _WITH_BATCH_MATERIAL
 	if (m_pMaterial) m_pMaterial->UpdateShaderVariables(pd3dCommandList);
@@ -602,7 +611,7 @@ void CObjectsShader::Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera 
 	for (int j = 0; j < m_nObjects; j++)
 	{
 		if (m_ppObjects[j]) m_ppObjects[j]->Render(pd3dCommandList, pCamera);
-	}*/
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -719,13 +728,13 @@ void CTreeShader::BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandLi
 	float fTerrainWidth = pTerrain->GetWidth();
 	float fTerrainLength = pTerrain->GetLength();
 
-	int xObjects = 30;
+	int xObjects = 1;
 	int yObjects = 1;
-	int zObjects = 30;
+	int zObjects = 1;
 	m_nTree = (xObjects * yObjects * zObjects);
 
 	CTexture *pTexture = new CTexture(1, RESOURCE_TEXTURE2D_ARRAY, 0);
-	pTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Image/Trees/Tree02.dds", 0);
+	pTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Image/Items/RedDot.dds", 0);
 
 	UINT ncbElementBytes = ((sizeof(CB_GAMEOBJECT_INFO) + 255) & ~255);
 
@@ -742,7 +751,7 @@ void CTreeShader::BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandLi
 	pCubeMaterial->SetTexture(pTexture);
 #endif
 
-	CBillboardMesh *pCubeMesh = new CBillboardMesh(pd3dDevice, pd3dCommandList, 30.0f, 60.0f, 12.0f);
+	CBillboardMesh *pCubeMesh = new CBillboardMesh(pd3dDevice, pd3dCommandList, 30.0f, 30.0f, 1.0f);
 
 	m_ppTree = new CBillboard*[m_nTree];
 
@@ -759,10 +768,10 @@ void CTreeShader::BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandLi
 #ifndef _WITH_BATCH_MATERIAL
 				pRotatingObject->SetMaterial(pCubeMaterial);
 #endif
-				float xPosition = 100 + x * 40;
-				float zPosition = 100 + z * 20;
+				float xPosition = 800;
+				float zPosition = 800;
 				float fHeight = pTerrain->GetHeight(xPosition, zPosition);
-				pRotatingObject->SetPosition(xPosition, fHeight + (y * 3.0f * fyPitch) + 6.0f, zPosition);
+				pRotatingObject->SetPosition(800, 0, 1000);
 				if (y == 0)
 				{
 					xmf3SurfaceNormal = pTerrain->GetNormal(xPosition, zPosition);
@@ -797,6 +806,10 @@ void CTreeShader::AnimateObjects(float fTimeElapsed, CCamera *pCamera)
 	{
 		m_ppTree[j]->Animate(fTimeElapsed, pCamera);
 	}
+	m_ppTree[0]->SetPosition(XMFLOAT3(CGameFramework::m_pPlayer[CGameFramework::my_client_id]->GetPosition().x + 15 * CGameFramework::m_pCamera->GetLookVector().x,
+		CGameFramework::m_pPlayer[CGameFramework::my_client_id]->GetPosition().y + 15 + 15 * CGameFramework::m_pCamera->GetLookVector().y,
+		CGameFramework::m_pPlayer[CGameFramework::my_client_id]->GetPosition().z + 15 * CGameFramework::m_pCamera->GetLookVector().z));
+
 }
 
 void CTreeShader::ReleaseUploadBuffers()
@@ -898,7 +911,7 @@ void CFlowerShader::BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommand
 	m_nTree = (xObjects * yObjects * zObjects);
 
 	CTexture *pTexture = new CTexture(1, RESOURCE_TEXTURE2D_ARRAY, 0);
-	pTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Image/Trees/Tree06.dds", 0);
+	pTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Image/Items/AK-47.dds", 0);
 
 	UINT ncbElementBytes = ((sizeof(CB_GAMEOBJECT_INFO) + 255) & ~255);
 
@@ -915,7 +928,7 @@ void CFlowerShader::BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommand
 	pCubeMaterial->SetTexture(pTexture);
 #endif
 
-	CBillboardMesh *pCubeMesh = new CBillboardMesh(pd3dDevice, pd3dCommandList, 6.0f, 6.0f, 6.0f);
+	CBillboardMesh *pCubeMesh = new CBillboardMesh(pd3dDevice, pd3dCommandList, 12.0f, 6.0f, 6.0f);
 
 	m_ppTree = new CBillboard*[m_nTree];
 
@@ -1076,7 +1089,7 @@ void CBulletShader::BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommand
 
 	UINT ncbElementBytes = ((sizeof(CB_GAMEOBJECT_INFO) + 255) & ~255);
 
-	CreateCbvAndSrvDescriptorHeaps(pd3dDevice, pd3dCommandList, m_nBullet, 6);
+	CreateCbvAndSrvDescriptorHeaps(pd3dDevice, pd3dCommandList, m_nBullet, 1);
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 	CreateConstantBufferViews(pd3dDevice, pd3dCommandList, m_nBullet, m_pd3dcbGameObjects, ncbElementBytes);
 	CreateShaderResourceViews(pd3dDevice, pd3dCommandList, pTexture, 5, false);

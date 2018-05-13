@@ -37,10 +37,7 @@ CGameFramework::CGameFramework()
 	for (int i = 0; i < 4; ++i)
 		m_pPlayer[i] = NULL;
 
-	_tcscpy_s(m_pszFrameRate, _T("LabProject ("));
-
-
-	// 
+	_tcscpy_s(m_pszFrameRate, _T("THE BOAT   ("));
 }
 
 CGameFramework::~CGameFramework()
@@ -324,12 +321,15 @@ void CGameFramework::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM
 		//::SetCapture(hWnd);
 		//::GetCursorPos(&m_ptOldCursorPos);
 		server_mgr.SendPacket(CS_RIGHT_BUTTON_DOWN, m_pPlayer[my_client_id]->GetLook());
+		m_pCamera = m_pPlayer[my_client_id]->ChangeCamera(SPACESHIP_CAMERA, m_GameTimer.GetTimeElapsed());	// 마우스 우클시 카메라 변환
+		printf("마우스 우클릭\n");
 		break;
 	case WM_LBUTTONUP:
 		server_mgr.SendPacket(CS_LEFT_BUTTON_UP, m_pPlayer[my_client_id]->GetLook());
 		break;
 	case WM_RBUTTONUP:
 		server_mgr.SendPacket(CS_RIGHT_BUTTON_UP, m_pPlayer[my_client_id]->GetLook());
+		m_pCamera = m_pPlayer[my_client_id]->ChangeCamera(FIRST_PERSON_CAMERA, m_GameTimer.GetTimeElapsed());	// 마우스 우클시 카메라 변환
 		break;
 	case WM_MOUSEMOVE:
 		//printf("마우스 벡터 x : %f, y : %f, z : %f \n", 
@@ -709,17 +709,34 @@ void CGameFramework::ProcessInput()
 
 		if ((dwDirection != 0) || (cxDelta != 0.0f) || (cyDelta != 0.0f))
 		{
-			if (cxDelta || cyDelta)
-			{
-				if (pKeysBuffer[VK_RBUTTON] & 0xF0)
+			if (m_pCamera->GetMode() == FIRST_PERSON_CAMERA) {
+				if (cxDelta || cyDelta)
+				{
+					if (pKeysBuffer[VK_RBUTTON] & 0xF0)
 
-					m_pPlayer[my_client_id]->Rotate(cyDelta, 0.0f, -cxDelta);
-				else
-					m_pPlayer[my_client_id]->Rotate(cyDelta, cxDelta, 0.0f);
+						m_pPlayer[my_client_id]->Rotate(cyDelta, 0.0f, -cxDelta);
+					else
+						m_pPlayer[my_client_id]->Rotate(cyDelta, cxDelta, 0.0f);
+				}
+				if (dwDirection) {
+					for (int i = 0; i < MAXIMUM_PLAYER; ++i) {
+						m_pPlayer[i]->Move(dwDirection, 50.0f * m_GameTimer.GetTimeElapsed(), true);
+					}
+				}
 			}
-			if (dwDirection) {
-				for (int i = 0; i < MAXIMUM_PLAYER; ++i) {
-					m_pPlayer[i]->Move(dwDirection, 50.0f * m_GameTimer.GetTimeElapsed(), true);
+			else {
+				if (cxDelta || cyDelta)
+				{
+					if (pKeysBuffer[VK_RBUTTON] & 0xF0)
+
+						m_pPlayer[my_client_id]->Rotate(cyDelta, cxDelta, 0.0f);
+					else
+						m_pPlayer[my_client_id]->Rotate(cyDelta, 0.0f, -cxDelta);
+				}
+				if (dwDirection) {
+					for (int i = 0; i < MAXIMUM_PLAYER; ++i) {
+						m_pPlayer[i]->Move(dwDirection, 50.0f * m_GameTimer.GetTimeElapsed(), true);
+					}
 				}
 			}
 		}
@@ -805,7 +822,9 @@ void CGameFramework::FrameAdvance()
 #endif
 	for (int i = 0; i < 4; ++i) {
 		m_pPlayer[i]->UpdateTransform(NULL);
-		m_pPlayer[i]->Render(m_pd3dCommandList, m_pCamera);
+		if (i == my_client_id && m_pCamera->GetMode() == SPACESHIP_CAMERA);
+		else
+			m_pPlayer[i]->Render(m_pd3dCommandList, m_pCamera);
 	}
 
 	d3dResourceBarrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;

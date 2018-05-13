@@ -1,7 +1,7 @@
 #pragma once
 
-#define FRAME_BUFFER_WIDTH		640
-#define FRAME_BUFFER_HEIGHT		480
+#define FRAME_BUFFER_WIDTH		1280
+#define FRAME_BUFFER_HEIGHT		1024
 
 #include "Timer.h"
 #include "Player.h"
@@ -53,6 +53,7 @@ public:
 	LRESULT CALLBACK OnProcessingWindowMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam);
 
 	static CPlayer				*m_pPlayer[4];
+	static CCamera				*m_pCamera;
 
 private:
 	HINSTANCE					m_hInstance;
@@ -94,7 +95,6 @@ private:
 	CGameTimer					m_GameTimer;
 
 	CScene						*m_pScene = NULL;
-	CCamera						*m_pCamera = NULL;
 
 	POINT						m_ptOldCursorPos;
 

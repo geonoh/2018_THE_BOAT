@@ -89,6 +89,8 @@ protected:
 	CShader						**m_ppShaders = NULL;
 	int							m_nShaders = 0;
 
+	CShader						*m_pBuildings = NULL;
+
 	LIGHTS						*m_pLights = NULL;
 
 	ID3D12Resource				*m_pd3dcbLights = NULL;
