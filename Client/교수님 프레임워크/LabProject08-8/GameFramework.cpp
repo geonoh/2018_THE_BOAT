@@ -4,6 +4,8 @@
 
 #include "stdafx.h"
 #include "GameFramework.h"
+#include"resource.h"
+#pragma comment (lib,"winmm")
 
 int CShader::shootBullet;
 
@@ -310,12 +312,13 @@ void CGameFramework::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM
 		::SetCapture(hWnd);
 		::GetCursorPos(&m_ptOldCursorPos);
 
-		if (CShader::shootBullet == 0)
+		if (CShader::shootBullet == 0) {
 			CShader::shootBullet = 1;
+			sndPlaySound(L"../Assets/Sounds/RifleSound.wav", SND_ASYNC);	//사운드 재생
+		}
 		else
 			CShader::shootBullet = 0;
 		server_mgr.SendPacket(CS_LEFT_BUTTON_DOWN, m_pPlayer[my_client_id]->GetLook());
-
 		break;
 	case WM_RBUTTONDOWN:
 		//::SetCapture(hWnd);
@@ -373,6 +376,7 @@ void CGameFramework::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPA
 				//printf("Look Vector : %lf, %lf, %lf\n", m_pPlayer[my_client_id]->GetLook().x, m_pPlayer[my_client_id]->GetLook().y, m_pPlayer[my_client_id]->GetLook().z);
 				//printf("w를 눌렀는데 my_client_id는 이거임  %d  \n", my_client_id);
 				is_pushed[CS_KEY_PRESS_UP] = true;
+				//sndPlaySound(L"../Assets/Sounds/FootStep.wav", SND_ASYNC);	//사운드 재생
 			}
 			break;
 		case 'a':
@@ -556,6 +560,7 @@ LRESULT CALLBACK CGameFramework::OnProcessingWindowMessage(HWND hWnd, UINT nMess
 		}
 		switch (WSAGETSELECTEVENT(lParam)) {
 		case FD_READ:
+			XMFLOAT3 read_buf;
 			// 첫번째 읽을때 아이디 저장
 			server_mgr.ReadPacket();
 			if (first_recv) {
@@ -565,18 +570,7 @@ LRESULT CALLBACK CGameFramework::OnProcessingWindowMessage(HWND hWnd, UINT nMess
 				first_recv = false;
 			}
 			m_pPlayer[server_mgr.GetClientID()]->SetPosition(server_mgr.ReturnXMFLOAT3(server_mgr.GetClientID()));
-			m_pScene->m_ppShaders[2]->SetPosition(server_mgr.GetBullet().id, 
-				XMFLOAT3(server_mgr.GetBullet().x, server_mgr.GetBullet().y, server_mgr.GetBullet().z));
-
-			//printf("충돌지점 x : %f, y : %f, z : %f\n", server_mgr.ReturnCollsionPosition().x,
-			//	server_mgr.ReturnCollsionPosition().y, server_mgr.ReturnCollsionPosition().z);
-
-			//server_mgr.ReturnCollsionPosition();
-
-
-
-
-				//printf("%d번 플레이어 좌표 FD_READ, x : %f, y : %f, z : %f\n", server_mgr.GetClientID()
+			//printf("%d번 플레이어 좌표 FD_READ, x : %f, y : %f, z : %f\n", server_mgr.GetClientID()
 			//	, m_pPlayer[server_mgr.GetClientID()]->GetPosition().x,
 			//	m_pPlayer[server_mgr.GetClientID()]->GetPosition().y,
 			//	m_pPlayer[server_mgr.GetClientID()]->GetPosition().z);
