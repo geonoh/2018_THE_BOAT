@@ -66,17 +66,6 @@ void ServerFramework::InitServer() {
 	}
 	client_lock.unlock();
 
-<<<<<<< HEAD
-	//bullet_lock.lock();
-	//for (int i = 0; i < MAX_BULLET_SIZE; ++i) {
-	//   bullets[i]->x = 0.f;
-	//   bullets[i]->y = 0.f;
-	//   bullets[i]->z = 0.f;
-	//}
-	//bullet_lock.unlock();
-
-=======
->>>>>>> 575c367a587ce89e7333b8377c986fbca80ec4d2
 	// OOBB 셋
 	for (int i = 0; i < MAXIMUM_PLAYER; ++i) {
 		//clients[i].SetOOBB(XMFLOAT3(0, 0, 0), XMFLOAT3(10.f, 10.f, 10.f), XMFLOAT4(0, 0, 0, 1));
@@ -352,75 +341,6 @@ void ServerFramework::WorkerThread() {
 			// OBB 충돌체크  
 			for (int j = 0; j < MAXIMUM_PLAYER - 1; ++j) {
 				for (int i = 0; i < MAX_BULLET_SIZE; ++i) {
-<<<<<<< HEAD
-					ContainmentType containType = clients[j].bounding_box.Contains(bullets[j + 1][i].bounding_box);
-					switch (containType)
-					{
-					case DISJOINT:
-					{
-						//printf("충돌 안함ㅠ\n");
-						break;
-					}
-					case INTERSECTS:
-					{
-						SC_PACKET_COLLISION packets;
-						packets.size = sizeof(SC_PACKET_COLLISION);
-						packets.type = SC_COLLSION_PB;
-						packets.x = clients[j].bounding_box.Center.x;
-						packets.y = clients[j].bounding_box.Center.y;
-						packets.z = clients[j].bounding_box.Center.z;
-						SendPacket(j, &packets);
-						SendPacket(j + 1, &packets);
-						printf("충돌 시작\n");
-						break;
-					}
-					case CONTAINS:
-						SC_PACKET_COLLISION packets;
-						packets.size = sizeof(SC_PACKET_COLLISION);
-						packets.type = SC_COLLSION_PB;
-						packets.x = clients[j].bounding_box.Center.x;
-						packets.y = clients[j].bounding_box.Center.y;
-						packets.z = clients[j].bounding_box.Center.z;
-						SendPacket(j, &packets);
-						SendPacket(j + 1, &packets);
-						printf("충돌!!!!\n");
-						break;
-					}
-
-					//ContainmentType containType_rev = clients[j].bounding_box.Contains(bullets[j + 1][i].bounding_box);
-					ContainmentType containType_rev = bullets[j][i].bounding_box.Contains(clients[j + 1].bounding_box);
-					switch (containType_rev)
-					{
-					case DISJOINT:
-					{
-						//printf("충돌 안함ㅠ\n");
-						break;
-					}
-					case INTERSECTS:
-					{
-						SC_PACKET_COLLISION packets;
-						packets.size = sizeof(SC_PACKET_COLLISION);
-						packets.type = SC_COLLSION_PB;
-						packets.x = clients[j + 1].bounding_box.Center.x;
-						packets.y = clients[j + 1].bounding_box.Center.y;
-						packets.z = clients[j + 1].bounding_box.Center.z;
-						SendPacket(j, &packets);
-						SendPacket(j + 1, &packets);
-						printf("충돌 시작\n");
-						break;
-					}
-					case CONTAINS:
-						SC_PACKET_COLLISION packets;
-						packets.size = sizeof(SC_PACKET_COLLISION);
-						packets.type = SC_COLLSION_PB;
-						packets.x = clients[j + 1].bounding_box.Center.x;
-						packets.y = clients[j + 1].bounding_box.Center.y;
-						packets.z = clients[j + 1].bounding_box.Center.z;
-						SendPacket(j, &packets);
-						SendPacket(j + 1, &packets);
-						printf("충돌!!!!\n");
-						break;
-=======
 					if (bullets[j + 1][i].in_use) {
 						ContainmentType containType = clients[j].bounding_box.Contains(bullets[j + 1][i].bounding_box);
 						switch (containType)
@@ -438,6 +358,7 @@ void ServerFramework::WorkerThread() {
 							packets.x = clients[j].bounding_box.Center.x;
 							packets.y = clients[j].bounding_box.Center.y;
 							packets.z = clients[j].bounding_box.Center.z;
+							packets.client_id = j;
 							//
 							clients[j].hp -= 25.f;
 							//
@@ -456,6 +377,7 @@ void ServerFramework::WorkerThread() {
 							packets.x = clients[j].bounding_box.Center.x;
 							packets.y = clients[j].bounding_box.Center.y;
 							packets.z = clients[j].bounding_box.Center.z;
+							packets.client_id = j;
 							//
 							clients[j].hp -= 25.f;
 							//
@@ -486,7 +408,7 @@ void ServerFramework::WorkerThread() {
 							packets.x = clients[j + 1].bounding_box.Center.x;
 							packets.y = clients[j + 1].bounding_box.Center.y;
 							packets.z = clients[j + 1].bounding_box.Center.z;
-
+							packets.client_id = j + 1;
 							//
 							clients[j + 1].hp -= 25.f;
 							//
@@ -506,7 +428,7 @@ void ServerFramework::WorkerThread() {
 							packets.x = clients[j + 1].bounding_box.Center.x;
 							packets.y = clients[j + 1].bounding_box.Center.y;
 							packets.z = clients[j + 1].bounding_box.Center.z;
-
+							packets.client_id = j + 1;
 							//
 							clients[j + 1].hp -= 25.f;
 							//
@@ -518,7 +440,6 @@ void ServerFramework::WorkerThread() {
 							printf("충돌!!!!\n");
 							break;
 						}
->>>>>>> 575c367a587ce89e7333b8377c986fbca80ec4d2
 					}
 				}
 			}

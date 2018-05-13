@@ -126,7 +126,7 @@ void ServerMgr::ProcessPacket(char* ptr) {
 		collision_pos.y = packets->y;
 		collision_pos.z = packets->z;
 		client_hp[packets->client_id] = packets->hp;
-		printf("%d플레이어의 충돌지점 x : %f, y : %f, z : %f, 체력 : %f \n",packets->client_id, collision_pos.x,
+		printf("%d 플레이어의 충돌지점 x : %f, y : %f, z : %f, 체력 : %f \n",packets->client_id, collision_pos.x,
 			collision_pos.y, collision_pos.z, client_hp[packets->client_id]);
 
 		break;
