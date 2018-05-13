@@ -65,7 +65,7 @@ float4 PSPlayer(VS_DIFFUSED_OUTPUT input) : SV_TARGET
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 Texture2D gtxtTexture : register(t0);
-Texture2D gtxtTextures[6] : register(t4);
+Texture2D gtxtTextures[6] : register(t5);
 SamplerState gWrapSamplerState : register(s0);
 SamplerState gClampSamplerState : register(s1);
 

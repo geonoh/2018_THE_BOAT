@@ -771,8 +771,9 @@ void CGameFramework::AnimateObjects(CCamera *pCamera)
 	
 	//printf("%f", server_mgr.ReturnCollsionPosition().x);
 	if (server_mgr.ReturnCollsionPosition().x != 0.0) {
-		m_pScene->m_ppShaders[3]->SetPosition(0, XMFLOAT3(server_mgr.ReturnCollsionPosition().x - 10 * m_pPlayer[my_client_id]->GetLook().x,
-			server_mgr.ReturnCollsionPosition().y - 95, server_mgr.ReturnCollsionPosition().z - 10 * m_pPlayer[my_client_id]->GetLook().z));
+		m_pScene->m_ppShaders[3]->SetPosition(0, XMFLOAT3(server_mgr.ReturnCollsionPosition().x,
+			server_mgr.ReturnCollsionPosition().y - 95, server_mgr.ReturnCollsionPosition().z));
+		//- 10 * m_pPlayer[my_client_id]->GetLook().z
 		//printf("좌표변경!");
 	}
 }
