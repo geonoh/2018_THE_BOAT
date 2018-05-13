@@ -155,7 +155,6 @@
     <ClInclude Include="..\..\..\Server\TheBoat_server\TheBoat_server\protocol.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="DDSTextureLoader12.h" />
-    <ClInclude Include="FBXLoader.h" />
     <ClInclude Include="GameFramework.h" />
     <ClInclude Include="LabProject08-8.h" />
     <ClInclude Include="MD5Loader.h" />
@@ -174,7 +173,6 @@
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="DDSTextureLoader12.cpp" />
-    <ClCompile Include="FBXLoader.cpp" />
     <ClCompile Include="GameFramework.cpp" />
     <ClCompile Include="LabProject08-8.cpp" />
     <ClCompile Include="MD5Loader.cpp" />

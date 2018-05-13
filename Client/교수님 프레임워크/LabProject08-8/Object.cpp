@@ -5,7 +5,6 @@
 #include "stdafx.h"
 #include "Object.h"
 #include "Shader.h"
-#include "FBXLoader.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
@@ -435,7 +434,7 @@ void CGameObject::Rotate(XMFLOAT4 *pxmf4Quaternion)
 
 #define _WITH_DEBUG_FRAME_HIERARCHY
 
-void CGameObject::LoadFrameHierarchyFromFile(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, ID3D12RootSignature *pd3dGraphicsRootSignature, VertexDataArray g_vertexDataArray, UINT nFrame, ModelSubset ModelData)
+void CGameObject::LoadFrameHierarchyFromFile(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, ID3D12RootSignature *pd3dGraphicsRootSignature, UINT nFrame, ModelSubset ModelData)
 {
 	XMFLOAT3 *pxmf3Positions = NULL, *pxmf3Normals = NULL;
 	XMFLOAT2 *pxmf3TextureCoords0 = NULL, *pxmf3TextureCoords1 = NULL;
@@ -460,19 +459,8 @@ void CGameObject::LoadFrameHierarchyFromFile(ID3D12Device *pd3dDevice, ID3D12Gra
 
 	nVertices = 1590;
 	pxmf3Positions = new XMFLOAT3[nVertices];
-	for (int i = 0; i < nVertices; i++)
-	{
-		pxmf3Positions[i] = g_vertexDataArray[i].pos;
-	}
-
 	nNormals = 1590;
 	pxmf3Normals = new XMFLOAT3[nNormals];
-	for (int i = 0; i < nNormals; i++)
-	{
-		pxmf3Normals[i].x = g_vertexDataArray[i].normal.x;
-		pxmf3Normals[i].y = g_vertexDataArray[i].normal.y;
-		pxmf3Normals[i].z = g_vertexDataArray[i].normal.z;
-	}
 	CMesh *pMesh = NULL;
 	CMaterial *pMaterial = NULL;
 	if ((nNormals > 0) && (nTextureCoords > 0) && (pstrAlbedoTextureName[0] != '\0'))
@@ -585,10 +573,8 @@ void CGameObject::PrintFrameInfo(CGameObject *pGameObject, CGameObject *pParent)
 
 void CGameObject::LoadGeometryFromFile(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, ID3D12RootSignature *pd3dGraphicsRootSignature, TCHAR *pstrFileName)
 {
-	LoadFBXConvertToVertexData("../Assets/Model/Soldier.fbx", g_vertexDataArray);
-
 	ModelSubset data;
-	LoadFrameHierarchyFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, g_vertexDataArray, 0, data);
+	LoadFrameHierarchyFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, 0, data);
 	
 
 
