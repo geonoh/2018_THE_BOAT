@@ -561,17 +561,12 @@ LRESULT CALLBACK CGameFramework::OnProcessingWindowMessage(HWND hWnd, UINT nMess
 		case FD_READ:
 			// 첫번째 읽을때 아이디 저장
 			XMFLOAT3 read_buf;
-			// ù��° ������ ���̵� ����
 			server_mgr.ReadPacket();
 			if (first_recv) {
-				my_client_id = server_mgr.GetClientID();
-				atomic_thread_fence(memory_order_release);
+				my_client_id = server_mgr.ReturnCameraID();
 				m_pCamera = m_pPlayer[my_client_id]->GetCamera();
 				printf("카메라는 %d에 고정\n", my_client_id);
-				atomic_thread_fence(memory_order_release);
-				printf("ī�޶�� %d�� ����\n", my_client_id);
 				first_recv = false;
-				atomic_thread_fence(memory_order_release);
 			}
 			m_pPlayer[server_mgr.GetClientID()]->SetPosition(server_mgr.ReturnXMFLOAT3(server_mgr.GetClientID()));
 			m_pScene->m_ppShaders[2]->SetPosition(server_mgr.GetBullet().id,

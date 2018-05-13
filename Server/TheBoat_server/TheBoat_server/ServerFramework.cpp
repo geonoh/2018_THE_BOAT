@@ -144,8 +144,9 @@ void ServerFramework::AcceptPlayer() {
 	packet.x = clients[client_id].x;
 	packet.y = clients[client_id].y;
 	packet.z = clients[client_id].z;
+	SendPacket(client_id, &packet);
 	for (int i = 0; i < MAXIMUM_PLAYER; ++i) {
-		if (clients[i].in_use) {
+		if (clients[i].in_use && (client_id != i)) {
 			printf("%d 플레이어 입장 정보 전송\n", i);
 			SendPacket(i, &packet);
 		}
