@@ -85,6 +85,7 @@ void ServerMgr::ProcessPacket(char* ptr) {
 		SC_PACKET_ENTER_PLAYER * packets = reinterpret_cast<SC_PACKET_ENTER_PLAYER*>(ptr);
 		if (first_set_id) {
 			clients_id = packets->id;
+			camera_id = packets->id;
 			first_set_id = false;
 		}
 		sc_vec_buff[packets->id].x = packets->x;
@@ -362,4 +363,7 @@ XMFLOAT3 ServerMgr::ReturnXMFLOAT3(int client_id) {
 
 XMFLOAT3 ServerMgr::ReturnLookVector() {
 	return sc_look_vec;
+}
+int ServerMgr::ReturnCameraID() {
+	return camera_id;
 }

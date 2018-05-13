@@ -27,6 +27,7 @@ class ServerMgr
 
 	XMFLOAT3 collision_pos;
 	float client_hp[4] = { 0 };
+	int camera_id = 0;
 public:
 	void Initialize(HWND& hwnd);
 	void ClientError();
@@ -36,6 +37,7 @@ public:
 	void ProcessPacket(char* ptr);
 	void ErrorDisplay(const char* msg, int err_no);
 	int GetClientID();
+	int ReturnCameraID();
 	Bullet GetBullet();
 	XMFLOAT3 ReturnXMFLOAT3(int client_id);
 	XMFLOAT3 ReturnLookVector();
