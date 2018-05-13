@@ -566,10 +566,10 @@ LRESULT CALLBACK CGameFramework::OnProcessingWindowMessage(HWND hWnd, UINT nMess
 				first_recv = false;
 			}
 			m_pPlayer[server_mgr.GetClientID()]->SetPosition(server_mgr.ReturnXMFLOAT3(server_mgr.GetClientID()));
-			printf("%d번 플레이어 좌표 FD_READ, x : %f, y : %f, z : %f\n", server_mgr.GetClientID()
-				, m_pPlayer[server_mgr.GetClientID()]->GetPosition().x,
-				m_pPlayer[server_mgr.GetClientID()]->GetPosition().y,
-				m_pPlayer[server_mgr.GetClientID()]->GetPosition().z);
+			//printf("%d번 플레이어 좌표 FD_READ, x : %f, y : %f, z : %f\n", server_mgr.GetClientID()
+			//	, m_pPlayer[server_mgr.GetClientID()]->GetPosition().x,
+			//	m_pPlayer[server_mgr.GetClientID()]->GetPosition().y,
+			//	m_pPlayer[server_mgr.GetClientID()]->GetPosition().z);
 			//printf("%d번 플레이어 LOOKVEC FD_READ, x : %f, y : %f, z : %f\n", server_mgr.GetClientID()
 			//	, m_pPlayer[server_mgr.GetClientID()]->GetLookVector().x,
 			//	m_pPlayer[server_mgr.GetClientID()]->GetLookVector().y,

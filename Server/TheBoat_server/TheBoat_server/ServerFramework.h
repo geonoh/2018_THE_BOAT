@@ -20,8 +20,20 @@ class ServerFramework
 	mutex client_lock;
 
 	// Timer전용 OverlappedExtensionSetd
-	OverlappedExtensionSet ol_ex[4];
+	// 4는 플레이어 위치 업데이트 전용
+	// 5는 충돌체크전용
+	// 6은 플레이어 총알 생성
+	// 7은 총알 업데이트
+	OverlappedExtensionSet ol_ex[8];
 
+	Bullet bullets[4][MAX_BULLET_SIZE] = { 0 };
+	mutex bullet_lock;
+	// 플레이어별 몇 번째 총알까지 발사했는지 저장하는 변수
+	int bullet_counter[4] = { 0 };
+
+
+	// 플레이어마다 bullet 시간을 가지고 있다. 
+	float bullet_times[4];
 
 public:
 	void InitServer();

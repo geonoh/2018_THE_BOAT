@@ -90,7 +90,8 @@ void ServerMgr::ProcessPacket(char* ptr) {
 		sc_vec_buff[packets->id].y = packets->y;
 		sc_vec_buff[packets->id].z = packets->z;
 		printf("[SC_ENTER_PLAYER] : %d 플레이어 입장\n", packets->id);
-		break; 
+
+		break;
 	}
 	case SC_POS: {
 		SC_PACKET_POS* packets = reinterpret_cast<SC_PACKET_POS*>(ptr);
@@ -98,12 +99,18 @@ void ServerMgr::ProcessPacket(char* ptr) {
 		sc_vec_buff[packets->id].x = packets->x;
 		sc_vec_buff[packets->id].y = packets->y;
 		sc_vec_buff[packets->id].z = packets->z;
-		break; 
+		break;
 	}
 	case SC_PLAYER_LOOKVEC: {
 		SC_PACKET_LOOCVEC* packets = reinterpret_cast<SC_PACKET_LOOCVEC*>(ptr);
-		clients_id = packets->id;
+		clients_id = packets->id; 
 		sc_look_vec = packets->look_vec;
+		break;
+	}
+	case SC_BULLET_POS: {
+		SC_PACKET_BULLET* packets = reinterpret_cast<SC_PACKET_BULLET*>(ptr);
+		clients_id = packets->id;
+		printf("[Bullet] %d 플레이어 총알 ID[%d] \n", clients_id, packets->bullet_id);
 		break;
 	}
 	}
@@ -212,7 +219,7 @@ void ServerMgr::SendPacket(int type) {
 		int error_code = WSAGetLastError();
 		ErrorDisplay("[WSASend] 에러 : ", error_code);
 	}
-	
+
 }
 void ServerMgr::SendPacket(int type, XMFLOAT3& xmvector) {
 	CS_PACKET_KEYUP* packet_buffer = reinterpret_cast<CS_PACKET_KEYUP*>(send_buffer);
@@ -299,7 +306,7 @@ void ServerMgr::SendPacket(int type, XMFLOAT3& xmvector) {
 		packet_buffer->type = CS_RIGHT_BUTTON_DOWN;
 		retval = WSASend(sock, &send_wsabuf, 1, &iobytes, 0, NULL, NULL);
 		break;
-		 
+
 	case CS_LEFT_BUTTON_UP:
 		packet_buffer->type = CS_LEFT_BUTTON_UP;
 		retval = WSASend(sock, &send_wsabuf, 1, &iobytes, 0, NULL, NULL);

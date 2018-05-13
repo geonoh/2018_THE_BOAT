@@ -7,7 +7,7 @@
 #define MAXIMUM_PLAYER		4
 #define	WM_SOCKET			WM_USER + 1
 #define CLIENT_BUF_SIZE		1024
-#define PIXER_PER_METER		25
+#define PIXER_PER_METER		50
 
 // Server To Client
 #define SC_ENTER_PLAYER			1
@@ -15,8 +15,20 @@
 #define SC_REMOVE_PLAYER		3
 #define SC_PLAYER_MOVE			4
 #define SC_PLAYER_LOOKVEC		5
+#define SC_BULLET_POS			6	// Bullet Position
 
+// Server To Server
+#define SS_COLLISION			6
+#define SS_PLAYER_POS_UPDATE	7
+#define SS_BULLET_GENERATE		8
+#define SS_BULLET_UPDATE		9
 
+// 화기류 연사속도 
+#define AR_SHOOTER				0.05f
+#define AR_SPEED				800.f
+#define MAX_BULLET_SIZE			256
+#define RUN_SPEED				2.78f
+#define WALK_SPEED				1.67f
 
 // Client To Server
 #define CS_KEY_PRESS_UP			1
@@ -171,4 +183,12 @@ struct SC_PACKET_REMOVE_PLAYER {
 	BYTE size;
 	BYTE type;
 	WORD client_id;
+};
+
+struct SC_PACKET_BULLET {
+	BYTE size;
+	BYTE type;
+	WORD id;
+	WORD bullet_id;
+	float x, y, z;
 };

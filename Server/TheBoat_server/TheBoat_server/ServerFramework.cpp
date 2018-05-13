@@ -69,7 +69,6 @@ void ServerFramework::InitServer() {
 	for (int i = 0; i < MAXIMUM_PLAYER; ++i) {
 		//clients[i].SetOOBB(XMFLOAT3(0, 0, 0), XMFLOAT3(10.f, 10.f, 10.f), XMFLOAT4(0, 0, 0, 1));
 		clients[i].SetOOBB(XMFLOAT3(clients[i].x, clients[i].y, clients[i].z), XMFLOAT3(OBB_SCALE_X, OBB_SCALE_Y, OBB_SCALE_Z), XMFLOAT4(0, 0, 0, 1));
-		printf("client %d번의 OBB의 가로 길이 %f \n", i, clients[i].bounding_box.Extents.x);
 	}
 
 }
@@ -225,6 +224,7 @@ void ServerFramework::ProcessPacket(int cl_id, char* packet) {
 
 	case CS_LEFT_BUTTON_DOWN:
 		clients[cl_id].is_left_click = true;
+		//bullet_counter[cl_id]++;
 		break;
 	case CS_LEFT_BUTTON_UP:
 		clients[cl_id].is_left_click = false;
@@ -328,6 +328,184 @@ void ServerFramework::WorkerThread() {
 				ZeroMemory(overlapped_buffer, sizeof(OverlappedExtensionSet));
 			}
 		}
+		else if(overlapped_buffer->command == SS_COLLISION){
+			for (int i = 0; i < MAXIMUM_PLAYER; ++i) {
+				//printf("%d 번 진짜 마지막테스트 %f\n",i, clients[i].bounding_box.Extents.x);
+				//clients[i].x;
+				XMFLOAT4X4 danwi(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, clients[i].x, height_map->GetHeight(clients[i].x, clients[i].z), clients[i].z, 1);
+				clients[i].bounding_box.Transform(clients[i].bounding_box,
+					DirectX::XMLoadFloat4x4(&danwi));
+				XMStoreFloat4(&clients[i].bounding_box.Orientation, XMQuaternionNormalize(XMLoadFloat4(&clients[i].bounding_box.Orientation)));
+				clients[i].bounding_box.Extents.x = OBB_SCALE_X;
+				clients[i].bounding_box.Extents.y = OBB_SCALE_Y;
+				clients[i].bounding_box.Extents.z = OBB_SCALE_Z;
+			}
+
+			// OBB 충돌체크 
+			ContainmentType containType = clients[0].bounding_box.Contains(clients[1].bounding_box);
+			switch (containType)
+			{
+			case DISJOINT:
+			{
+				//printf("0번(x : %f, y : %f, z : %f), 1번(x : %f, y : %f, z : %f    ",
+				//	clients[0].bounding_box.Center.x,
+				//	clients[0].bounding_box.Center.y,
+				//	clients[0].bounding_box.Center.z,
+				//	clients[1].bounding_box.Center.x,
+				//	clients[1].bounding_box.Center.y,
+				//	clients[1].bounding_box.Center.z);
+				//printf("   박스 크기 : %f    ", clients[0].bounding_box.Extents.x);
+				//printf("충돌 안함ㅠ\n");
+				break;
+			}
+			case INTERSECTS:
+			{
+				//printf("0번(x : %f, y : %f, z : %f), 1번(x : %f, y : %f, z : %f    ",
+				//	clients[0].bounding_box.Center.x,
+				//	clients[0].bounding_box.Center.y,
+				//	clients[0].bounding_box.Center.z,
+				//	clients[1].bounding_box.Center.x,
+				//	clients[1].bounding_box.Center.y,
+				//	clients[1].bounding_box.Center.z);
+				//printf("충돌 시작\n");
+				break;
+			}
+			case CONTAINS:
+				//printf("0번(x : %f, y : %f, z : %f), 1번(x : %f, y : %f, z : %f   ",
+				//	clients[0].bounding_box.Center.x,
+				//	clients[0].bounding_box.Center.y,
+				//	clients[0].bounding_box.Center.z,
+				//	clients[1].bounding_box.Center.x,
+				//	clients[1].bounding_box.Center.y,
+				//	clients[1].bounding_box.Center.z);
+				//printf("   박스 크기 : %f    ", clients[0].bounding_box.Extents.x);
+
+				//printf("충돌!!!!\n");
+				break;
+			}
+		}
+		else if (overlapped_buffer->command == SS_PLAYER_POS_UPDATE) {
+			for (int i = 0; i < MAXIMUM_PLAYER; ++i) {
+				//client_lock.lock();
+				clients[i].client_lock.lock();
+				if (clients[i].is_move_foward) {
+					if (clients[i].is_running) {
+						clients[i].z += PIXER_PER_METER * clients[i].look_vec.z * (RUN_SPEED * overlapped_buffer->elapsed_time);
+						clients[i].x += PIXER_PER_METER * clients[i].look_vec.x * (RUN_SPEED * overlapped_buffer->elapsed_time);
+					}
+					else {
+						clients[i].z += PIXER_PER_METER * clients[i].look_vec.z * (WALK_SPEED * overlapped_buffer->elapsed_time);
+						clients[i].x += PIXER_PER_METER * clients[i].look_vec.x * (WALK_SPEED * overlapped_buffer->elapsed_time);
+					}
+				}
+				if (clients[i].is_move_backward) {
+					if (clients[i].is_running) {
+						clients[i].z += (-1) * PIXER_PER_METER * clients[i].look_vec.z * (RUN_SPEED * overlapped_buffer->elapsed_time);
+						clients[i].x += (-1) * PIXER_PER_METER * clients[i].look_vec.x * (RUN_SPEED * overlapped_buffer->elapsed_time);
+					}
+					else {
+						clients[i].z += (-1) * PIXER_PER_METER * clients[i].look_vec.z * (WALK_SPEED * overlapped_buffer->elapsed_time);
+						clients[i].x += (-1) * PIXER_PER_METER * clients[i].look_vec.x * (WALK_SPEED * overlapped_buffer->elapsed_time);
+					}
+				}
+				if (clients[i].is_move_left) {
+					if (clients[i].is_running) {
+						clients[i].z += PIXER_PER_METER * clients[i].look_vec.x * (RUN_SPEED * overlapped_buffer->elapsed_time);
+						clients[i].x += (-1) * PIXER_PER_METER * clients[i].look_vec.z * (RUN_SPEED * overlapped_buffer->elapsed_time);
+					}
+					else {
+						clients[i].z += PIXER_PER_METER * clients[i].look_vec.x * (WALK_SPEED * overlapped_buffer->elapsed_time);
+						clients[i].x += (-1) * PIXER_PER_METER * clients[i].look_vec.z * (WALK_SPEED * overlapped_buffer->elapsed_time);
+					}
+				}
+				if (clients[i].is_move_right) {
+					if (clients[i].is_running) {
+						clients[i].z += (-1) * PIXER_PER_METER * clients[i].look_vec.x * (RUN_SPEED * overlapped_buffer->elapsed_time);
+						clients[i].x += PIXER_PER_METER * clients[i].look_vec.z * (RUN_SPEED * overlapped_buffer->elapsed_time);
+					}
+					else {
+						clients[i].z += (-1) * PIXER_PER_METER * clients[i].look_vec.x * (WALK_SPEED * overlapped_buffer->elapsed_time);
+						clients[i].x += PIXER_PER_METER * clients[i].look_vec.z * (WALK_SPEED * overlapped_buffer->elapsed_time);
+					}
+
+				}
+				clients[i].client_lock.unlock();
+				//client_lock.unlock();
+			}
+		}
+		else if (overlapped_buffer->command == SS_BULLET_GENERATE) {
+			for (int i = 0; i < MAXIMUM_PLAYER; ++i) {
+				if (clients[i].is_left_click) {
+					bullet_lock.lock();
+					bullet_times[i] += overlapped_buffer->elapsed_time;
+					if (bullet_times[i] >= AR_SHOOTER) {
+						if (bullet_counter[i] > MAX_BULLET_SIZE - 2) {
+							for (int d = 0; d < MAX_BULLET_SIZE; ++d) {
+								bullets[i][d].in_use = false;
+							}
+							bullet_counter[i] = 0;
+							printf("총알 초기화\n");
+							break;
+						}
+						printf("화기버튼누름 %d \n", bullet_counter[i]);
+						bullets[i][bullet_counter[i]].x = clients[i].x;
+						bullets[i][bullet_counter[i]].y = clients[i].y;
+						bullets[i][bullet_counter[i]].z = clients[i].z;
+						bullets[i][bullet_counter[i]].look_vec = clients[i].look_vec;
+						bullets[i][bullet_counter[i]].in_use = true;
+						bullet_counter[i]++;
+						bullet_times[i] = 0;
+					}
+					bullet_lock.unlock();
+				}
+			}
+		}
+		else if (overlapped_buffer->command == SS_BULLET_UPDATE) {
+			// i 가 플레이어
+			// j 가 플레이어가 발사한 총알
+			for (int i = 0; i < MAXIMUM_PLAYER; ++i) {
+				for (int j = 0; j < MAX_BULLET_SIZE; ++j) {
+					//bullet_lock.lock();
+					if (bullets[i][j].in_use) {
+						bullets[i][j].x += PIXER_PER_METER * bullets[i][j].look_vec.x * (AR_SPEED * overlapped_buffer->elapsed_time);
+						bullets[i][j].y += PIXER_PER_METER * bullets[i][j].look_vec.y * (AR_SPEED * overlapped_buffer->elapsed_time);
+						bullets[i][j].z += PIXER_PER_METER * bullets[i][j].look_vec.z * (AR_SPEED * overlapped_buffer->elapsed_time);
+						//printf("총알 진행중\n");
+					}
+					if (bullets[i][j].x >= 4000.f || bullets[i][j].x <= 0) {
+						bullets[i][j].in_use = false;
+						bullet_lock.unlock();
+						continue;
+					}
+					if (bullets[i][j].y >= 4000.f || bullets[i][j].y <= 0) {
+						bullets[i][j].in_use = false;
+						bullet_lock.unlock();
+						continue;
+					}
+					if (bullets[i][j].z >= 4000.f || bullets[i][j].z <= 0) {
+						bullets[i][j].in_use = false;
+						bullet_lock.unlock();
+						continue;
+					}
+
+					//여기서 보내줘야지~
+					if (bullets[i][j].in_use) {
+						SC_PACKET_BULLET packets;
+						packets.id = i;
+						packets.size = sizeof(SC_PACKET_BULLET);
+						packets.type = SC_BULLET_POS;
+						packets.bullet_id = j;
+						packets.x = bullets[i][j].x;
+						packets.y = bullets[i][j].y;
+						packets.z = bullets[i][j].z;
+						// 해당 플레이어에게만 보내야함
+						SendPacket(i, &packets);
+					}
+					//bullet_lock.unlock();
+				}
+			}
+
+		}
 		// Send로 인해 할당된 영역 반납
 		else {
 			delete overlapped_buffer;
@@ -391,123 +569,28 @@ bool ServerFramework::IsStartGame() {
 }
 
 void ServerFramework::Update(duration<float>& elapsed_time) {
-	Sleep(1);
-	float elapsed_double = elapsed_time.count();
-	for (int i = 0; i < MAXIMUM_PLAYER; ++i) {
-		client_lock.lock();
-		if (clients[i].is_move_foward) {
-			if (clients[i].is_running) {
-				clients[i].z += PIXER_PER_METER * clients[i].look_vec.z * (10000.f * elapsed_double / 3600.f);
-				clients[i].x += PIXER_PER_METER * clients[i].look_vec.x * (10000.f * elapsed_double / 3600.f);
-			}
-			else {
-				clients[i].z += PIXER_PER_METER * clients[i].look_vec.z * (6000 * elapsed_double / 3600.f);
-				clients[i].x += PIXER_PER_METER * clients[i].look_vec.x * (6000 * elapsed_double / 3600.f);
-			}
-		}
-		if (clients[i].is_move_backward) {
-			if (clients[i].is_running) {
-				clients[i].z += (-1) * PIXER_PER_METER * clients[i].look_vec.z * (10000.f * elapsed_double / 3600.f);
-				clients[i].x += (-1) * PIXER_PER_METER * clients[i].look_vec.x * (10000.f * elapsed_double / 3600.f);
-			}
-			else {
-				clients[i].z += (-1) * PIXER_PER_METER * clients[i].look_vec.z * (6000 * elapsed_double / 3600.f);
-				clients[i].x += (-1) * PIXER_PER_METER * clients[i].look_vec.x * (6000 * elapsed_double / 3600.f);
-			}
-		}
-		if (clients[i].is_move_left) {
-			if (clients[i].is_running) {
-				clients[i].z += PIXER_PER_METER * clients[i].look_vec.x * (10000.f * elapsed_double / 3600.f);
-				clients[i].x += (-1) * PIXER_PER_METER * clients[i].look_vec.z * (10000.f * elapsed_double / 3600.f);
-			}
-			else {
-				clients[i].z += PIXER_PER_METER * clients[i].look_vec.x * (6000 * elapsed_double / 3600.f);
-				clients[i].x += (-1) * PIXER_PER_METER * clients[i].look_vec.z * (6000 * elapsed_double / 3600.f);
-			}
-		}
-		if (clients[i].is_move_right) {
-			if (clients[i].is_running) {
-				clients[i].z += (-1) * PIXER_PER_METER * clients[i].look_vec.x * (10000.f * elapsed_double / 3600.f);
-				clients[i].x += PIXER_PER_METER * clients[i].look_vec.z * (10000.f * elapsed_double / 3600.f);
-			}
-			else {
-				clients[i].z += (-1) * PIXER_PER_METER * clients[i].look_vec.x * (6000 * elapsed_double / 3600.f);
-				clients[i].x += PIXER_PER_METER * clients[i].look_vec.z * (6000 * elapsed_double / 3600.f);
-			}
 
-		}
+	Sleep(1);	// 이거 붙여야 뒤쪽 이동할때 잘 가는데
+	// 이유를 모르겠네 도대체;
+	ol_ex[4].command = SS_PLAYER_POS_UPDATE;
+	ol_ex[4].elapsed_time = elapsed_time.count();
+	PostQueuedCompletionStatus(iocp_handle, 0, 4, reinterpret_cast<WSAOVERLAPPED*>(&ol_ex[4]));
 
-		// 여기서 OBB도 업데이트 해주자
-		for (int i = 0; i < MAXIMUM_PLAYER; ++i) {
-			//printf("%d 번 진짜 마지막테스트 %f\n",i, clients[i].bounding_box.Extents.x);
-			//clients[i].x;
-			XMFLOAT4X4 danwi(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, clients[i].x, height_map->GetHeight(clients[i].x, clients[i].z), clients[i].z, 1);
-			clients[i].bounding_box.Transform(clients[i].bounding_box,
-				DirectX::XMLoadFloat4x4(&danwi)); // 어 시발? 
-			XMStoreFloat4(&clients[i].bounding_box.Orientation, XMQuaternionNormalize(XMLoadFloat4(&clients[i].bounding_box.Orientation)));
-			clients[i].bounding_box.Extents.x = OBB_SCALE_X;
-			clients[i].bounding_box.Extents.y = OBB_SCALE_Y;
-			clients[i].bounding_box.Extents.z = OBB_SCALE_Z;
-		}
-		client_lock.unlock();
+	ol_ex[5].command = SS_COLLISION;
+	PostQueuedCompletionStatus(iocp_handle, 0, 5, reinterpret_cast<WSAOVERLAPPED*>(&ol_ex[5]));
 
-		//
+	// bool 변수 클라이언트마다 배정.
+	// 시간값을 overlapped로 넘겨줘서 
+	ol_ex[6].command = SS_BULLET_GENERATE;
+	ol_ex[6].elapsed_time = elapsed_time.count();
+	PostQueuedCompletionStatus(iocp_handle, 0, 6, reinterpret_cast<WSAOVERLAPPED*>(&ol_ex[6]));
 
-		//if (clients[0].bounding_box.Intersects(clients[1].bounding_box)) {
-		//	printf("0번(x : %f, y : %f, z : %f), 1번(x : %f, y : %f, z : %f    ",
-		//		clients[0].bounding_box.Center.x,
-		//		clients[0].bounding_box.Center.y,
-		//		clients[0].bounding_box.Center.z,
-		//		clients[1].bounding_box.Center.x,
-		//		clients[1].bounding_box.Center.y,
-		//		clients[1].bounding_box.Center.z);
-		//	clients[0].bounding_box.Extents.x;
-		//	printf("x크기는 %d   ", clients[0].bounding_box.Extents.x);
-		//	printf("충돌 해보림\n");
-		//}
-		ContainmentType containType = clients[0].bounding_box.Contains(clients[1].bounding_box);
-		switch (containType)
-		{
-		case DISJOINT:
-		{
-			printf("0번(x : %f, y : %f, z : %f), 1번(x : %f, y : %f, z : %f    ",
-				clients[0].bounding_box.Center.x,
-				clients[0].bounding_box.Center.y,
-				clients[0].bounding_box.Center.z,
-				clients[1].bounding_box.Center.x,
-				clients[1].bounding_box.Center.y,
-				clients[1].bounding_box.Center.z);
-			printf("   박스 크기 : %f    ", clients[0].bounding_box.Extents.x);
-			printf("충돌 안함ㅠ\n");
-			break;
-		}
-		case INTERSECTS:
-		{
-			printf("0번(x : %f, y : %f, z : %f), 1번(x : %f, y : %f, z : %f    ",
-				clients[0].bounding_box.Center.x,
-				clients[0].bounding_box.Center.y,
-				clients[0].bounding_box.Center.z,
-				clients[1].bounding_box.Center.x,
-				clients[1].bounding_box.Center.y,
-				clients[1].bounding_box.Center.z);
-			printf("충돌 시작\n");
-			break;
-		}
-		case CONTAINS:
-			printf("0번(x : %f, y : %f, z : %f), 1번(x : %f, y : %f, z : %f   ",
-				clients[0].bounding_box.Center.x,
-				clients[0].bounding_box.Center.y,
-				clients[0].bounding_box.Center.z,
-				clients[1].bounding_box.Center.x,
-				clients[1].bounding_box.Center.y,
-				clients[1].bounding_box.Center.z);
-			printf("   박스 크기 : %f    ", clients[0].bounding_box.Extents.x);
-
-			printf("충돌!!!!\n");
-			break;
-		}
-	}
+	// Bullet이 실제로 날아가는건 여기서 관리해야할거같다.
+	ol_ex[7].command = SS_BULLET_UPDATE;
+	ol_ex[7].elapsed_time = elapsed_time.count();
+	PostQueuedCompletionStatus(iocp_handle, 0, 7, reinterpret_cast<WSAOVERLAPPED*>(&ol_ex[7]));
 }
+
 
 void ServerFramework::TimerSend(duration<float>& elapsed_time) {
 	sender_time += elapsed_time.count();
@@ -517,8 +600,8 @@ void ServerFramework::TimerSend(duration<float>& elapsed_time) {
 				// PQCS로 확인하자
 				ol_ex[i].command = SC_PLAYER_MOVE;
 				PostQueuedCompletionStatus(iocp_handle, 0, i, reinterpret_cast<WSAOVERLAPPED*>(&ol_ex[i]));
-				printf("%d의 바운딩박스 x : %f  y : %f  z : %f \n", i, clients[i].bounding_box.Center.x, clients[i].bounding_box.Center.y,
-					clients[i].bounding_box.Center.z);
+				//printf("%d의 바운딩박스 x : %f  y : %f  z : %f \n", i, clients[i].bounding_box.Center.x, clients[i].bounding_box.Center.y,
+				//	clients[i].bounding_box.Center.z);
 			}
 		}
 		sender_time = 0;
