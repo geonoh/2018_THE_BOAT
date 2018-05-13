@@ -26,7 +26,6 @@ CShader::~CShader()
 	}
 }
 
-
 void CShader::SetPosition(int id, XMFLOAT3 input) {
 
 }
@@ -542,7 +541,7 @@ void CObjectsShader::BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsComman
 	pCubeMaterial->SetTexture(pTexture);
 	pCubeMaterial->SetReflection(1);
 #endif
-	CCubeMeshIlluminatedTextured *pCubeMesh = new CCubeMeshIlluminatedTextured(pd3dDevice, pd3dCommandList, 40.0f, 100.0f, 20.0f);
+	CCubeMeshIlluminatedTextured *pCubeMesh = new CCubeMeshIlluminatedTextured(pd3dDevice, pd3dCommandList, 80.0f, 200.0f, 40.0f);
 
 	m_ppObjects = new CGameObject*[m_nObjects];
 
@@ -562,7 +561,7 @@ void CObjectsShader::BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsComman
 #endif
 				float xPosition = 2000, zPosition = 2000;
 				float fHeight = pTerrain->GetHeight(xPosition, zPosition);
-				pRotatingObject->SetPosition(xPosition + 1000*x, fHeight + 50, zPosition + 1000*z);
+				pRotatingObject->SetPosition(xPosition + 1000*x, fHeight + 100, zPosition + 1000*z);
 				pRotatingObject->SetRotationAxis(XMFLOAT3(0.0f, 1.0f, 0.0f));
 				pRotatingObject->SetRotationSpeed(10.0f * (i % 10));
 				pRotatingObject->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize * i));
@@ -868,7 +867,6 @@ void CTreeShader::ReleaseShaderVariables()
 		m_pd3dcbGameObjects->Unmap(0, NULL);
 		m_pd3dcbGameObjects->Release();
 	}
-
 	CTexturedShader::ReleaseShaderVariables();
 }
 
@@ -910,9 +908,9 @@ void CFlowerShader::BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommand
 	float fTerrainWidth = pTerrain->GetWidth();
 	float fTerrainLength = pTerrain->GetLength();
 
-	int xObjects = 30;
+	int xObjects = 3;
 	int yObjects = 1;
-	int zObjects = 30;
+	int zObjects = 3;
 	m_nTree = (xObjects * yObjects * zObjects);
 
 	CTexture *pTexture = new CTexture(1, RESOURCE_TEXTURE2D_ARRAY, 0);
@@ -1302,7 +1300,7 @@ void CParticleShader::BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsComma
 	pCubeMaterial->SetTexture(pTexture);
 #endif
 
-	CBillboardMesh *pCubeMesh = new CBillboardMesh(pd3dDevice, pd3dCommandList, 30.0, 30.0, 10.0);
+	CBillboardMesh *pCubeMesh = new CBillboardMesh(pd3dDevice, pd3dCommandList, 20.0, 20.0, 10.0);
 
 	m_ppParticle = new CBillboard*[m_nParticle];
 

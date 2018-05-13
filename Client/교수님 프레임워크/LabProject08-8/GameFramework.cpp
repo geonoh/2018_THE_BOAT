@@ -772,7 +772,7 @@ void CGameFramework::AnimateObjects(CCamera *pCamera)
 	//printf("%f", server_mgr.ReturnCollsionPosition().x);
 	if (server_mgr.ReturnCollsionPosition().x != 0.0) {
 		m_pScene->m_ppShaders[3]->SetPosition(0, XMFLOAT3(server_mgr.ReturnCollsionPosition().x,
-			server_mgr.ReturnCollsionPosition().y - 95, server_mgr.ReturnCollsionPosition().z));
+			server_mgr.ReturnCollsionPosition().y, server_mgr.ReturnCollsionPosition().z));
 		//- 10 * m_pPlayer[my_client_id]->GetLook().z
 		//printf("좌표변경!");
 	}
@@ -883,5 +883,7 @@ void CGameFramework::FrameAdvance()
 
 	m_GameTimer.GetFrameRate(m_pszFrameRate + 12, 37);
 	::SetWindowText(m_hWnd, m_pszFrameRate);
+	for(int i=0;i<50;++i)
+		printf("%d\t", m_pszFrameRate[i]);
 }
 
