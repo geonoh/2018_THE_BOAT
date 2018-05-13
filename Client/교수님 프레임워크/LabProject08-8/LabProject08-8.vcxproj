@@ -214,12 +214,6 @@
   <ItemGroup>
     <None Include="..\Assets\Model\Soldier.FBX" />
   </ItemGroup>
-  <ItemGroup>
-    <Media Include="..\Assets\Sounds\BarretaSound.wav" />
-    <Media Include="..\Assets\Sounds\BarretaSound.wav.wav" />
-    <Media Include="..\Assets\Sounds\RifleSound.wav" />
-    <Media Include="..\Assets\Sounds\RifleSound.wav.wav" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

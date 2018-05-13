@@ -8,6 +8,10 @@ class ServerMgr
 	WSABUF send_wsabuf;
 	WSABUF recv_wsabuf;
 	int clients_id = 0;
+
+	Bullet bullets[MAX_BULLET_SIZE] = { 0 };
+	int recvd_bullet_id = 0;
+
 	bool first_set_id = true;
 
 	char send_buffer[CLIENT_BUF_SIZE] = { 0 };
@@ -20,6 +24,8 @@ class ServerMgr
 
 	XMFLOAT3 sc_vec_buff[4];
 	XMFLOAT3 sc_look_vec;
+
+	XMFLOAT3 collision_pos;
 public:
 	void Initialize(HWND& hwnd);
 	void ClientError();
@@ -29,6 +35,8 @@ public:
 	void ProcessPacket(char* ptr);
 	void ErrorDisplay(const char* msg, int err_no);
 	int GetClientID();
+	Bullet GetBullet();
 	XMFLOAT3 ReturnXMFLOAT3(int client_id);
 	XMFLOAT3 ReturnLookVector();
+	XMFLOAT3 ReturnCollsionPosition();
 };

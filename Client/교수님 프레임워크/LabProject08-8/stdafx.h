@@ -310,3 +310,8 @@ namespace Plane
 		return(xmf4Result);
 	}
 }
+struct Bullet {
+	bool in_use = false;
+	int id;
+	float x, y, z;
+};

@@ -72,7 +72,9 @@ void ServerMgr::ReadPacket() {
 
 	}
 }
-
+Bullet ServerMgr::GetBullet() {
+	return bullets[recvd_bullet_id];
+}
 int ServerMgr::GetClientID() {
 	return clients_id;
 }
@@ -110,11 +112,32 @@ void ServerMgr::ProcessPacket(char* ptr) {
 	case SC_BULLET_POS: {
 		SC_PACKET_BULLET* packets = reinterpret_cast<SC_PACKET_BULLET*>(ptr);
 		clients_id = packets->id;
-		printf("[Bullet] %d 플레이어 총알 ID[%d] \n", clients_id, packets->bullet_id);
+		recvd_bullet_id = packets->bullet_id;
+		bullets[packets->bullet_id].id = packets->bullet_id;
+		bullets[packets->bullet_id].x = packets->x;
+		bullets[packets->bullet_id].y = packets->y;
+		bullets[packets->bullet_id].z = packets->z;
+
+		//printf("[Bullet] %d 플레이어 총알 ID[%d] \n", clients_id, packets->bullet_id);
+		break;
+	}
+	case SC_COLLSION_PB: {
+		SC_PACKET_COLLISION* packets = reinterpret_cast<SC_PACKET_COLLISION*>(ptr);
+		collision_pos.x = packets->x;
+		collision_pos.y = packets->y;
+		collision_pos.z = packets->z;
+		printf("충돌지점 x : %f, y : %f, z : %f\n", collision_pos.x,
+			collision_pos.y, collision_pos.z);
+
 		break;
 	}
 	}
 }
+
+XMFLOAT3 ServerMgr::ReturnCollsionPosition() {
+	return collision_pos;
+}
+
 void ServerMgr::SendPacket(int type) {
 	CS_PACKET_KEYUP* packet_buffer = reinterpret_cast<CS_PACKET_KEYUP*>(send_buffer);
 	packet_buffer->size = sizeof(CS_PACKET_KEYUP);

@@ -1079,10 +1079,10 @@ void CBulletShader::BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommand
 	float fTerrainWidth = pTerrain->GetWidth();
 	float fTerrainLength = pTerrain->GetLength();
 
-	int xObjects = 10;
+	int xObjects = 256;
 	int yObjects = 1;
-	int zObjects = 10;
-	m_nBullet = 100;
+	int zObjects = 1;
+	m_nBullet = 256;
 
 	CTexture *pTexture = new CTexture(1, RESOURCE_TEXTURE2D_ARRAY, 0);
 	pTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Image/Bullets/Bullet.dds", 0);
@@ -1162,7 +1162,7 @@ void CBulletShader::AnimateObjects(float fTimeElapsed, CCamera *pCamera)
 		m_ppBullet[j]->Animate(fTimeElapsed, pCamera);
 	}
 
-	if (shootBullet == 1)
+	/*if (shootBullet == 1)
 	{
 		m_ppBullet[BulletCount]->render = 1;
 		m_ppBullet[BulletCount]->SetPosition(XMFLOAT3(CGameFramework::m_pPlayer[CGameFramework::my_client_id]->GetPosition().x, 
@@ -1178,7 +1178,7 @@ void CBulletShader::AnimateObjects(float fTimeElapsed, CCamera *pCamera)
 	for (int i = 0; i < 100; ++i) {
 		if (m_ppBullet[i]->render == 1)
 			m_ppBullet[i]->SetPosition(XMFLOAT3(m_ppBullet[i]->GetPosition().x + 3 * m_ppBullet[i]->objectLook.x, m_ppBullet[i]->GetPosition().y + 3 *  m_ppBullet[i]->objectLook.y, m_ppBullet[i]->GetPosition().z + 3* m_ppBullet[i]->objectLook.z));
-	}
+	}*/
 }
 
 void CBulletShader::ReleaseUploadBuffers()
@@ -1254,4 +1254,8 @@ D3D12_BLEND_DESC CBulletShader::CreateBlendState()
 	d3dBlendDesc.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
 
 	return(d3dBlendDesc);
+}
+
+void CShader::SetPosition(int id, XMFLOAT3 input) {
+
 }
