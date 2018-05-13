@@ -6,6 +6,10 @@
 #include "GameFramework.h"
 #include"resource.h"
 #pragma comment (lib,"winmm")
+<<<<<<< HEAD
+=======
+
+>>>>>>> 575c367a587ce89e7333b8377c986fbca80ec4d2
 int CShader::shootBullet;
 
 CGameFramework::CGameFramework()
@@ -313,12 +317,15 @@ void CGameFramework::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM
 
 		if (CShader::shootBullet == 0) {
 			CShader::shootBullet = 1;
+<<<<<<< HEAD
 			sndPlaySound(L"../Assets/Sounds/RifleSound.wav", SND_ASYNC);    //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
+=======
+			sndPlaySound(L"../Assets/Sounds/RifleSound.wav", SND_ASYNC);	//»ç¿îµå Àç»ı
+>>>>>>> 575c367a587ce89e7333b8377c986fbca80ec4d2
 		}
 		else
 			CShader::shootBullet = 0;
 		server_mgr.SendPacket(CS_LEFT_BUTTON_DOWN, m_pPlayer[my_client_id]->GetLook());
-
 		break;
 	case WM_RBUTTONDOWN:
 		//::SetCapture(hWnd);
@@ -376,6 +383,7 @@ void CGameFramework::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPA
 				//printf("Look Vector : %lf, %lf, %lf\n", m_pPlayer[my_client_id]->GetLook().x, m_pPlayer[my_client_id]->GetLook().y, m_pPlayer[my_client_id]->GetLook().z);
 				//printf("wë¥¼ ëˆŒë €ëŠ”ë° my_client_idëŠ” ì´ê±°ì„  %d  \n", my_client_id);
 				is_pushed[CS_KEY_PRESS_UP] = true;
+				//sndPlaySound(L"../Assets/Sounds/FootStep.wav", SND_ASYNC);	//»ç¿îµå Àç»ı
 			}
 			break;
 		case 'a':
@@ -559,15 +567,28 @@ LRESULT CALLBACK CGameFramework::OnProcessingWindowMessage(HWND hWnd, UINT nMess
 		}
 		switch (WSAGETSELECTEVENT(lParam)) {
 		case FD_READ:
+<<<<<<< HEAD
 			// ì²«ë²ˆì§¸ ì½ì„ë•Œ ì•„ì´ë”” ì €ì¥
+=======
+			XMFLOAT3 read_buf;
+			// Ã¹¹øÂ° ÀĞÀ»¶§ ¾ÆÀÌµğ ÀúÀå
+>>>>>>> 575c367a587ce89e7333b8377c986fbca80ec4d2
 			server_mgr.ReadPacket();
 			if (first_recv) {
 				my_client_id = server_mgr.GetClientID();
+				atomic_thread_fence(memory_order_release);
 				m_pCamera = m_pPlayer[my_client_id]->GetCamera();
+<<<<<<< HEAD
 				printf("ì¹´ë©”ë¼ëŠ” %dì— ê³ ì •\n", my_client_id);
+=======
+				atomic_thread_fence(memory_order_release);
+				printf("Ä«¸Ş¶ó´Â %d¿¡ °íÁ¤\n", my_client_id);
+>>>>>>> 575c367a587ce89e7333b8377c986fbca80ec4d2
 				first_recv = false;
+				atomic_thread_fence(memory_order_release);
 			}
 			m_pPlayer[server_mgr.GetClientID()]->SetPosition(server_mgr.ReturnXMFLOAT3(server_mgr.GetClientID()));
+<<<<<<< HEAD
 			m_pScene->m_ppShaders[2]->SetPosition(server_mgr.GetBullet().id, 
 				XMFLOAT3(server_mgr.GetBullet().x, server_mgr.GetBullet().y, server_mgr.GetBullet().z));
 			//printf("ì¶©ëŒì§€ì  x : %f, y : %f, z : %f\n", server_mgr.ReturnCollsionPosition().x,
@@ -579,6 +600,11 @@ LRESULT CALLBACK CGameFramework::OnProcessingWindowMessage(HWND hWnd, UINT nMess
 
 
 				//printf("%dë²ˆ í”Œë ˆì´ì–´ ì¢Œí‘œ FD_READ, x : %f, y : %f, z : %f\n", server_mgr.GetClientID()
+=======
+			
+			//server_mgr.ReturnCollsionPosition();
+			//printf("%d¹ø ÇÃ·¹ÀÌ¾î ÁÂÇ¥ FD_READ, x : %f, y : %f, z : %f\n", server_mgr.GetClientID()
+>>>>>>> 575c367a587ce89e7333b8377c986fbca80ec4d2
 			//	, m_pPlayer[server_mgr.GetClientID()]->GetPosition().x,
 			//	m_pPlayer[server_mgr.GetClientID()]->GetPosition().y,
 			//	m_pPlayer[server_mgr.GetClientID()]->GetPosition().z);

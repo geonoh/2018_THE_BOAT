@@ -40,7 +40,6 @@ void ServerMgr::Initialize(HWND& hwnd) {
 	recv_wsabuf.buf = recv_buffer;
 	recv_wsabuf.len = CLIENT_BUF_SIZE;
 	printf("server_mgr 초기화\n");
-
 }
 
 void ServerMgr::ReadPacket() {
@@ -126,8 +125,9 @@ void ServerMgr::ProcessPacket(char* ptr) {
 		collision_pos.x = packets->x;
 		collision_pos.y = packets->y;
 		collision_pos.z = packets->z;
-		printf("충돌지점 x : %f, y : %f, z : %f\n", collision_pos.x,
-			collision_pos.y, collision_pos.z);
+		client_hp[packets->client_id] = packets->hp;
+		printf("%d플레이어의 충돌지점 x : %f, y : %f, z : %f, 체력 : %f \n",packets->client_id, collision_pos.x,
+			collision_pos.y, collision_pos.z, client_hp[packets->client_id]);
 
 		break;
 	}

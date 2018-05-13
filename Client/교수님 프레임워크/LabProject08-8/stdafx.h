@@ -45,6 +45,7 @@ using namespace std;
 #include <algorithm>
 #include <memory.h>
 #include <fbxsdk.h>
+#include <atomic>
 
 #include "..\..\..\Server\TheBoat_server\TheBoat_server\protocol.h"
 using namespace DirectX;

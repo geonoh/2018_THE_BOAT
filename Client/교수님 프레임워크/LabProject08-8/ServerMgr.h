@@ -26,6 +26,7 @@ class ServerMgr
 	XMFLOAT3 sc_look_vec;
 
 	XMFLOAT3 collision_pos;
+	float client_hp[4] = { 0 };
 public:
 	void Initialize(HWND& hwnd);
 	void ClientError();
