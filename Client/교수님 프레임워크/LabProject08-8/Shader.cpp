@@ -26,6 +26,11 @@ CShader::~CShader()
 	}
 }
 
+
+void CShader::SetPosition(int id, XMFLOAT3 input) {
+
+}
+
 D3D12_SHADER_BYTECODE CShader::CreateVertexShader(ID3DBlob **ppd3dShaderBlob)
 {
 	D3D12_SHADER_BYTECODE d3dShaderByteCode;
@@ -1256,6 +1261,190 @@ D3D12_BLEND_DESC CBulletShader::CreateBlendState()
 	return(d3dBlendDesc);
 }
 
-void CShader::SetPosition(int id, XMFLOAT3 input) {
+
+CParticleShader::CParticleShader() {
 
 }
+CParticleShader::~CParticleShader() {
+}
+
+void CParticleShader::BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, void *pContext)
+{
+	CHeightMapTerrain *pTerrain = (CHeightMapTerrain *)pContext;
+
+	float fxPitch = 12.0f * 3.5f;
+	float fyPitch = 12.0f * 3.5f;
+	float fzPitch = 12.0f * 3.5f;
+
+	float fTerrainWidth = pTerrain->GetWidth();
+	float fTerrainLength = pTerrain->GetLength();
+
+	int xObjects = 1;
+	int yObjects = 1;
+	int zObjects = 1;
+	m_nParticle = 1;
+
+	CTexture *pTexture = new CTexture(1, RESOURCE_TEXTURE2D_ARRAY, 0);
+	pTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Image/Blood/Blood.dds", 0);
+
+	UINT ncbElementBytes = ((sizeof(CB_GAMEOBJECT_INFO) + 255) & ~255);
+
+	CreateCbvAndSrvDescriptorHeaps(pd3dDevice, pd3dCommandList, m_nParticle, 6);
+	CreateShaderVariables(pd3dDevice, pd3dCommandList);
+	CreateConstantBufferViews(pd3dDevice, pd3dCommandList, m_nParticle, m_pd3dcbGameObjects, ncbElementBytes);
+	CreateShaderResourceViews(pd3dDevice, pd3dCommandList, pTexture, 5, false);
+
+#ifdef _WITH_BATCH_MATERIAL
+	m_pMaterial = new CMaterial();
+	m_pMaterial->SetTexture(pTexture);
+#else
+	CMaterial *pCubeMaterial = new CMaterial();
+	pCubeMaterial->SetTexture(pTexture);
+#endif
+
+	CBillboardMesh *pCubeMesh = new CBillboardMesh(pd3dDevice, pd3dCommandList, 30.0, 30.0, 10.0);
+
+	m_ppParticle = new CBillboard*[m_nParticle];
+
+	XMFLOAT3 xmf3RotateAxis, xmf3SurfaceNormal;
+	CBillboard *pRotatingObject = NULL;
+	for (int i = 0, x = 0; x < xObjects; x++)
+	{
+		for (int z = 0; z < zObjects; z++)
+		{
+			for (int y = 0; y < yObjects; y++)
+			{
+				pRotatingObject = new CBillboard();
+				pRotatingObject->SetMesh(0, pCubeMesh);
+#ifndef _WITH_BATCH_MATERIAL
+				pRotatingObject->SetMaterial(pCubeMaterial);
+#endif
+				float xPosition = 510 + x * 10;
+				float zPosition = 1510 + z * 5;
+				float fHeight = pTerrain->GetHeight(xPosition, zPosition);
+				pRotatingObject->SetPosition(XMFLOAT3(xPosition, fHeight, zPosition));
+				if (y == 0)
+				{
+					xmf3SurfaceNormal = pTerrain->GetNormal(xPosition, zPosition);
+					xmf3RotateAxis = Vector3::CrossProduct(XMFLOAT3(0.0f, 1.0f, 0.0f), xmf3SurfaceNormal);
+					if (Vector3::IsZero(xmf3RotateAxis)) xmf3RotateAxis = XMFLOAT3(0.0f, 1.0f, 0.0f);
+					float fAngle = acos(Vector3::DotProduct(XMFLOAT3(0.0f, 1.0f, 0.0f), xmf3SurfaceNormal));
+					pRotatingObject->Rotate(&xmf3RotateAxis, XMConvertToDegrees(fAngle));
+				}
+				pRotatingObject->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize * i));
+				m_ppParticle[i++] = pRotatingObject;
+			}
+		}
+	}
+}
+
+void CParticleShader::ReleaseObjects()
+{
+	if (m_ppParticle)
+	{
+		for (int j = 0; j < m_nParticle; j++) if (m_ppParticle[j]) delete m_ppParticle[j];
+		delete[] m_ppParticle;
+	}
+
+#ifdef _WITH_BATCH_MATERIAL
+	if (m_pMaterial) delete m_pMaterial;
+#endif
+}
+
+void CParticleShader::AnimateObjects(float fTimeElapsed, CCamera *pCamera)
+{
+	for (int j = 0; j < m_nParticle; j++)
+	{
+		m_ppParticle[j]->SetPosition(changePosition);
+		m_ppParticle[j]->Animate(fTimeElapsed, pCamera);
+	}
+
+	//if (shootBullet == 1)
+	//{
+	//	m_ppParticle[BulletCount]->render = 1;
+	//	m_ppParticle[BulletCount]->SetPosition(XMFLOAT3(0,0,0));
+	//	//m_ppParticle[BulletCount]->SetPlayerLook(CGameFramework::m_pPlayer->GetLook());
+	//	++BulletCount;
+	//	if (BulletCount > 99)
+	//		BulletCount = 0;
+	//	shootBullet = 2;
+	//}
+}
+
+void CParticleShader::SetPosition(int id, XMFLOAT3 input) {
+	changePosition = XMFLOAT3(input.x, input.y - 60.0, input.z);
+	//printf("%f %f %f", m_ppParticle[0]->GetPosition().x, m_ppParticle[0]->GetPosition().y - 150, m_ppParticle[0]->GetPosition().z);
+}
+
+void CParticleShader::ReleaseUploadBuffers()
+{
+	if (m_ppParticle)
+	{
+		for (int j = 0; j < m_nParticle; j++) if (m_ppParticle[j]) m_ppParticle[j]->ReleaseUploadBuffers();
+	}
+
+#ifdef _WITH_BATCH_MATERIAL
+	if (m_pMaterial) m_pMaterial->ReleaseUploadBuffers();
+#endif
+}
+
+void CParticleShader::Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera)
+{
+	CTexturedShader::Render(pd3dCommandList, pCamera);
+
+#ifdef _WITH_BATCH_MATERIAL
+	if (m_pMaterial) m_pMaterial->UpdateShaderVariables(pd3dCommandList);
+#endif
+	for (int j = 0; j < m_nParticle; j++)
+			m_ppParticle[j]->Render(pd3dCommandList, pCamera);
+}
+
+void CParticleShader::CreateShaderVariables(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList)
+{
+	UINT ncbElementBytes = ((sizeof(CB_GAMEOBJECT_INFO) + 255) & ~255); //256ÀÇ ¹è¼ö
+	m_pd3dcbGameObjects = ::CreateBufferResource(pd3dDevice, pd3dCommandList, NULL, ncbElementBytes * m_nParticle, D3D12_HEAP_TYPE_UPLOAD, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, NULL);
+
+	m_pd3dcbGameObjects->Map(0, NULL, (void **)&m_pcbMappedGameObjects);
+}
+
+void CParticleShader::UpdateShaderVariables(ID3D12GraphicsCommandList *pd3dCommandList)
+{
+	UINT ncbElementBytes = ((sizeof(CB_GAMEOBJECT_INFO) + 255) & ~255);
+	for (int j = 0; j < m_nParticle; j++)
+	{
+		CB_GAMEOBJECT_INFO *pbMappedcbGameObject = (CB_GAMEOBJECT_INFO *)((UINT8 *)m_pcbMappedGameObjects + (j * ncbElementBytes));
+		XMStoreFloat4x4(&pbMappedcbGameObject->m_xmf4x4World, XMMatrixTranspose(XMLoadFloat4x4(&m_ppParticle[j]->m_xmf4x4World)));
+	}
+}
+
+void CParticleShader::ReleaseShaderVariables()
+{
+	if (m_pd3dcbGameObjects)
+	{
+		m_pd3dcbGameObjects->Unmap(0, NULL);
+		m_pd3dcbGameObjects->Release();
+	}
+
+	CTexturedShader::ReleaseShaderVariables();
+}
+
+D3D12_BLEND_DESC CParticleShader::CreateBlendState()
+{
+	D3D12_BLEND_DESC d3dBlendDesc;
+	::ZeroMemory(&d3dBlendDesc, sizeof(D3D12_BLEND_DESC));
+	d3dBlendDesc.AlphaToCoverageEnable = FALSE;
+	d3dBlendDesc.IndependentBlendEnable = FALSE;
+	d3dBlendDesc.RenderTarget[0].BlendEnable = true;
+	d3dBlendDesc.RenderTarget[0].LogicOpEnable = FALSE;
+	d3dBlendDesc.RenderTarget[0].SrcBlend = D3D12_BLEND_SRC_ALPHA;
+	d3dBlendDesc.RenderTarget[0].DestBlend = D3D12_BLEND_INV_SRC_ALPHA;
+	d3dBlendDesc.RenderTarget[0].BlendOp = D3D12_BLEND_OP_ADD;
+	d3dBlendDesc.RenderTarget[0].SrcBlendAlpha = D3D12_BLEND_ONE;
+	d3dBlendDesc.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_ZERO;
+	d3dBlendDesc.RenderTarget[0].BlendOpAlpha = D3D12_BLEND_OP_ADD;
+	d3dBlendDesc.RenderTarget[0].LogicOp = D3D12_LOGIC_OP_NOOP;
+	d3dBlendDesc.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
+
+	return(d3dBlendDesc);
+}
+

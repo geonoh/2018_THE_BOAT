@@ -155,7 +155,7 @@ void CScene::BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *p
 
 	m_pBuildings = pBuildingShader;
 
-	m_nShaders = 3;
+	m_nShaders = 4;
 	m_ppShaders = new CShader*[m_nShaders];
 
 	CTreeShader *pTreeShader = new CTreeShader();
@@ -170,9 +170,14 @@ void CScene::BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *p
 	pBulletShader->CreateShader(pd3dDevice, m_pd3dGraphicsRootSignature);
 	pBulletShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pTerrain);
 
+	CParticleShader *pParticleShader = new CParticleShader();
+	pParticleShader->CreateShader(pd3dDevice, m_pd3dGraphicsRootSignature);
+	pParticleShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pTerrain);
+
 	m_ppShaders[0] = pTreeShader;
 	m_ppShaders[1] = pFlowerShader;
 	m_ppShaders[2] = pBulletShader;
+	m_ppShaders[3] = pParticleShader;
 
 
 	BuildLightsAndMaterials();
@@ -432,11 +437,6 @@ void CScene::AnimateObjects(float fTimeElapsed, CCamera *pCamera)
 
 	for (int i = 0; i < 4; ++i) {
 		m_pPlayer[i]->SetScale(0.1, 0.1, 0.1);	// 캐릭터 크기 조정
-
-		//CHeightMapTerrain *pTerrain = (CHeightMapTerrain *)m_pTerrain;
-		//float fHeight = pTerrain->GetHeight(m_pPlayer[i]->GetPosition().x, m_pPlayer[i]->GetPosition().z);
-		//m_pPlayer[i]->SetPosition(XMFLOAT3(m_pPlayer[i]->GetPosition().x, fHeight, m_pPlayer[i]->GetPosition().z));			// 플레이어가 지형 위로 움직이게.
-	
 	}
 }
 

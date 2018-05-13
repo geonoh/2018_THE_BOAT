@@ -323,4 +323,5 @@ public:
 	void SetPlayerLook(XMFLOAT3 playerLook);
 
 	bool	render = 0;
+	int		particleCount = 0;
 };

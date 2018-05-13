@@ -77,6 +77,10 @@ public:
 
 	CPlayer						*m_pPlayer[4];
 
+	static int					makeParticleIndex;
+	static bool					particleOn;
+	static XMFLOAT3				particlePosition;
+
 protected:
 	ID3D12RootSignature			*m_pd3dGraphicsRootSignature = NULL;
 

@@ -1,10 +1,11 @@
-//-----------------------------------------------------------------------------
+ï»¿//-----------------------------------------------------------------------------
 // File: CGameFramework.cpp
 //-----------------------------------------------------------------------------
 
 #include "stdafx.h"
 #include "GameFramework.h"
-
+#include"resource.h"
+#pragma comment (lib,"winmm")
 int CShader::shootBullet;
 
 CGameFramework::CGameFramework()
@@ -56,10 +57,10 @@ bool CGameFramework::OnCreate(HINSTANCE hInstance, HWND hMainWnd)
 
 	BuildObjects();
 
-	// ¿©±â¼­ ÇÚµéÀ» ¹Ş¾Æ¼­ ºñµ¿±â ¹æ½ÄÀ¸·Î Åë½ÅÇÏ¸é µÊ
-	printf("Åë½Å¸ğµâ ÃÊ±âÈ­ ½ÃÀÛ\n");
+	// ì—¬ê¸°ì„œ í•¸ë“¤ì„ ë°›ì•„ì„œ ë¹„ë™ê¸° ë°©ì‹ìœ¼ë¡œ í†µì‹ í•˜ë©´ ë¨
+	printf("í†µì‹ ëª¨ë“ˆ ì´ˆê¸°í™” ì‹œì‘\n");
 	server_mgr.Initialize(hMainWnd);
-	printf("Åë½Å¸ğµâ ÃÊ±âÈ­ ³¡\n");
+	printf("í†µì‹ ëª¨ë“ˆ ì´ˆê¸°í™” ë\n");
 	return(true);
 }
 
@@ -310,8 +311,10 @@ void CGameFramework::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM
 		::SetCapture(hWnd);
 		::GetCursorPos(&m_ptOldCursorPos);
 
-		if (CShader::shootBullet == 0)
+		if (CShader::shootBullet == 0) {
 			CShader::shootBullet = 1;
+			sndPlaySound(L"../Assets/Sounds/RifleSound.wav", SND_ASYNC);    //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
+		}
 		else
 			CShader::shootBullet = 0;
 		server_mgr.SendPacket(CS_LEFT_BUTTON_DOWN, m_pPlayer[my_client_id]->GetLook());
@@ -321,18 +324,18 @@ void CGameFramework::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM
 		//::SetCapture(hWnd);
 		//::GetCursorPos(&m_ptOldCursorPos);
 		server_mgr.SendPacket(CS_RIGHT_BUTTON_DOWN, m_pPlayer[my_client_id]->GetLook());
-		m_pCamera = m_pPlayer[my_client_id]->ChangeCamera(SPACESHIP_CAMERA, m_GameTimer.GetTimeElapsed());	// ¸¶¿ì½º ¿ìÅ¬½Ã Ä«¸Ş¶ó º¯È¯
-		printf("¸¶¿ì½º ¿ìÅ¬¸¯\n");
+		m_pCamera = m_pPlayer[my_client_id]->ChangeCamera(SPACESHIP_CAMERA, m_GameTimer.GetTimeElapsed());	// ë§ˆìš°ìŠ¤ ìš°í´ì‹œ ì¹´ë©”ë¼ ë³€í™˜
+		printf("ë§ˆìš°ìŠ¤ ìš°í´ë¦­\n");
 		break;
 	case WM_LBUTTONUP:
 		server_mgr.SendPacket(CS_LEFT_BUTTON_UP, m_pPlayer[my_client_id]->GetLook());
 		break;
 	case WM_RBUTTONUP:
 		server_mgr.SendPacket(CS_RIGHT_BUTTON_UP, m_pPlayer[my_client_id]->GetLook());
-		m_pCamera = m_pPlayer[my_client_id]->ChangeCamera(FIRST_PERSON_CAMERA, m_GameTimer.GetTimeElapsed());	// ¸¶¿ì½º ¿ìÅ¬½Ã Ä«¸Ş¶ó º¯È¯
+		m_pCamera = m_pPlayer[my_client_id]->ChangeCamera(FIRST_PERSON_CAMERA, m_GameTimer.GetTimeElapsed());	// ë§ˆìš°ìŠ¤ ìš°í´ì‹œ ì¹´ë©”ë¼ ë³€í™˜
 		break;
 	case WM_MOUSEMOVE:
-		//printf("¸¶¿ì½º º¤ÅÍ x : %f, y : %f, z : %f \n", 
+		//printf("ë§ˆìš°ìŠ¤ ë²¡í„° x : %f, y : %f, z : %f \n", 
 		//	m_pPlayer[my_client_id]->GetLook().x, m_pPlayer[my_client_id]->GetLook().y, m_pPlayer[my_client_id]->GetLook().z);
 		server_mgr.SendPacket(CS_MOUSE_MOVE, m_pPlayer[my_client_id]->GetLook());
 		break;
@@ -350,20 +353,20 @@ void CGameFramework::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPA
 	case WM_KEYDOWN: {
 		if (wParam == VK_SHIFT) {
 			if (is_pushed[CS_KEY_PRESS_SHIFT] == false) {
-				printf("[WM_KEYUP] : Shift Å° ÀÔ·Â\n");
+				printf("[WM_KEYUP] : Shift í‚¤ ì…ë ¥\n");
 				server_mgr.SendPacket(CS_KEY_PRESS_SHIFT);
 				is_pushed[CS_KEY_PRESS_SHIFT] = true;
 			}
 		}
 		if (wParam == VK_SPACE) {
 			if (is_pushed[CS_KEY_PRESS_SPACE] == false) {
-				printf("[WM_KEYUP] : Space Å° ÀÔ·Â\n");
+				printf("[WM_KEYUP] : Space í‚¤ ì…ë ¥\n");
 				server_mgr.SendPacket(CS_KEY_PRESS_SPACE);
 				is_pushed[CS_KEY_PRESS_SPACE] = true;
 			}
 		}
 
-		// char Çü keyµé ÀÔ·Â Ã³¸® 
+		// char í˜• keyë“¤ ì…ë ¥ ì²˜ë¦¬ 
 		switch (key_buffer) {
 		case 'w':
 		case 'W':
@@ -371,7 +374,7 @@ void CGameFramework::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPA
 				//server_mgr.SendPacket(CS_KEY_PRESS_UP);
 				server_mgr.SendPacket(CS_KEY_PRESS_UP, m_pPlayer[my_client_id]->GetLook());
 				//printf("Look Vector : %lf, %lf, %lf\n", m_pPlayer[my_client_id]->GetLook().x, m_pPlayer[my_client_id]->GetLook().y, m_pPlayer[my_client_id]->GetLook().z);
-				//printf("w¸¦ ´­·¶´Âµ¥ my_client_id´Â ÀÌ°ÅÀÓ  %d  \n", my_client_id);
+				//printf("wë¥¼ ëˆŒë €ëŠ”ë° my_client_idëŠ” ì´ê±°ì„  %d  \n", my_client_id);
 				is_pushed[CS_KEY_PRESS_UP] = true;
 			}
 			break;
@@ -425,13 +428,13 @@ void CGameFramework::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPA
 			exit(-1);
 		}
 		else if (wParam == VK_SHIFT) {
-			printf("[WM_KEYUP] : Shift Å° ³õÀ½\n");
+			printf("[WM_KEYUP] : Shift í‚¤ ë†“ìŒ\n");
 			server_mgr.SendPacket(CS_KEY_RELEASE_SHIFT);
 			is_pushed[CS_KEY_PRESS_SHIFT] = false;
 
 		}
 		else if (wParam == VK_SPACE) {
-			printf("[WM_KEYUP] : Space Å° ³õÀ½\n");
+			printf("[WM_KEYUP] : Space í‚¤ ë†“ìŒ\n");
 			server_mgr.SendPacket(CS_KEY_RELEASE_SPACE);
 			is_pushed[CS_KEY_PRESS_SPACE] = false;
 		}
@@ -440,7 +443,7 @@ void CGameFramework::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPA
 		case 'w':
 		case 'W':
 			if (is_pushed[CS_KEY_PRESS_UP] == true) {
-				printf("[WM_KEYDOWN] : w,WÅ° ³õÀ½ \n");
+				printf("[WM_KEYDOWN] : w,Wí‚¤ ë†“ìŒ \n");
 				server_mgr.SendPacket(CS_KEY_RELEASE_UP);
 				is_pushed[CS_KEY_PRESS_UP] = false;
 			}
@@ -448,7 +451,7 @@ void CGameFramework::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPA
 		case 'a':
 		case 'A':
 			if (is_pushed[CS_KEY_PRESS_LEFT] == true) {
-				printf("[WM_KEYDOWN] : a,AÅ° ³õÀ½ \n");
+				printf("[WM_KEYDOWN] : a,Aí‚¤ ë†“ìŒ \n");
 				server_mgr.SendPacket(CS_KEY_RELEASE_LEFT);
 				is_pushed[CS_KEY_PRESS_LEFT] = false;
 			}
@@ -456,7 +459,7 @@ void CGameFramework::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPA
 		case 's':
 		case 'S':
 			if (is_pushed[CS_KEY_PRESS_DOWN] == true) {
-				printf("[WM_KEYDOWN] : s,SÅ° ³õÀ½ \n");
+				printf("[WM_KEYDOWN] : s,Sí‚¤ ë†“ìŒ \n");
 				server_mgr.SendPacket(CS_KEY_RELEASE_DOWN);
 				is_pushed[CS_KEY_PRESS_DOWN] = false;
 			}
@@ -464,7 +467,7 @@ void CGameFramework::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPA
 		case 'd':
 		case 'D':
 			if (is_pushed[CS_KEY_PRESS_RIGHT] == true) {
-				printf("[WM_KEYDOWN] : d,DÅ° ³õÀ½ \n");
+				printf("[WM_KEYDOWN] : d,Dí‚¤ ë†“ìŒ \n");
 				server_mgr.SendPacket(CS_KEY_RELEASE_RIGHT);
 				is_pushed[CS_KEY_PRESS_RIGHT] = false;
 			}
@@ -472,14 +475,14 @@ void CGameFramework::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPA
 
 		case '1':
 			if (is_pushed[CS_KEY_PRESS_1] == true) {
-				printf("[WM_KEYDOWN] : 1Å° ³õÀ½ \n");
+				printf("[WM_KEYDOWN] : 1í‚¤ ë†“ìŒ \n");
 				server_mgr.SendPacket(CS_KEY_RELEASE_1);
 				is_pushed[CS_KEY_PRESS_1] = false;
 			}
 			break;
 		case '2':
 			if (is_pushed[CS_KEY_PRESS_2] == true) {
-				printf("[WM_KEYDOWN] : 2Å° ³õÀ½ \n");
+				printf("[WM_KEYDOWN] : 2í‚¤ ë†“ìŒ \n");
 				server_mgr.SendPacket(CS_KEY_RELEASE_2);
 				is_pushed[CS_KEY_PRESS_2] = false;
 			}
@@ -556,19 +559,18 @@ LRESULT CALLBACK CGameFramework::OnProcessingWindowMessage(HWND hWnd, UINT nMess
 		}
 		switch (WSAGETSELECTEVENT(lParam)) {
 		case FD_READ:
-			// Ã¹¹øÂ° ÀĞÀ»¶§ ¾ÆÀÌµğ ÀúÀå
+			// ì²«ë²ˆì§¸ ì½ì„ë•Œ ì•„ì´ë”” ì €ì¥
 			server_mgr.ReadPacket();
 			if (first_recv) {
 				my_client_id = server_mgr.GetClientID();
 				m_pCamera = m_pPlayer[my_client_id]->GetCamera();
-				printf("Ä«¸Ş¶ó´Â %d¿¡ °íÁ¤\n", my_client_id);
+				printf("ì¹´ë©”ë¼ëŠ” %dì— ê³ ì •\n", my_client_id);
 				first_recv = false;
 			}
 			m_pPlayer[server_mgr.GetClientID()]->SetPosition(server_mgr.ReturnXMFLOAT3(server_mgr.GetClientID()));
 			m_pScene->m_ppShaders[2]->SetPosition(server_mgr.GetBullet().id, 
 				XMFLOAT3(server_mgr.GetBullet().x, server_mgr.GetBullet().y, server_mgr.GetBullet().z));
-
-			//printf("Ãæµ¹ÁöÁ¡ x : %f, y : %f, z : %f\n", server_mgr.ReturnCollsionPosition().x,
+			//printf("ì¶©ëŒì§€ì  x : %f, y : %f, z : %f\n", server_mgr.ReturnCollsionPosition().x,
 			//	server_mgr.ReturnCollsionPosition().y, server_mgr.ReturnCollsionPosition().z);
 
 			//server_mgr.ReturnCollsionPosition();
@@ -576,16 +578,16 @@ LRESULT CALLBACK CGameFramework::OnProcessingWindowMessage(HWND hWnd, UINT nMess
 
 
 
-				//printf("%d¹ø ÇÃ·¹ÀÌ¾î ÁÂÇ¥ FD_READ, x : %f, y : %f, z : %f\n", server_mgr.GetClientID()
+				//printf("%dë²ˆ í”Œë ˆì´ì–´ ì¢Œí‘œ FD_READ, x : %f, y : %f, z : %f\n", server_mgr.GetClientID()
 			//	, m_pPlayer[server_mgr.GetClientID()]->GetPosition().x,
 			//	m_pPlayer[server_mgr.GetClientID()]->GetPosition().y,
 			//	m_pPlayer[server_mgr.GetClientID()]->GetPosition().z);
-			//printf("%d¹ø ÇÃ·¹ÀÌ¾î LOOKVEC FD_READ, x : %f, y : %f, z : %f\n", server_mgr.GetClientID()
+			//printf("%dë²ˆ í”Œë ˆì´ì–´ LOOKVEC FD_READ, x : %f, y : %f, z : %f\n", server_mgr.GetClientID()
 			//	, m_pPlayer[server_mgr.GetClientID()]->GetLookVector().x,
 			//	m_pPlayer[server_mgr.GetClientID()]->GetLookVector().y,
 			//	m_pPlayer[server_mgr.GetClientID()]->GetLookVector().z);
 
-			// º»ÀÎ ÇÃ·¹ÀÌ¾î ¿ÜÀÇ ÇÃ·¹ÀÌ¾î°¡ ¿Ã¶§¸¸ LookVectorÀ» ¼ÂÆÃÇØÁØ´Ù.
+			// ë³¸ì¸ í”Œë ˆì´ì–´ ì™¸ì˜ í”Œë ˆì´ì–´ê°€ ì˜¬ë•Œë§Œ LookVectorì„ ì…‹íŒ…í•´ì¤€ë‹¤.
 			if (server_mgr.GetClientID() != my_client_id)
 				m_pPlayer[server_mgr.GetClientID()]->SetLook(server_mgr.ReturnLookVector());
 			break;
@@ -691,14 +693,14 @@ void CGameFramework::ProcessInput()
 	if (!bProcessedByScene)
 	{
 		DWORD dwDirection = 0;
-		// ÇÃ·¹ÀÌ¾î ¿òÁ÷ÀÓ (Áß¿ä)
+		// í”Œë ˆì´ì–´ ì›€ì§ì„ (ì¤‘ìš”)
 		//if (pKeysBuffer[0x57] & 0xF0) dwDirection |= DIR_FORWARD;
 		//if (pKeysBuffer[0x53] & 0xF0) dwDirection |= DIR_BACKWARD;
 		//if (pKeysBuffer[0x41] & 0xF0) dwDirection |= DIR_LEFT;
 		//if (pKeysBuffer[0x44] & 0xF0) dwDirection |= DIR_RIGHT;
 		if (pKeysBuffer[VK_PRIOR] & 0xF0) dwDirection |= DIR_UP;
 		if (pKeysBuffer[VK_NEXT] & 0xF0) dwDirection |= DIR_DOWN;
-		/*if (pKeysBuffer[VK_SPACE] & 0xF0) {	// ÃÑ¾Ë¹ß»ç
+		/*if (pKeysBuffer[VK_SPACE] & 0xF0) {	// ì´ì•Œë°œì‚¬
 			if (CShader::shootBullet == 0)
 				CShader::shootBullet = 1;
 		}
@@ -762,6 +764,12 @@ void CGameFramework::AnimateObjects(CCamera *pCamera)
 	for (int i = 0; i < 4; ++i)
 		if (m_pPlayer) m_pPlayer[i]->Animate(fTimeElapsed);
 	if (m_pScene) m_pScene->AnimateObjects(fTimeElapsed, pCamera);
+	
+	//printf("%f", server_mgr.ReturnCollsionPosition().x);
+	if (server_mgr.ReturnCollsionPosition().x != 0.0) {
+		m_pScene->m_ppShaders[3]->SetPosition(0, server_mgr.ReturnCollsionPosition());
+		//printf("ì¢Œí‘œë³€ê²½!");
+	}
 }
 
 void CGameFramework::WaitForGpuComplete()

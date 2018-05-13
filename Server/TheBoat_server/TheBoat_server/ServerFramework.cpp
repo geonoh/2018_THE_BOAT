@@ -44,7 +44,7 @@ void ServerFramework::InitServer() {
 	ZeroMemory(&server_addr, sizeof(server_addr));
 	server_addr.sin_family = AF_INET;
 	server_addr.sin_addr.s_addr = htonl(INADDR_ANY);
-	server_addr.sin_port = htons(SERVER_PORT);			// 9000번 포트
+	server_addr.sin_port = htons(SERVER_PORT);         // 9000번 포트
 	retval = ::bind(listen_socket, (SOCKADDR*)&server_addr, sizeof(server_addr));
 	if (retval == SOCKET_ERROR)
 		printf("bind 에러\n");
@@ -54,7 +54,7 @@ void ServerFramework::InitServer() {
 		printf("listen 에러\n");
 
 	XMFLOAT3 xmf3Scale(8.0f, 2.f, 8.0f);
-	LPCTSTR file_name = _T("terrain17.raw");
+	LPCTSTR file_name = _T("terrain18.raw");
 	height_map = new CHeightMapImage(file_name, 513, 513, xmf3Scale);
 
 	client_lock.lock();
@@ -67,9 +67,9 @@ void ServerFramework::InitServer() {
 
 	//bullet_lock.lock();
 	//for (int i = 0; i < MAX_BULLET_SIZE; ++i) {
-	//	bullets[i]->x = 0.f;
-	//	bullets[i]->y = 0.f;
-	//	bullets[i]->z = 0.f;
+	//   bullets[i]->x = 0.f;
+	//   bullets[i]->y = 0.f;
+	//   bullets[i]->z = 0.f;
 	//}
 	//bullet_lock.unlock();
 
@@ -154,7 +154,7 @@ void ServerFramework::AcceptPlayer() {
 	for (int i = 0; i < MAXIMUM_PLAYER; ++i) {
 		if (clients[i].in_use) {
 			printf("%d 플레이어 입장 정보 전송\n", i);
-			SendPacket(i, &packet);	
+			SendPacket(i, &packet);
 		}
 	}
 
@@ -344,9 +344,9 @@ void ServerFramework::WorkerThread() {
 				ZeroMemory(overlapped_buffer, sizeof(OverlappedExtensionSet));
 			}
 		}
-		else if(overlapped_buffer->command == SS_COLLISION){
+		else if (overlapped_buffer->command == SS_COLLISION) {
 			// OBB 충돌체크  
-			for (int j = 0; j < MAXIMUM_PLAYER - 1 ; ++j) {
+			for (int j = 0; j < MAXIMUM_PLAYER - 1; ++j) {
 				for (int i = 0; i < MAX_BULLET_SIZE; ++i) {
 					ContainmentType containType = clients[j].bounding_box.Contains(bullets[j + 1][i].bounding_box);
 					switch (containType)
@@ -365,6 +365,7 @@ void ServerFramework::WorkerThread() {
 						packets.y = clients[j].bounding_box.Center.y;
 						packets.z = clients[j].bounding_box.Center.z;
 						SendPacket(j, &packets);
+						SendPacket(j + 1, &packets);
 						printf("충돌 시작\n");
 						break;
 					}
@@ -376,6 +377,7 @@ void ServerFramework::WorkerThread() {
 						packets.y = clients[j].bounding_box.Center.y;
 						packets.z = clients[j].bounding_box.Center.z;
 						SendPacket(j, &packets);
+						SendPacket(j + 1, &packets);
 						printf("충돌!!!!\n");
 						break;
 					}
@@ -397,6 +399,7 @@ void ServerFramework::WorkerThread() {
 						packets.x = clients[j + 1].bounding_box.Center.x;
 						packets.y = clients[j + 1].bounding_box.Center.y;
 						packets.z = clients[j + 1].bounding_box.Center.z;
+						SendPacket(j, &packets);
 						SendPacket(j + 1, &packets);
 						printf("충돌 시작\n");
 						break;
@@ -408,8 +411,9 @@ void ServerFramework::WorkerThread() {
 						packets.x = clients[j + 1].bounding_box.Center.x;
 						packets.y = clients[j + 1].bounding_box.Center.y;
 						packets.z = clients[j + 1].bounding_box.Center.z;
-						printf("충돌!!!!\n");
+						SendPacket(j, &packets);
 						SendPacket(j + 1, &packets);
+						printf("충돌!!!!\n");
 						break;
 					}
 
@@ -619,8 +623,8 @@ bool ServerFramework::IsStartGame() {
 
 void ServerFramework::Update(duration<float>& elapsed_time) {
 
-	Sleep(1);	// 이거 붙여야 뒤쪽 이동할때 잘 가는데
-	// 이유를 모르겠네 도대체;
+	Sleep(1);   // 이거 붙여야 뒤쪽 이동할때 잘 가는데
+				// 이유를 모르겠네 도대체;
 	ol_ex[4].command = SS_PLAYER_POS_UPDATE;
 	ol_ex[4].elapsed_time = elapsed_time.count();
 	PostQueuedCompletionStatus(iocp_handle, 0, 4, reinterpret_cast<WSAOVERLAPPED*>(&ol_ex[4]));
@@ -643,14 +647,14 @@ void ServerFramework::Update(duration<float>& elapsed_time) {
 
 void ServerFramework::TimerSend(duration<float>& elapsed_time) {
 	sender_time += elapsed_time.count();
-	if (sender_time >= UPDATE_TIME) {	// 1/60 초마다 데이터 송신
+	if (sender_time >= UPDATE_TIME) {   // 1/60 초마다 데이터 송신
 		for (int i = 0; i < MAXIMUM_PLAYER; ++i) {
 			if (clients[i].is_move_backward || clients[i].is_move_foward || clients[i].is_move_left || clients[i].is_move_right) {
 				// PQCS로 확인하자
 				ol_ex[i].command = SC_PLAYER_MOVE;
 				PostQueuedCompletionStatus(iocp_handle, 0, i, reinterpret_cast<WSAOVERLAPPED*>(&ol_ex[i]));
 				//printf("%d의 바운딩박스 x : %f  y : %f  z : %f \n", i, clients[i].bounding_box.Center.x, clients[i].bounding_box.Center.y,
-				//	clients[i].bounding_box.Center.z);
+				//   clients[i].bounding_box.Center.z);
 			}
 		}
 		sender_time = 0;
