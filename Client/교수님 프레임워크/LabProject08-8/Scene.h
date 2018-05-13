@@ -86,9 +86,11 @@ protected:
 	CGameObject					**m_ppBullets = NULL;
 	int							m_nBullets = 0;
 
+public:
 	CShader						**m_ppShaders = NULL;
 	int							m_nShaders = 0;
 
+protected:
 	CShader						*m_pBuildings = NULL;
 
 	LIGHTS						*m_pLights = NULL;

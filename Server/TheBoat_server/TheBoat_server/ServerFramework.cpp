@@ -65,12 +65,28 @@ void ServerFramework::InitServer() {
 	}
 	client_lock.unlock();
 
+	//bullet_lock.lock();
+	//for (int i = 0; i < MAX_BULLET_SIZE; ++i) {
+	//	bullets[i]->x = 0.f;
+	//	bullets[i]->y = 0.f;
+	//	bullets[i]->z = 0.f;
+	//}
+	//bullet_lock.unlock();
+
 	// OOBB 셋
 	for (int i = 0; i < MAXIMUM_PLAYER; ++i) {
 		//clients[i].SetOOBB(XMFLOAT3(0, 0, 0), XMFLOAT3(10.f, 10.f, 10.f), XMFLOAT4(0, 0, 0, 1));
-		clients[i].SetOOBB(XMFLOAT3(clients[i].x, clients[i].y, clients[i].z), XMFLOAT3(OBB_SCALE_X, OBB_SCALE_Y, OBB_SCALE_Z), XMFLOAT4(0, 0, 0, 1));
+		clients[i].SetOOBB(XMFLOAT3(clients[i].x, clients[i].y, clients[i].z), XMFLOAT3(OBB_SCALE_PLAYER_X, OBB_SCALE_PLAYER_Y, OBB_SCALE_PLAYER_Z), XMFLOAT4(0, 0, 0, 1));
 	}
 
+	// Bullet의 OBB
+	for (int j = 0; j < MAXIMUM_PLAYER; ++j) {
+		for (int i = 0; i < MAX_BULLET_SIZE; ++i) {
+			bullets[j][i].SetOOBB(XMFLOAT3(bullets[j][i].x, bullets[j][i].y, bullets[j][i].z),
+				XMFLOAT3(OBB_SCALE_BULLET_X, OBB_SCALE_BULLET_Y, OBB_SCALE_BULLET_Z),
+				XMFLOAT4(0, 0, 0, 1));
+		}
+	}
 }
 
 void ServerFramework::AcceptPlayer() {
@@ -329,59 +345,75 @@ void ServerFramework::WorkerThread() {
 			}
 		}
 		else if(overlapped_buffer->command == SS_COLLISION){
-			for (int i = 0; i < MAXIMUM_PLAYER; ++i) {
-				//printf("%d 번 진짜 마지막테스트 %f\n",i, clients[i].bounding_box.Extents.x);
-				//clients[i].x;
-				XMFLOAT4X4 danwi(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, clients[i].x, height_map->GetHeight(clients[i].x, clients[i].z), clients[i].z, 1);
-				clients[i].bounding_box.Transform(clients[i].bounding_box,
-					DirectX::XMLoadFloat4x4(&danwi));
-				XMStoreFloat4(&clients[i].bounding_box.Orientation, XMQuaternionNormalize(XMLoadFloat4(&clients[i].bounding_box.Orientation)));
-				clients[i].bounding_box.Extents.x = OBB_SCALE_X;
-				clients[i].bounding_box.Extents.y = OBB_SCALE_Y;
-				clients[i].bounding_box.Extents.z = OBB_SCALE_Z;
-			}
+			// OBB 충돌체크  
+			for (int j = 0; j < MAXIMUM_PLAYER - 1 ; ++j) {
+				for (int i = 0; i < MAX_BULLET_SIZE; ++i) {
+					ContainmentType containType = clients[j].bounding_box.Contains(bullets[j + 1][i].bounding_box);
+					switch (containType)
+					{
+					case DISJOINT:
+					{
+						//printf("충돌 안함ㅠ\n");
+						break;
+					}
+					case INTERSECTS:
+					{
+						SC_PACKET_COLLISION packets;
+						packets.size = sizeof(SC_PACKET_COLLISION);
+						packets.type = SC_COLLSION_PB;
+						packets.x = clients[j].bounding_box.Center.x;
+						packets.y = clients[j].bounding_box.Center.y;
+						packets.z = clients[j].bounding_box.Center.z;
+						SendPacket(j, &packets);
+						printf("충돌 시작\n");
+						break;
+					}
+					case CONTAINS:
+						SC_PACKET_COLLISION packets;
+						packets.size = sizeof(SC_PACKET_COLLISION);
+						packets.type = SC_COLLSION_PB;
+						packets.x = clients[j].bounding_box.Center.x;
+						packets.y = clients[j].bounding_box.Center.y;
+						packets.z = clients[j].bounding_box.Center.z;
+						SendPacket(j, &packets);
+						printf("충돌!!!!\n");
+						break;
+					}
 
-			// OBB 충돌체크 
-			ContainmentType containType = clients[0].bounding_box.Contains(clients[1].bounding_box);
-			switch (containType)
-			{
-			case DISJOINT:
-			{
-				//printf("0번(x : %f, y : %f, z : %f), 1번(x : %f, y : %f, z : %f    ",
-				//	clients[0].bounding_box.Center.x,
-				//	clients[0].bounding_box.Center.y,
-				//	clients[0].bounding_box.Center.z,
-				//	clients[1].bounding_box.Center.x,
-				//	clients[1].bounding_box.Center.y,
-				//	clients[1].bounding_box.Center.z);
-				//printf("   박스 크기 : %f    ", clients[0].bounding_box.Extents.x);
-				//printf("충돌 안함ㅠ\n");
-				break;
-			}
-			case INTERSECTS:
-			{
-				//printf("0번(x : %f, y : %f, z : %f), 1번(x : %f, y : %f, z : %f    ",
-				//	clients[0].bounding_box.Center.x,
-				//	clients[0].bounding_box.Center.y,
-				//	clients[0].bounding_box.Center.z,
-				//	clients[1].bounding_box.Center.x,
-				//	clients[1].bounding_box.Center.y,
-				//	clients[1].bounding_box.Center.z);
-				//printf("충돌 시작\n");
-				break;
-			}
-			case CONTAINS:
-				//printf("0번(x : %f, y : %f, z : %f), 1번(x : %f, y : %f, z : %f   ",
-				//	clients[0].bounding_box.Center.x,
-				//	clients[0].bounding_box.Center.y,
-				//	clients[0].bounding_box.Center.z,
-				//	clients[1].bounding_box.Center.x,
-				//	clients[1].bounding_box.Center.y,
-				//	clients[1].bounding_box.Center.z);
-				//printf("   박스 크기 : %f    ", clients[0].bounding_box.Extents.x);
+					//ContainmentType containType_rev = clients[j].bounding_box.Contains(bullets[j + 1][i].bounding_box);
+					ContainmentType containType_rev = bullets[j][i].bounding_box.Contains(clients[j + 1].bounding_box);
+					switch (containType_rev)
+					{
+					case DISJOINT:
+					{
+						//printf("충돌 안함ㅠ\n");
+						break;
+					}
+					case INTERSECTS:
+					{
+						SC_PACKET_COLLISION packets;
+						packets.size = sizeof(SC_PACKET_COLLISION);
+						packets.type = SC_COLLSION_PB;
+						packets.x = clients[j + 1].bounding_box.Center.x;
+						packets.y = clients[j + 1].bounding_box.Center.y;
+						packets.z = clients[j + 1].bounding_box.Center.z;
+						SendPacket(j + 1, &packets);
+						printf("충돌 시작\n");
+						break;
+					}
+					case CONTAINS:
+						SC_PACKET_COLLISION packets;
+						packets.size = sizeof(SC_PACKET_COLLISION);
+						packets.type = SC_COLLSION_PB;
+						packets.x = clients[j + 1].bounding_box.Center.x;
+						packets.y = clients[j + 1].bounding_box.Center.y;
+						packets.z = clients[j + 1].bounding_box.Center.z;
+						printf("충돌!!!!\n");
+						SendPacket(j + 1, &packets);
+						break;
+					}
 
-				//printf("충돌!!!!\n");
-				break;
+				}
 			}
 		}
 		else if (overlapped_buffer->command == SS_PLAYER_POS_UPDATE) {
@@ -431,6 +463,14 @@ void ServerFramework::WorkerThread() {
 				}
 				clients[i].client_lock.unlock();
 				//client_lock.unlock();
+
+				XMFLOAT4X4 danwi(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, clients[i].x, height_map->GetHeight(clients[i].x, clients[i].z), clients[i].z, 1);
+				clients[i].bounding_box.Transform(clients[i].bounding_box,
+					DirectX::XMLoadFloat4x4(&danwi));
+				XMStoreFloat4(&clients[i].bounding_box.Orientation, XMQuaternionNormalize(XMLoadFloat4(&clients[i].bounding_box.Orientation)));
+				clients[i].bounding_box.Extents.x = OBB_SCALE_PLAYER_X;
+				clients[i].bounding_box.Extents.y = OBB_SCALE_PLAYER_Y;
+				clients[i].bounding_box.Extents.z = OBB_SCALE_PLAYER_Z;
 			}
 		}
 		else if (overlapped_buffer->command == SS_BULLET_GENERATE) {
@@ -445,7 +485,7 @@ void ServerFramework::WorkerThread() {
 							}
 							bullet_counter[i] = 0;
 							printf("총알 초기화\n");
-							break;
+							//break;
 						}
 						printf("화기버튼누름 %d \n", bullet_counter[i]);
 						bullets[i][bullet_counter[i]].x = clients[i].x;
@@ -471,20 +511,29 @@ void ServerFramework::WorkerThread() {
 						bullets[i][j].y += PIXER_PER_METER * bullets[i][j].look_vec.y * (AR_SPEED * overlapped_buffer->elapsed_time);
 						bullets[i][j].z += PIXER_PER_METER * bullets[i][j].look_vec.z * (AR_SPEED * overlapped_buffer->elapsed_time);
 						//printf("총알 진행중\n");
+
+						XMFLOAT4X4 danwi(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, bullets[i][j].x, bullets[i][j].y, bullets[i][j].z, 1);
+						bullets[i][j].bounding_box.Transform(bullets[i][j].bounding_box,
+							DirectX::XMLoadFloat4x4(&danwi));
+						XMStoreFloat4(&bullets[i][j].bounding_box.Orientation, XMQuaternionNormalize(XMLoadFloat4(&bullets[i][j].bounding_box.Orientation)));
+						bullets[i][j].bounding_box.Extents.x = OBB_SCALE_BULLET_X;
+						bullets[i][j].bounding_box.Extents.y = OBB_SCALE_BULLET_Y;
+						bullets[i][j].bounding_box.Extents.z = OBB_SCALE_BULLET_Z;
+
 					}
 					if (bullets[i][j].x >= 4000.f || bullets[i][j].x <= 0) {
 						bullets[i][j].in_use = false;
-						bullet_lock.unlock();
+						//bullet_lock.unlock();
 						continue;
 					}
 					if (bullets[i][j].y >= 4000.f || bullets[i][j].y <= 0) {
 						bullets[i][j].in_use = false;
-						bullet_lock.unlock();
+						//bullet_lock.unlock();
 						continue;
 					}
 					if (bullets[i][j].z >= 4000.f || bullets[i][j].z <= 0) {
 						bullets[i][j].in_use = false;
-						bullet_lock.unlock();
+						//bullet_lock.unlock();
 						continue;
 					}
 

@@ -23,10 +23,14 @@
 #define SS_BULLET_GENERATE		8
 #define SS_BULLET_UPDATE		9
 
+// Server To Client
+#define SC_COLLSION_PB			10	// Collsion Player to Bullet
+
 // 화기류 연사속도 
 #define AR_SHOOTER				0.05f
-#define AR_SPEED				800.f
-#define MAX_BULLET_SIZE			256
+#define AR_SPEED				400.f
+//#define AR_SPEED				20.f
+#define MAX_BULLET_SIZE			40
 #define RUN_SPEED				2.78f
 #define WALK_SPEED				1.67f
 
@@ -102,6 +106,12 @@ struct SC_PACKET_POS {
 	BYTE size;
 	BYTE type;
 	WORD id;
+	float x, y, z;
+};
+
+struct SC_PACKET_COLLISION {
+	BYTE size;
+	BYTE type;
 	float x, y, z;
 };
 
@@ -190,5 +200,7 @@ struct SC_PACKET_BULLET {
 	BYTE type;
 	WORD id;
 	WORD bullet_id;
+	DirectX::XMFLOAT3 pos;
+
 	float x, y, z;
 };

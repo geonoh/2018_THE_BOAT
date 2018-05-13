@@ -556,7 +556,6 @@ LRESULT CALLBACK CGameFramework::OnProcessingWindowMessage(HWND hWnd, UINT nMess
 		}
 		switch (WSAGETSELECTEVENT(lParam)) {
 		case FD_READ:
-			XMFLOAT3 read_buf;
 			// 첫번째 읽을때 아이디 저장
 			server_mgr.ReadPacket();
 			if (first_recv) {
@@ -566,7 +565,18 @@ LRESULT CALLBACK CGameFramework::OnProcessingWindowMessage(HWND hWnd, UINT nMess
 				first_recv = false;
 			}
 			m_pPlayer[server_mgr.GetClientID()]->SetPosition(server_mgr.ReturnXMFLOAT3(server_mgr.GetClientID()));
-			//printf("%d번 플레이어 좌표 FD_READ, x : %f, y : %f, z : %f\n", server_mgr.GetClientID()
+			m_pScene->m_ppShaders[2]->SetPosition(server_mgr.GetBullet().id, 
+				XMFLOAT3(server_mgr.GetBullet().x, server_mgr.GetBullet().y, server_mgr.GetBullet().z));
+
+			//printf("충돌지점 x : %f, y : %f, z : %f\n", server_mgr.ReturnCollsionPosition().x,
+			//	server_mgr.ReturnCollsionPosition().y, server_mgr.ReturnCollsionPosition().z);
+
+			//server_mgr.ReturnCollsionPosition();
+
+
+
+
+				//printf("%d번 플레이어 좌표 FD_READ, x : %f, y : %f, z : %f\n", server_mgr.GetClientID()
 			//	, m_pPlayer[server_mgr.GetClientID()]->GetPosition().x,
 			//	m_pPlayer[server_mgr.GetClientID()]->GetPosition().y,
 			//	m_pPlayer[server_mgr.GetClientID()]->GetPosition().z);
