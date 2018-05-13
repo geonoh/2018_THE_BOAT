@@ -7,7 +7,7 @@
 #include "Mesh.h"
 #include "Camera.h"
 #include "FBXLoader.h"
-
+#include "MD5Loader.h"
 #define DIR_FORWARD					0x01
 #define DIR_BACKWARD				0x02
 #define DIR_LEFT					0x04
@@ -190,11 +190,15 @@ public:
 	CGameObject 					*m_pSibling = NULL;
 	VertexDataArray					g_vertexDataArray;
 
+	Model3D NewMD5Model;
+	std::vector<D3D12_SHADER_RESOURCE_VIEW_DESC*> meshSRV;
+	std::vector<std::wstring> textureNameArray;
+
 	void SetChild(CGameObject *pChild);
 	CGameObject *GetParent() { return(m_pParent); }
 	CGameObject *FindFrame(_TCHAR *pstrFrameName);
 
-	void LoadFrameHierarchyFromFile(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, ID3D12RootSignature *pd3dGraphicsRootSignature, VertexDataArray g_vertexDataArray, UINT nFrame);
+	void LoadFrameHierarchyFromFile(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, ID3D12RootSignature *pd3dGraphicsRootSignature, VertexDataArray g_vertexDataArray, UINT nFrame, ModelSubset ModelData);
 	void LoadGeometryFromFile(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, ID3D12RootSignature *pd3dGraphicsRootSignature, TCHAR *pstrFileName);
 	void PrintFrameInfo(CGameObject *pGameObject, CGameObject *pParent);
 };

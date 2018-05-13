@@ -19,6 +19,8 @@
 
 // C의 런타임 헤더 파일입니다.
 #include <stdlib.h>
+#include <iostream>
+#include <memory>
 #include <malloc.h>
 #include <tchar.h>
 #include <math.h>
@@ -47,6 +49,7 @@ using namespace std;
 #include <fbxsdk.h>
 #include <atomic>
 
+#include "d3dx12.h"
 #include "..\..\..\Server\TheBoat_server\TheBoat_server\protocol.h"
 using namespace DirectX;
 using namespace DirectX::PackedVector;
@@ -98,6 +101,31 @@ inline bool IsZero(float fValue) { return((fabsf(fValue) < EPSILON)); }
 inline bool IsEqual(float fA, float fB) { return(::IsZero(fA - fB)); }
 inline float InverseSqrt(float fValue) { return 1.0f / sqrtf(fValue); }
 inline void Swap(float *pfS, float *pfT) { float fTemp = *pfS; *pfS = *pfT; *pfT = fTemp; }
+inline std::wstring AnsiToWString(const std::string& str)
+{
+	WCHAR buffer[512];
+	MultiByteToWideChar(CP_ACP, 0, str.c_str(), -1, buffer, 512);
+	return std::wstring(buffer);
+}
+class DxException
+{
+public:
+	DxException() = default;
+	DxException(HRESULT hr, const std::wstring& functionName, const std::wstring& filename, int lineNumber);
+
+	std::wstring ToString()const;
+
+	HRESULT ErrorCode = S_OK;
+	std::wstring FunctionName;
+	std::wstring Filename;
+	int LineNumber = -1;
+};
+#define ThrowIfFailed(x)                                              \
+{                                                                     \
+    HRESULT hr__ = (x);                                               \
+    std::wstring wfn = AnsiToWString(__FILE__);                       \
+    if(FAILED(hr__)) { throw DxException(hr__, L#x, wfn, __LINE__); } \
+}
 
 namespace Vector3
 {
@@ -316,3 +344,92 @@ struct Bullet {
 	int id;
 	float x, y, z;
 };
+struct Vertex1 //Overloaded Vertex Structure 
+{
+	Vertex1() {}
+	Vertex1(float x, float y, float z, float u, float v, float nx, float ny, float nz, float tx, float ty, float tz) : pos(x, y, z), texCoord(u, v), normal(nx, ny, nz), tangent(tx, ty, tz) {}
+	XMFLOAT3 pos;
+	XMFLOAT2 texCoord;
+	XMFLOAT3 normal;
+	XMFLOAT3 tangent;
+	XMFLOAT3 biTangent;
+	///////////////**************new**************//////////////////// // Will not be sent to shader 
+	int StartWeight;
+	int WeightCount;
+	///////////////**************new**************//////////////////// 
+};
+
+struct Joint
+{
+	std::wstring name;
+	int parentID;
+	XMFLOAT3 pos;
+	XMFLOAT4 orientation;
+};
+
+struct Weight
+{
+	int jointID;
+	float bias;
+	XMFLOAT3 pos;
+	XMFLOAT3 normal;
+};
+struct ModelSubset
+{
+	int texArrayIndex;
+	int numTriangles;
+	std::vector<Vertex1> vertices;
+	std::vector<DWORD> indices;
+	std::vector<Weight> weights;
+	std::vector<XMFLOAT3> positions;
+	ID3D12Resource* vertBuff;
+	ID3D12Resource* indexBuff;
+
+};
+struct BoundingBox1
+{
+	XMFLOAT3 min;
+	XMFLOAT3 max;
+};
+struct FrameData
+{
+	int frameID;
+	std::vector<float> frameData;
+};
+struct AnimJointInfo
+{
+	std::wstring name;
+	int parentID;
+	int flags;
+	int startIndex;
+};
+struct ModelAnimation
+{
+	int numFrames;
+	int numJoints;
+	int frameRate;
+	int numAnimatedComponents;
+	float frameTime;
+	float totalAnimTime;
+
+
+	float currAnimTime;
+	std::vector<AnimJointInfo> jointInfo;
+	std::vector<BoundingBox1> frameBounds;
+	std::vector<Joint> baseFrameJoints;
+	std::vector<FrameData> frameData;
+	std::vector<vector<Joint>> frameSkeleton;
+};
+struct Model3D
+{
+	int numSubsets;
+	int numJoints;
+	std::vector<Joint> joints;
+	std::vector<ModelSubset> subsets;
+	std::vector<ModelAnimation> animations;
+
+};
+static UINT CalcConstantBufferByteSize(UINT byteSize)
+{
+	return (byteSize + 255) & ~255;
+}

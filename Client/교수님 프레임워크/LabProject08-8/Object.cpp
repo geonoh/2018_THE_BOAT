@@ -435,7 +435,7 @@ void CGameObject::Rotate(XMFLOAT4 *pxmf4Quaternion)
 
 #define _WITH_DEBUG_FRAME_HIERARCHY
 
-void CGameObject::LoadFrameHierarchyFromFile(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, ID3D12RootSignature *pd3dGraphicsRootSignature, VertexDataArray g_vertexDataArray, UINT nFrame)
+void CGameObject::LoadFrameHierarchyFromFile(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, ID3D12RootSignature *pd3dGraphicsRootSignature, VertexDataArray g_vertexDataArray, UINT nFrame, ModelSubset ModelData)
 {
 	XMFLOAT3 *pxmf3Positions = NULL, *pxmf3Normals = NULL;
 	XMFLOAT2 *pxmf3TextureCoords0 = NULL, *pxmf3TextureCoords1 = NULL;
@@ -509,7 +509,10 @@ void CGameObject::LoadFrameHierarchyFromFile(ID3D12Device *pd3dDevice, ID3D12Gra
 	}
 	else if (nNormals > 0)
 	{
-		if (nVertices > 0) pMesh = new CMeshIlluminated(pd3dDevice, pd3dCommandList, nVertices, pxmf3Positions, pxmf3Normals, nIndices, pnIndices);
+		LoadMD5Model(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, L"../Assets/Model/1313.MD5MESH", NewMD5Model, meshSRV, textureNameArray, pMesh);
+		LoadMD5Anim(L"../Assets/Model/WarriorIdle.MD5ANIM", NewMD5Model);
+
+		//if (nVertices > 0) pMesh = new CMeshIlluminated(pd3dDevice, pd3dCommandList, nVertices, pxmf3Positions, pxmf3Normals, nIndices, pnIndices);
 
 		pMaterial = new CMaterial();
 		pMaterial->m_xmf4Albedo = xmf4MaterialAlbedo;
@@ -565,7 +568,10 @@ void CGameObject::PrintFrameInfo(CGameObject *pGameObject, CGameObject *pParent)
 void CGameObject::LoadGeometryFromFile(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, ID3D12RootSignature *pd3dGraphicsRootSignature, TCHAR *pstrFileName)
 {
 	LoadFBXConvertToVertexData("../Assets/Model/Soldier.fbx", g_vertexDataArray);
-	LoadFrameHierarchyFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, g_vertexDataArray, 0);
+
+	ModelSubset data;
+	LoadFrameHierarchyFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, g_vertexDataArray, 0, data);
+	
 
 
 #ifdef _WITH_DEBUG_FRAME_HIERARCHY

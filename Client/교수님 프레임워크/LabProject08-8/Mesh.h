@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include"UploadBuffer.h"
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 class CVertex
@@ -108,7 +109,7 @@ public:
 	void Release() { if (--m_nReferences <= 0) delete this; }
 
 	void ReleaseUploadBuffers();
-
+	void Upload();
 protected:
 	ID3D12Resource					*m_pd3dVertexBuffer = NULL;
 	ID3D12Resource					*m_pd3dVertexUploadBuffer = NULL;
@@ -130,6 +131,7 @@ protected:
 	int								m_nBaseVertex = 0;
 
 public:
+	UploadBuffer<Vertex1>* A;
 	virtual void Render(ID3D12GraphicsCommandList *pd3dCommandList);
 };
 

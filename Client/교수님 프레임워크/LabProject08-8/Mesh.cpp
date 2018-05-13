@@ -4,6 +4,7 @@
 
 #include "stdafx.h"
 #include "Mesh.h"
+#include "UploadBuffer.h"
 
 CMesh::CMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList)
 {
@@ -11,6 +12,7 @@ CMesh::CMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandLis
 
 CMesh::CMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, UINT nVertices, XMFLOAT3 *pxmf3Positions, UINT nIndices, UINT *pnIndices)
 {
+	A = new UploadBuffer<Vertex1>(pd3dDevice, nVertices, true);
 	m_nStride = sizeof(CVertex);
 	m_nVertices = nVertices;
 
@@ -28,7 +30,6 @@ CMesh::CMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandLis
 		m_nIndices = nIndices;
 
 		m_pd3dIndexBuffer = ::CreateBufferResource(pd3dDevice, pd3dCommandList, pnIndices, sizeof(UINT) * m_nIndices, D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_STATE_INDEX_BUFFER, &m_pd3dIndexUploadBuffer);
-
 		m_d3dIndexBufferView.BufferLocation = m_pd3dIndexBuffer->GetGPUVirtualAddress();
 		m_d3dIndexBufferView.Format = DXGI_FORMAT_R32_UINT;
 		m_d3dIndexBufferView.SizeInBytes = sizeof(UINT) * m_nIndices;
@@ -49,8 +50,11 @@ void CMesh::ReleaseUploadBuffers()
 	if (m_pd3dIndexUploadBuffer) m_pd3dIndexUploadBuffer->Release();
 	m_pd3dVertexUploadBuffer = NULL;
 	m_pd3dIndexUploadBuffer = NULL;
-};
-
+}
+void CMesh::Upload() {
+	//m_pd3dVertexUploadBuffer = A->Resource();
+	m_d3dVertexBufferView.BufferLocation = A->Resource()->GetGPUVirtualAddress();
+}
 void CMesh::Render(ID3D12GraphicsCommandList *pd3dCommandList)
 {
 	pd3dCommandList->IASetPrimitiveTopology(m_d3dPrimitiveTopology);
@@ -64,6 +68,7 @@ void CMesh::Render(ID3D12GraphicsCommandList *pd3dCommandList)
 	{
 		pd3dCommandList->DrawInstanced(m_nVertices, 1, m_nOffset, 0);
 	}
+
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -74,6 +79,7 @@ CMeshTextured::CMeshTextured(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList
 
 CMeshTextured::CMeshTextured(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, UINT nVertices, XMFLOAT3 *pxmf3Positions, XMFLOAT2 *pxmf2UVs, UINT nIndices, UINT *pnIndices) : CMesh(pd3dDevice, pd3dCommandList)
 {
+	A = new UploadBuffer<Vertex1>(pd3dDevice, nVertices, true);
 	m_nStride = sizeof(CTexturedVertex);
 	m_nVertices = nVertices;
 
@@ -96,6 +102,7 @@ CMeshTextured::CMeshTextured(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList
 		m_d3dIndexBufferView.Format = DXGI_FORMAT_R32_UINT;
 		m_d3dIndexBufferView.SizeInBytes = sizeof(UINT) * m_nIndices;
 	}
+
 }
 
 CMeshTextured::~CMeshTextured()
@@ -110,6 +117,8 @@ CMeshIlluminated::CMeshIlluminated(ID3D12Device *pd3dDevice, ID3D12GraphicsComma
 
 CMeshIlluminated::CMeshIlluminated(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, UINT nVertices, XMFLOAT3 *pxmf3Positions, XMFLOAT3 *pxmf3Normals, UINT nIndices, UINT *pnIndices) : CMesh(pd3dDevice, pd3dCommandList)
 {
+	A = new UploadBuffer<Vertex1>(pd3dDevice, nVertices, true);
+
 	m_nStride = sizeof(CIlluminatedVertex);
 	m_nVertices = nVertices;
 
@@ -144,9 +153,9 @@ void CMeshIlluminated::CalculateTriangleListVertexNormals(XMFLOAT3 *pxmf3Normals
 	UINT nIndex0, nIndex1, nIndex2;
 	for (int i = 0; i < nPrimitives; i++)
 	{
-		nIndex0 = i*3+0;
-		nIndex1 = i*3+1;
-		nIndex2 = i*3+2;
+		nIndex0 = i * 3 + 0;
+		nIndex1 = i * 3 + 1;
+		nIndex2 = i * 3 + 2;
 		XMFLOAT3 xmf3Edge01 = Vector3::Subtract(pxmf3Positions[nIndex1], pxmf3Positions[nIndex0]);
 		XMFLOAT3 xmf3Edge02 = Vector3::Subtract(pxmf3Positions[nIndex2], pxmf3Positions[nIndex0]);
 		pxmf3Normals[nIndex0] = pxmf3Normals[nIndex1] = pxmf3Normals[nIndex2] = Vector3::CrossProduct(xmf3Edge01, xmf3Edge02, true);
@@ -163,9 +172,9 @@ void CMeshIlluminated::CalculateTriangleListVertexNormals(XMFLOAT3 *pxmf3Normals
 		xmf3SumOfNormal = XMFLOAT3(0.0f, 0.0f, 0.0f);
 		for (UINT i = 0; i < nPrimitives; i++)
 		{
-			nIndex0 = pnIndices[i*3+0];
-			nIndex1 = pnIndices[i*3+1];
-			nIndex2 = pnIndices[i*3+2];
+			nIndex0 = pnIndices[i * 3 + 0];
+			nIndex1 = pnIndices[i * 3 + 1];
+			nIndex2 = pnIndices[i * 3 + 2];
 			if (pnIndices && ((nIndex0 == j) || (nIndex1 == j) || (nIndex2 == j)))
 			{
 				xmf3Edge01 = Vector3::Subtract(pxmf3Positions[nIndex1], pxmf3Positions[nIndex0]);
@@ -209,17 +218,17 @@ void CMeshIlluminated::CalculateVertexNormals(XMFLOAT3 *pxmf3Normals, XMFLOAT3 *
 {
 	switch (m_d3dPrimitiveTopology)
 	{
-		case D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST:
-			if (pnIndices)
-				CalculateTriangleListVertexNormals(pxmf3Normals, pxmf3Positions, nVertices, pnIndices, nIndices);
-			else
-				CalculateTriangleListVertexNormals(pxmf3Normals, pxmf3Positions, nVertices);
-			break;
-		case D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP:
-			CalculateTriangleStripVertexNormals(pxmf3Normals, pxmf3Positions, nVertices, pnIndices, nIndices);
-			break;
-		default:
-			break;
+	case D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST:
+		if (pnIndices)
+			CalculateTriangleListVertexNormals(pxmf3Normals, pxmf3Positions, nVertices, pnIndices, nIndices);
+		else
+			CalculateTriangleListVertexNormals(pxmf3Normals, pxmf3Positions, nVertices);
+		break;
+	case D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP:
+		CalculateTriangleStripVertexNormals(pxmf3Normals, pxmf3Positions, nVertices, pnIndices, nIndices);
+		break;
+	default:
+		break;
 	}
 }
 
@@ -231,6 +240,7 @@ CMeshIlluminatedTextured::CMeshIlluminatedTextured(ID3D12Device *pd3dDevice, ID3
 
 CMeshIlluminatedTextured::CMeshIlluminatedTextured(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, UINT nVertices, XMFLOAT3 *pxmf3Positions, XMFLOAT3 *pxmf3Normals, XMFLOAT2 *pxmf2UVs, UINT nIndices, UINT *pnIndices) : CMeshIlluminated(pd3dDevice, pd3dCommandList)
 {
+	A = new UploadBuffer<Vertex1>(pd3dDevice, nVertices, true);
 	m_nStride = sizeof(CIlluminatedTexturedVertex);
 	m_nVertices = nVertices;
 
@@ -269,7 +279,7 @@ CCubeMeshIlluminatedTextured::CCubeMeshIlluminatedTextured(ID3D12Device *pd3dDev
 	m_nSlot = 0;
 	m_d3dPrimitiveTopology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 
-	float fx = fWidth*0.5f, fy = fHeight*0.5f, fz = fDepth*0.5f;
+	float fx = fWidth * 0.5f, fy = fHeight * 0.5f, fz = fDepth * 0.5f;
 
 	XMFLOAT3 pxmf3Positions[36];
 	int i = 0;
@@ -398,7 +408,7 @@ CAirplaneMeshDiffused::CAirplaneMeshDiffused(ID3D12Device *pd3dDevice, ID3D12Gra
 	m_nSlot = 0;
 	m_d3dPrimitiveTopology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 
-	float fx = fWidth*0.5f, fy = fHeight*0.5f, fz = fDepth*0.5f;
+	float fx = fWidth * 0.5f, fy = fHeight * 0.5f, fz = fDepth * 0.5f;
 
 	CDiffusedVertex pVertices[24 * 3];
 
@@ -813,7 +823,7 @@ CBillboardMesh::CBillboardMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandLi
 	m_nSlot = 0;
 	m_d3dPrimitiveTopology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 
-	float fx = fWidth*0.5f, fy = fHeight*0.5f, fz = fDepth*0.5f;
+	float fx = fWidth * 0.5f, fy = fHeight * 0.5f, fz = fDepth * 0.5f;
 
 	CTexturedVertex pVertices[6];
 	int i = 0;

@@ -1302,7 +1302,7 @@ void CParticleShader::BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsComma
 	pCubeMaterial->SetTexture(pTexture);
 #endif
 
-	CBillboardMesh *pCubeMesh = new CBillboardMesh(pd3dDevice, pd3dCommandList, 30.0, 30.0, 10.0);
+	CBillboardMesh *pCubeMesh = new CBillboardMesh(pd3dDevice, pd3dCommandList, 15.0, 15.0, 10.0);
 
 	m_ppParticle = new CBillboard*[m_nParticle];
 

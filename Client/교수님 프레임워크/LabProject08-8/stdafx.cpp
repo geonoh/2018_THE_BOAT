@@ -3,14 +3,27 @@
 // stdafx.obj에는 미리 컴파일된 형식 정보가 포함됩니다.
 
 #include "stdafx.h"
-
+#include <comdef.h>
 #include "DDSTextureLoader12.h"
 
 UINT gnCbvSrvDescriptorIncrementSize = 0;
 
 // TODO: 필요한 추가 헤더는
 // 이 파일이 아닌 STDAFX.H에서 참조합니다.
+DxException::DxException(HRESULT hr, const std::wstring& functionName, const std::wstring& filename, int lineNumber) :
+	ErrorCode(hr),
+	FunctionName(functionName),
+	Filename(filename),
+	LineNumber(lineNumber)
+{
+}
+std::wstring DxException::ToString()const
+{
+	_com_error err(ErrorCode);
+	std::wstring msg = err.ErrorMessage();
 
+	return FunctionName + L" failed in " + Filename + L"; line " + std::to_wstring(LineNumber) + L"; error: " + msg;
+}
 ID3D12Resource *CreateBufferResource(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, void *pData, UINT nBytes, D3D12_HEAP_TYPE d3dHeapType, D3D12_RESOURCE_STATES d3dResourceStates, ID3D12Resource **ppd3dUploadBuffer)
 {
 	ID3D12Resource *pd3dBuffer = NULL;
