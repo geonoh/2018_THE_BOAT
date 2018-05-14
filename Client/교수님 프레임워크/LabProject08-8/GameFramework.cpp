@@ -573,8 +573,8 @@ LRESULT CALLBACK CGameFramework::OnProcessingWindowMessage(HWND hWnd, UINT nMess
 			m_pPlayer[server_mgr.GetClientID()]->SetPosition(server_mgr.ReturnXMFLOAT3(server_mgr.GetClientID()));
 			m_pScene->m_ppShaders[2]->SetPosition(server_mgr.GetBullet().id,
 				XMFLOAT3(server_mgr.GetBullet().x, server_mgr.GetBullet().y, server_mgr.GetBullet().z));
-			printf("충돌지점 x : %f, y : %f, z : %f\n", server_mgr.ReturnCollsionPosition().x,
-				server_mgr.ReturnCollsionPosition().y, server_mgr.ReturnCollsionPosition().z);
+			//printf("충돌지점 x : %f, y : %f, z : %f\n", server_mgr.ReturnCollsionPosition().x,
+			//	server_mgr.ReturnCollsionPosition().y, server_mgr.ReturnCollsionPosition().z);
 
 			//server_mgr.ReturnCollsionPosition();
 
@@ -774,7 +774,7 @@ void CGameFramework::AnimateObjects(CCamera *pCamera)
 	//printf("%f", server_mgr.ReturnCollsionPosition().x);
 	if (server_mgr.ReturnCollsionPosition().x != 0.0) {
 		m_pScene->m_ppShaders[3]->SetPosition(0, XMFLOAT3(server_mgr.ReturnCollsionPosition().x,
-			server_mgr.ReturnCollsionPosition().y, server_mgr.ReturnCollsionPosition().z));
+			server_mgr.ReturnCollsionPosition().y + 70.f, server_mgr.ReturnCollsionPosition().z));
 		//- 10 * m_pPlayer[my_client_id]->GetLook().z
 		//printf("좌표변경!");
 	}

@@ -329,7 +329,7 @@ void ServerFramework::WorkerThread() {
 				packets.x = clients[client_id].x;
 				packets.y = clients[client_id].y;
 				packets.z = clients[client_id].z;
-				printf("높이 : %f\n", clients[client_id].y);
+				//printf("높이 : %f\n", clients[client_id].y);
 				for (int i = 0; i < MAXIMUM_PLAYER; ++i) {
 					if (clients[i].in_use == true) {
 						SendPacket(i, &packets);
