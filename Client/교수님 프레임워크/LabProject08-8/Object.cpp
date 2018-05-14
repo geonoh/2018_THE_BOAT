@@ -501,8 +501,8 @@ void CGameObject::LoadFrameHierarchyFromFile(ID3D12Device *pd3dDevice, ID3D12Gra
 	}
 	else if (nNormals > 0)
 	{
-		LoadMD5Model(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, L"../Assets/Model/1313.MD5MESH", NewMD5Model, meshSRV, textureNameArray, pMesh);
-		LoadMD5Anim(L"../Assets/Model/WarriorIdle.MD5ANIM", NewMD5Model);
+		LoadMD5Model(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, L"../Assets/Model/66.MD5MESH", NewMD5Model, meshSRV, textureNameArray, pMesh);
+		LoadMD5Anim(L"../Assets/Model/24.MD5ANIM", NewMD5Model);
 
 		TCHAR pstrPathName[512] = { '\0' };
 		_tcscpy_s(pstrPathName, 512, _T("../Assets/Model/"));

@@ -274,7 +274,7 @@ bool LoadMD5Model(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dComma
 				{
 					pxmf3Positions[i].x = subset.vertices[i].pos.x;
 					pxmf3Positions[i].y = subset.vertices[i].pos.y;
-					pxmf3Positions[i].z = -1 * subset.vertices[i].pos.z;
+					pxmf3Positions[i].z = -1 *subset.vertices[i].pos.z;
 				}
 				pxmf3Normals = new XMFLOAT3[nVertices];
 				for (int i = 0; i < nVertices; i++)
@@ -556,7 +556,7 @@ void UpdateMD5Model(Model3D & MD5Model, float deltaTime, int animation, CMesh*& 
 		{
 			MD5Model.subsets[k].vertices[i].pos = MD5Model.subsets[k].positions[i];
 		}
-		pMesh->A->CopyData((MD5Model.subsets[k].vertices.size()), MD5Model.subsets[k].vertices[0]);
+		pMesh->A->CopyData(0, MD5Model.subsets[k].vertices[0], (MD5Model.subsets[k].vertices.size()));
 
 	}
 }
