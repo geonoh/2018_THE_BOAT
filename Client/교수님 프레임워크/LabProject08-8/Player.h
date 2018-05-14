@@ -102,6 +102,6 @@ public:
 	virtual ~CAirplanePlayer();
 
 	virtual CCamera *ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed);
-	virtual void OnPlayerUpdateCallback(float fTimeElapsed);
-	virtual void OnCameraUpdateCallback(float fTimeElapsed);
+	/*virtual void OnPlayerUpdateCallback(float fTimeElapsed);
+	virtual void OnCameraUpdateCallback(float fTimeElapsed);*/
 };

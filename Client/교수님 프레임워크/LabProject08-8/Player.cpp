@@ -328,35 +328,35 @@ CCamera *CAirplanePlayer::ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed)
 	return(m_pCamera);
 }
 
-void CAirplanePlayer::OnPlayerUpdateCallback(float fTimeElapsed)
-{
-	CHeightMapTerrain *pTerrain = (CHeightMapTerrain *)m_pPlayerUpdatedContext;
-	XMFLOAT3 xmf3Scale = pTerrain->GetScale();
-	XMFLOAT3 xmf3PlayerPosition = GetPosition();
-	int z = (int)(xmf3PlayerPosition.z / xmf3Scale.z);
-	bool bReverseQuad = ((z % 2) != 0);
-	float fHeight = pTerrain->GetHeight(xmf3PlayerPosition.x, xmf3PlayerPosition.z, bReverseQuad) + 6.0f;
-	
-	XMFLOAT3 xmf3PlayerVelocity = GetVelocity();
-	xmf3PlayerVelocity.y = 0.0f;
-	SetVelocity(xmf3PlayerVelocity);
-	xmf3PlayerPosition.y = fHeight;
-	SetPosition(xmf3PlayerPosition);
-}
-
-void CAirplanePlayer::OnCameraUpdateCallback(float fTimeElapsed)
-{
-	CHeightMapTerrain *pTerrain = (CHeightMapTerrain *)m_pCameraUpdatedContext;
-	XMFLOAT3 xmf3Scale = pTerrain->GetScale();
-	XMFLOAT3 xmf3CameraPosition = m_pCamera->GetPosition();
-	int z = (int)(xmf3CameraPosition.z / xmf3Scale.z);
-	bool bReverseQuad = ((z % 2) != 0);
-	float fHeight = pTerrain->GetHeight(xmf3CameraPosition.x, xmf3CameraPosition.z, bReverseQuad) + 5.0f;
-	xmf3CameraPosition.y = fHeight;
-	m_pCamera->SetPosition(xmf3CameraPosition);
-	if (m_pCamera->GetMode() == FIRST_PERSON_CAMERA)
-	{
-		CThirdPersonCamera *p3rdPersonCamera = (CThirdPersonCamera *)m_pCamera;
-		p3rdPersonCamera->SetLookAt(GetPosition());
-	}
-}
+//void CAirplanePlayer::OnPlayerUpdateCallback(float fTimeElapsed)
+//{
+//	CHeightMapTerrain *pTerrain = (CHeightMapTerrain *)m_pPlayerUpdatedContext;
+//	XMFLOAT3 xmf3Scale = pTerrain->GetScale();
+//	XMFLOAT3 xmf3PlayerPosition = GetPosition();
+//	int z = (int)(xmf3PlayerPosition.z / xmf3Scale.z);
+//	bool bReverseQuad = ((z % 2) != 0);
+//	float fHeight = pTerrain->GetHeight(xmf3PlayerPosition.x, xmf3PlayerPosition.z, bReverseQuad) + 6.0f;
+//	
+//	XMFLOAT3 xmf3PlayerVelocity = GetVelocity();
+//	xmf3PlayerVelocity.y = 0.0f;
+//	SetVelocity(xmf3PlayerVelocity);
+//	xmf3PlayerPosition.y = fHeight;
+//	SetPosition(xmf3PlayerPosition);
+//}
+//
+//void CAirplanePlayer::OnCameraUpdateCallback(float fTimeElapsed)
+//{
+//	CHeightMapTerrain *pTerrain = (CHeightMapTerrain *)m_pCameraUpdatedContext;
+//	XMFLOAT3 xmf3Scale = pTerrain->GetScale();
+//	XMFLOAT3 xmf3CameraPosition = m_pCamera->GetPosition();
+//	int z = (int)(xmf3CameraPosition.z / xmf3Scale.z);
+//	bool bReverseQuad = ((z % 2) != 0);
+//	float fHeight = pTerrain->GetHeight(xmf3CameraPosition.x, xmf3CameraPosition.z, bReverseQuad) + 5.0f;
+//	xmf3CameraPosition.y = fHeight;
+//	m_pCamera->SetPosition(xmf3CameraPosition);
+//	if (m_pCamera->GetMode() == FIRST_PERSON_CAMERA)
+//	{
+//		CThirdPersonCamera *p3rdPersonCamera = (CThirdPersonCamera *)m_pCamera;
+//		p3rdPersonCamera->SetLookAt(GetPosition());
+//	}
+//}

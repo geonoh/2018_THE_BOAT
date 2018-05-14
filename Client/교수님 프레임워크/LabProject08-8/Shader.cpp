@@ -948,8 +948,8 @@ void CFlowerShader::BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommand
 #ifndef _WITH_BATCH_MATERIAL
 				pRotatingObject->SetMaterial(pCubeMaterial);
 #endif
-				float xPosition = 500 + x * 10;
-				float zPosition = 1500 + z * 5;
+				float xPosition = 500 + x * 30;
+				float zPosition = 1000 + z * 30;
 				float fHeight = pTerrain->GetHeight(xPosition, zPosition);
 				pRotatingObject->SetPosition(xPosition, fHeight + (y * 3.0f * fyPitch) + 6.0f, zPosition);
 				if (y == 0)
@@ -1125,7 +1125,7 @@ void CBulletShader::BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommand
 				float xPosition = 510 + x * 10;
 				float zPosition = 1510 + z * 5;
 				float fHeight = pTerrain->GetHeight(xPosition, zPosition);
-				pRotatingObject->SetPosition(xPosition, fHeight + (y * 3.0f * fyPitch) + 40.0f, zPosition);
+				pRotatingObject->SetPosition(xPosition, -100, zPosition);
 				if (y == 0)
 				{
 					xmf3SurfaceNormal = pTerrain->GetNormal(xPosition, zPosition);

@@ -658,12 +658,12 @@ void CGameFramework::BuildObjects()
 	//m_pCamera = m_pPlayer[my_client_id]->GetCamera();
 
 #ifdef _WITH_APACHE_MODEL
-	m_pPlayer->SetPosition(XMFLOAT3(0.0f, 350.0f, -300.0f));
+	m_pPlayer->SetPosition(XMFLOAT3(0.0f, 0.0f, -300.0f));
 	m_pPlayer->Rotate(0.0f, -45.0f, 0.0f);
 #endif
 #ifdef _WITH_GUNSHIP_MODEL
 	for (int i = 0; i < 4; ++i)
-		m_pPlayer[i]->SetPosition(XMFLOAT3(200.0f + 30 * i, 200.0f, 1500.0f));
+		m_pPlayer[i]->SetPosition(XMFLOAT3(30 * i, - 100.0f, 0.0f));
 	//	m_pPlayer->Rotate(0.0f, 0.0f, 0.0f);
 #endif
 
