@@ -28,7 +28,9 @@ class ServerMgr
 	XMFLOAT3 collision_pos;
 	float client_hp[4] = { 0 };
 	int camera_id = 0;
+	string server_ip;
 public:
+	void IPInput();
 	void Initialize(HWND& hwnd);
 	void ClientError();
 	void ReadPacket();

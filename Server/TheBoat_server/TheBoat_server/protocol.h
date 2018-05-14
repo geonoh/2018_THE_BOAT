@@ -9,6 +9,9 @@
 #define CLIENT_BUF_SIZE		1024
 #define PIXER_PER_METER		50
 
+//Player Height
+#define PLAYER_HEIGHT		0.f
+
 // Server To Client
 #define SC_ENTER_PLAYER			1
 #define SC_POS					2
@@ -27,10 +30,10 @@
 #define SC_COLLSION_PB			10	// Collsion Player to Bullet
 
 // 화기류 연사속도 
-#define AR_SHOOTER				0.05f
+#define AR_SHOOTER				0.2f
 #define AR_SPEED				400.f
 //#define AR_SPEED				20.f
-#define MAX_BULLET_SIZE			40
+#define MAX_BULLET_SIZE			30
 #define RUN_SPEED				2.78f
 #define WALK_SPEED				1.67f
 

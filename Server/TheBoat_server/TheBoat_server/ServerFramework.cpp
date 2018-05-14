@@ -53,7 +53,7 @@ void ServerFramework::InitServer() {
 	if (retval == SOCKET_ERROR)
 		printf("listen 에러\n");
 
-	XMFLOAT3 xmf3Scale(8.0f, 2.f, 8.0f);
+	XMFLOAT3 xmf3Scale(8.0f, 1.f, 8.0f);
 	LPCTSTR file_name = _T("terrain18.raw");
 	height_map = new CHeightMapImage(file_name, 513, 513, xmf3Scale);
 
@@ -61,7 +61,7 @@ void ServerFramework::InitServer() {
 	for (int i = 0; i < MAXIMUM_PLAYER; ++i) {
 		clients[i].x = 450.f;
 		clients[i].z = 800.f;
-		clients[i].y = height_map->GetHeight(clients[i].x, clients[i].z);
+		clients[i].y = height_map->GetHeight(clients[i].x, clients[i].z) + PLAYER_HEIGHT;
 		clients[i].hp = 100.f;
 	}
 	client_lock.unlock();
@@ -325,10 +325,11 @@ void ServerFramework::WorkerThread() {
 				packets.id = client_id;
 				packets.size = sizeof(SC_PACKET_POS);
 				packets.type = SC_POS;
-				clients[client_id].y = height_map->GetHeight(clients[client_id].x, clients[client_id].z);
+				clients[client_id].y = height_map->GetHeight(clients[client_id].x, clients[client_id].z) + PLAYER_HEIGHT;
 				packets.x = clients[client_id].x;
 				packets.y = clients[client_id].y;
 				packets.z = clients[client_id].z;
+				printf("높이 : %f\n", clients[client_id].y);
 				for (int i = 0; i < MAXIMUM_PLAYER; ++i) {
 					if (clients[i].in_use == true) {
 						SendPacket(i, &packets);
@@ -356,7 +357,7 @@ void ServerFramework::WorkerThread() {
 							packets.size = sizeof(SC_PACKET_COLLISION);
 							packets.type = SC_COLLSION_PB;
 							packets.x = clients[j].bounding_box.Center.x;
-							packets.y = clients[j].bounding_box.Center.y;
+							packets.y = clients[j].bounding_box.Center.y + PLAYER_HEIGHT;
 							packets.z = clients[j].bounding_box.Center.z;
 							packets.client_id = j;
 							//
@@ -492,7 +493,7 @@ void ServerFramework::WorkerThread() {
 				clients[i].client_lock.unlock();
 				//client_lock.unlock();
 
-				XMFLOAT4X4 danwi(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, clients[i].x, height_map->GetHeight(clients[i].x, clients[i].z), clients[i].z, 1);
+				XMFLOAT4X4 danwi(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, clients[i].x, height_map->GetHeight(clients[i].x, clients[i].z) + PLAYER_HEIGHT, clients[i].z, 1);
 				clients[i].bounding_box.Transform(clients[i].bounding_box,
 					DirectX::XMLoadFloat4x4(&danwi));
 				XMStoreFloat4(&clients[i].bounding_box.Orientation, XMQuaternionNormalize(XMLoadFloat4(&clients[i].bounding_box.Orientation)));

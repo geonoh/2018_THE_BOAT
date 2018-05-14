@@ -47,6 +47,8 @@ CGameFramework::~CGameFramework()
 
 bool CGameFramework::OnCreate(HINSTANCE hInstance, HWND hMainWnd)
 {
+	// 이거 주석치고 아이피 부분 확인
+	server_mgr.IPInput();
 	m_hInstance = hInstance;
 	m_hWnd = hMainWnd;
 
@@ -571,8 +573,8 @@ LRESULT CALLBACK CGameFramework::OnProcessingWindowMessage(HWND hWnd, UINT nMess
 			m_pPlayer[server_mgr.GetClientID()]->SetPosition(server_mgr.ReturnXMFLOAT3(server_mgr.GetClientID()));
 			m_pScene->m_ppShaders[2]->SetPosition(server_mgr.GetBullet().id,
 				XMFLOAT3(server_mgr.GetBullet().x, server_mgr.GetBullet().y, server_mgr.GetBullet().z));
-			//printf("충돌지점 x : %f, y : %f, z : %f\n", server_mgr.ReturnCollsionPosition().x,
-			//	server_mgr.ReturnCollsionPosition().y, server_mgr.ReturnCollsionPosition().z);
+			printf("충돌지점 x : %f, y : %f, z : %f\n", server_mgr.ReturnCollsionPosition().x,
+				server_mgr.ReturnCollsionPosition().y, server_mgr.ReturnCollsionPosition().z);
 
 			//server_mgr.ReturnCollsionPosition();
 
@@ -883,7 +885,7 @@ void CGameFramework::FrameAdvance()
 
 	m_GameTimer.GetFrameRate(m_pszFrameRate + 12, 37);
 	::SetWindowText(m_hWnd, m_pszFrameRate);
-	for(int i=0;i<50;++i)
-		printf("%d\t", m_pszFrameRate[i]);
+	//for(int i=0;i<50;++i)
+	//	printf("%d\t", m_pszFrameRate[i]);
 }
 
