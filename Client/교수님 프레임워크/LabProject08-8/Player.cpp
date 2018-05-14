@@ -25,7 +25,10 @@ CPlayer::CPlayer(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dComman
 	m_fRoll = 0.0f;
 	m_fYaw = 0.0f;
 }
-
+void CPlayer::GetKeyInput(bool key) {
+	printf("%dÅ° ´©¸§\n",key);
+	animation_status = key;
+}
 CPlayer::~CPlayer()
 {
 	ReleaseShaderVariables();
@@ -236,7 +239,7 @@ CCamera *CPlayer::OnChangeCamera(DWORD nNewCameraMode, DWORD nCurrentCameraMode)
 
 void CPlayer::Animate(float fTimeElapsed)
 {
-	UpdateMD5Model(NewMD5Model, fTimeElapsed *1, 0, m_ppMeshes[0]);
+	UpdateMD5Model(NewMD5Model, fTimeElapsed *1, animation_status, m_ppMeshes[0]);
 	//printf("%f %f %f \n", GetPosition().x, GetPosition().y, GetPosition().z);
 	m_ppMeshes[0]->Upload();
 	m_xmf4x4ToParentTransform._11 = m_xmf3Right.x; m_xmf4x4ToParentTransform._12 = m_xmf3Right.y; m_xmf4x4ToParentTransform._13 = m_xmf3Right.z;

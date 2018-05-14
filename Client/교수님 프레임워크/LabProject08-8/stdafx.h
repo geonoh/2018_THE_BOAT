@@ -59,8 +59,8 @@ using Microsoft::WRL::ComPtr;
 //#define _WITH_APACHE_MODEL
 #define _WITH_GUNSHIP_MODEL
 
-#define FRAME_BUFFER_WIDTH			1280
-#define FRAME_BUFFER_HEIGHT			1024
+#define FRAME_BUFFER_WIDTH			800
+#define FRAME_BUFFER_HEIGHT			600
 
 #define MAX_LIGHTS					8 
 #define MAX_MATERIALS				64 
