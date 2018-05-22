@@ -246,7 +246,16 @@ void ServerMgr::SendPacket(int type) {
 		packet_buffer->type = CS_MOUSE_MOVE;
 		// 여기에 추가적으로 player의 look 벡터를 같이 해서 보내줘야한다. 
 		retval = WSASend(sock, &send_wsabuf, 1, &iobytes, 0, NULL, NULL);
+	case CS_PLAYER_READY:
+		packet_buffer->type = CS_PLAYER_READY;
+		retval = WSASend(sock, &send_wsabuf, 1, &iobytes, 0, NULL, NULL);
+		break;
+	case CS_PLAYER_READY_CANCLE:
+		packet_buffer->type = CS_PLAYER_READY_CANCLE;
+		retval = WSASend(sock, &send_wsabuf, 1, &iobytes, 0, NULL, NULL);
+		break;
 	}
+
 	if (retval == 1) {
 		int error_code = WSAGetLastError();
 		ErrorDisplay("[WSASend] 에러 : ", error_code);

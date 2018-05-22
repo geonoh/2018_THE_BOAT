@@ -37,7 +37,7 @@ class ServerFramework
 	// 5는 충돌체크전용
 	// 6은 플레이어 총알 생성
 	// 7은 총알 업데이트
-	OverlappedExtensionSet ol_ex[8];
+	OverlappedExtensionSet ol_ex[10];
 
 	Bullet bullets[4][MAX_BULLET_SIZE] = { 0 };
 	mutex bullet_lock;
@@ -66,7 +66,6 @@ public:
 
 	// 이 함수는 ElaspsedTime을 측정하는 스레드 함수이다.
 	//void TimerFunc();
-	void TimerSend(duration<float>& elapsed_time);
 	// ElapsedTime을 받아와서 업데이트 하는 함수이다. 
 	void Update(duration<float>& elapsed_time);
 	ServerFramework();

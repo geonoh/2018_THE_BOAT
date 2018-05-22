@@ -21,19 +21,19 @@
 #define SC_BULLET_POS			6	// Bullet Position
 
 // Server To Server
-#define SS_COLLISION			6
-#define SS_PLAYER_POS_UPDATE	7
-#define SS_BULLET_GENERATE		8
-#define SS_BULLET_UPDATE		9
+#define SS_COLLISION			7
+#define SS_PLAYER_POS_UPDATE	8
+#define SS_BULLET_GENERATE		9
+#define SS_BULLET_UPDATE		10
+#define SS_PLAYER_READY			11
 
 // Server To Client
-#define SC_COLLSION_PB			10	// Collsion Player to Bullet
+#define SC_COLLSION_PB			12	// Collsion Player to Bullet
 
 // Event Type
 #define SEND_TERM				50	// 0.05 초
-#define EVT_MOVE				11
-#define EVT_ITEM_GEN			12
-
+#define EVT_MOVE				13
+#define EVT_ITEM_GEN			14
 
 // 화기류 연사속도 
 #define AR_SHOOTER				0.2f
@@ -69,7 +69,8 @@
 #define CS_MOUSE_MOVE				21
 
 #define CS_PLAYER_READY		100
-#define CS_PLAYER_TEAM_SELECT	101
+#define CS_PLAYER_READY_CANCLE 101
+#define CS_PLAYER_TEAM_SELECT	102
 
 enum GameMode {
 	TEAM_MODE, MELEE

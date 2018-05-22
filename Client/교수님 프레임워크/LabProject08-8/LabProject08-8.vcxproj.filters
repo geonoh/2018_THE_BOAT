@@ -63,14 +63,14 @@
     <ClInclude Include="ServerMgr.h">
       <Filter>ServerMgr</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Server\TheBoat_server\TheBoat_server\protocol.h">
-      <Filter>ServerMgr</Filter>
-    </ClInclude>
     <ClInclude Include="MD5Loader.h">
       <Filter>소스 파일</Filter>
     </ClInclude>
     <ClInclude Include="UploadBuffer.h">
       <Filter>소스 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Server\TheBoat_server_Refectory\TheBoat_server\protocol.h">
+      <Filter>ServerMgr</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

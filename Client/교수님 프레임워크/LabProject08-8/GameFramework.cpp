@@ -366,6 +366,18 @@ void CGameFramework::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPA
 				is_pushed[CS_KEY_PRESS_SPACE] = true;
 			}
 		}
+		if (wParam == VK_F5) {
+			if (player_ready) {
+				printf("Ready 취소\n");
+				server_mgr.SendPacket(CS_PLAYER_READY_CANCLE);
+				player_ready = false;
+			}
+			else {
+				printf("Ready\n");
+				server_mgr.SendPacket(CS_PLAYER_READY);
+				player_ready = true;
+			}
+		}
 
 		// char 형 key들 입력 처리 
 		switch (key_buffer) {

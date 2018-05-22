@@ -256,8 +256,14 @@ void ServerFramework::ProcessPacket(int cl_id, char* packet) {
 		}
 		break;
 	}
-	case CS_PLAYER_READY:
-		player_ready[cl_id] = true;
+	case CS_PLAYER_READY: {
+		ol_ex[8].command = SS_PLAYER_READY;
+		PostQueuedCompletionStatus(iocp_handle, 0, cl_id, reinterpret_cast<WSAOVERLAPPED*>(&ol_ex[8]));
+		break;
+	}
+	case CS_PLAYER_READY_CANCLE:
+		ol_ex[9].command = CS_PLAYER_READY_CANCLE;
+		PostQueuedCompletionStatus(iocp_handle, 0, cl_id, reinterpret_cast<WSAOVERLAPPED*>(&ol_ex[9]));
 		break;
 	case CS_PLAYER_TEAM_SELECT:
 		break;
@@ -345,6 +351,29 @@ void ServerFramework::WorkerThread() {
 
 			AddTimer(0, EVT_MOVE, GetTickCount() + SEND_TERM);
 			delete overlapped_buffer;
+		}
+		else if (overlapped_buffer->command == SS_PLAYER_READY) {
+			int ready_count_buf = 0;
+			player_ready[client_id] = true;
+			printf("%d 플레이어 레디 했\n", client_id);
+
+			// 전체 플레이어 들어왔는지 확인 
+			for (int i = 0; i < MAXIMUM_PLAYER; ++i) {
+				if (player_ready[i])
+					ready_count_buf++;
+			}
+			if (ready_count_buf == MAXIMUM_PLAYER) {
+				printf("모든플레이어 레디 게임 시작\n");
+			}
+		}
+		else if (overlapped_buffer->command == CS_PLAYER_READY_CANCLE) {
+			player_ready[client_id] = true;
+			printf("%d 플레이어 레디 풂\n", client_id);
+
+			// 전체 플레이어 들어왔는지 확인 
+			for (int i = 0; i < MAXIMUM_PLAYER; ++i) {
+
+			}
 		}
 		// TimerThread에서 호출
 		// 1/20 마다 모든 플레이어에게 정보 전송
@@ -642,6 +671,10 @@ void ServerFramework::SendPacket(int cl_id, void* packet) {
 void ServerFramework::DisconnectPlayer(int cl_id) {
 	// 플레이어 접속 끊기
 	closesocket(clients[cl_id].s);
+
+	player_ready[cl_id] = false;
+
+
 	clients[cl_id].in_use = false;
 	printf("[DisconnectPlayer] ClientID : %d\n", cl_id);
 	SC_PACKET_REMOVE_PLAYER packet;
@@ -661,8 +694,10 @@ void ServerFramework::DisconnectPlayer(int cl_id) {
 bool ServerFramework::IsStartGame() {
 	int ready_counter = 0;
 	for (auto i = 0; i < MAXIMUM_PLAYER; ++i) {
-		if (player_ready[i] == true)
+		if (player_ready[i] == true) {
+			printf("%d번 플레이어 레디\n", i);
 			ready_counter++;
+		}
 	}
 	if (ready_counter == 4)
 		return true;
@@ -693,22 +728,9 @@ void ServerFramework::Update(duration<float>& elapsed_time) {
 	PostQueuedCompletionStatus(iocp_handle, 0, 7, reinterpret_cast<WSAOVERLAPPED*>(&ol_ex[7]));
 }
 
-void ServerFramework::TimerSend(duration<float>& elapsed_time) {
-	sender_time += elapsed_time.count();
-	if (sender_time >= UPDATE_TIME) {   // 1/60 초마다 데이터 송신
-		for (int i = 0; i < MAXIMUM_PLAYER; ++i) {
-			if (clients[i].is_move_backward || clients[i].is_move_foward || clients[i].is_move_left || clients[i].is_move_right) {
-				ol_ex[i].command = SC_PLAYER_MOVE;
-				PostQueuedCompletionStatus(iocp_handle, 0, i, reinterpret_cast<WSAOVERLAPPED*>(&ol_ex[i]));
-			}
-		}
-		sender_time = 0;
-	}
-}
-
 void ServerFramework::TimerThread() {
 	while (true) {
-		Sleep(10);
+		Sleep(1);
 		while (false == timer_queue.empty()) {
 			if (timer_queue.top().start_time >= GetTickCount())
 				break;

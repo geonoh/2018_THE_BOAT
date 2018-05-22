@@ -152,7 +152,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\Server\TheBoat_server\TheBoat_server\protocol.h" />
+    <ClInclude Include="..\..\..\Server\TheBoat_server_Refectory\TheBoat_server\protocol.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="DDSTextureLoader12.h" />
     <ClInclude Include="GameFramework.h" />
