@@ -4,10 +4,10 @@
 #define SERVER_PORT			4000
 #define MAX_BUFFER_SIZE		4000
 #define MAX_PACKET_SIZE		256
-#define MAXIMUM_PLAYER		4
+#define MAXIMUM_PLAYER		2
 #define	WM_SOCKET			WM_USER + 1
 #define CLIENT_BUF_SIZE		1024
-#define PIXER_PER_METER		50
+
 
 //Player Height
 #define PLAYER_HEIGHT		0.f

@@ -364,7 +364,16 @@ void ServerFramework::WorkerThread() {
 			}
 			if (ready_count_buf == MAXIMUM_PLAYER) {
 				printf("모든플레이어 레디 게임 시작\n");
+				printf("2분 후 아이템 드랍이 시작 됩니다. \n");
+				AddTimer(0, EVT_ITEM_GEN, GetTickCount() + ITEM_GEN_TIME);
 			}
+		}
+		else if (overlapped_buffer->command == EVT_ITEM_GEN) {
+			printf("아이템 짠짠★\n");
+
+			// 첫 번째 부품 생성 후 그 이후 부품을 생성해야한다. 
+			printf("2분 후 아이템 드랍이 시작 됩니다. \n");
+			AddTimer(0, EVT_ITEM_GEN, GetTickCount() + ITEM_GEN_TIME);
 		}
 		else if (overlapped_buffer->command == CS_PLAYER_READY_CANCLE) {
 			player_ready[client_id] = true;
@@ -509,42 +518,42 @@ void ServerFramework::WorkerThread() {
 				clients[i].client_lock.lock();
 				if (clients[i].is_move_foward) {
 					if (clients[i].is_running) {
-						clients[i].z += PIXER_PER_METER * clients[i].look_vec.z * (RUN_SPEED * overlapped_buffer->elapsed_time);
-						clients[i].x += PIXER_PER_METER * clients[i].look_vec.x * (RUN_SPEED * overlapped_buffer->elapsed_time);
+						clients[i].z += METER_PER_PIXEL * clients[i].look_vec.z * (RUN_SPEED * overlapped_buffer->elapsed_time);
+						clients[i].x += METER_PER_PIXEL * clients[i].look_vec.x * (RUN_SPEED * overlapped_buffer->elapsed_time);
 					}
 					else {
-						clients[i].z += PIXER_PER_METER * clients[i].look_vec.z * (WALK_SPEED * overlapped_buffer->elapsed_time);
-						clients[i].x += PIXER_PER_METER * clients[i].look_vec.x * (WALK_SPEED * overlapped_buffer->elapsed_time);
+						clients[i].z += METER_PER_PIXEL * clients[i].look_vec.z * (WALK_SPEED * overlapped_buffer->elapsed_time);
+						clients[i].x += METER_PER_PIXEL * clients[i].look_vec.x * (WALK_SPEED * overlapped_buffer->elapsed_time);
 					}
 				}
 				if (clients[i].is_move_backward) {
 					if (clients[i].is_running) {
-						clients[i].z += (-1) * PIXER_PER_METER * clients[i].look_vec.z * (RUN_SPEED * overlapped_buffer->elapsed_time);
-						clients[i].x += (-1) * PIXER_PER_METER * clients[i].look_vec.x * (RUN_SPEED * overlapped_buffer->elapsed_time);
+						clients[i].z += (-1) * METER_PER_PIXEL * clients[i].look_vec.z * (RUN_SPEED * overlapped_buffer->elapsed_time);
+						clients[i].x += (-1) * METER_PER_PIXEL * clients[i].look_vec.x * (RUN_SPEED * overlapped_buffer->elapsed_time);
 					}
 					else {
-						clients[i].z += (-1) * PIXER_PER_METER * clients[i].look_vec.z * (WALK_SPEED * overlapped_buffer->elapsed_time);
-						clients[i].x += (-1) * PIXER_PER_METER * clients[i].look_vec.x * (WALK_SPEED * overlapped_buffer->elapsed_time);
+						clients[i].z += (-1) * METER_PER_PIXEL * clients[i].look_vec.z * (WALK_SPEED * overlapped_buffer->elapsed_time);
+						clients[i].x += (-1) * METER_PER_PIXEL * clients[i].look_vec.x * (WALK_SPEED * overlapped_buffer->elapsed_time);
 					}
 				}
 				if (clients[i].is_move_left) {
 					if (clients[i].is_running) {
-						clients[i].z += PIXER_PER_METER * clients[i].look_vec.x * (RUN_SPEED * overlapped_buffer->elapsed_time);
-						clients[i].x += (-1) * PIXER_PER_METER * clients[i].look_vec.z * (RUN_SPEED * overlapped_buffer->elapsed_time);
+						clients[i].z += METER_PER_PIXEL * clients[i].look_vec.x * (RUN_SPEED * overlapped_buffer->elapsed_time);
+						clients[i].x += (-1) * METER_PER_PIXEL * clients[i].look_vec.z * (RUN_SPEED * overlapped_buffer->elapsed_time);
 					}
 					else {
-						clients[i].z += PIXER_PER_METER * clients[i].look_vec.x * (WALK_SPEED * overlapped_buffer->elapsed_time);
-						clients[i].x += (-1) * PIXER_PER_METER * clients[i].look_vec.z * (WALK_SPEED * overlapped_buffer->elapsed_time);
+						clients[i].z += METER_PER_PIXEL * clients[i].look_vec.x * (WALK_SPEED * overlapped_buffer->elapsed_time);
+						clients[i].x += (-1) * METER_PER_PIXEL * clients[i].look_vec.z * (WALK_SPEED * overlapped_buffer->elapsed_time);
 					}
 				}
 				if (clients[i].is_move_right) {
 					if (clients[i].is_running) {
-						clients[i].z += (-1) * PIXER_PER_METER * clients[i].look_vec.x * (RUN_SPEED * overlapped_buffer->elapsed_time);
-						clients[i].x += PIXER_PER_METER * clients[i].look_vec.z * (RUN_SPEED * overlapped_buffer->elapsed_time);
+						clients[i].z += (-1) * METER_PER_PIXEL * clients[i].look_vec.x * (RUN_SPEED * overlapped_buffer->elapsed_time);
+						clients[i].x += METER_PER_PIXEL * clients[i].look_vec.z * (RUN_SPEED * overlapped_buffer->elapsed_time);
 					}
 					else {
-						clients[i].z += (-1) * PIXER_PER_METER * clients[i].look_vec.x * (WALK_SPEED * overlapped_buffer->elapsed_time);
-						clients[i].x += PIXER_PER_METER * clients[i].look_vec.z * (WALK_SPEED * overlapped_buffer->elapsed_time);
+						clients[i].z += (-1) * METER_PER_PIXEL * clients[i].look_vec.x * (WALK_SPEED * overlapped_buffer->elapsed_time);
+						clients[i].x += METER_PER_PIXEL * clients[i].look_vec.z * (WALK_SPEED * overlapped_buffer->elapsed_time);
 					}
 
 				}
@@ -593,9 +602,9 @@ void ServerFramework::WorkerThread() {
 				for (int j = 0; j < MAX_BULLET_SIZE; ++j) {
 					//bullet_lock.lock();
 					if (bullets[i][j].in_use) {
-						bullets[i][j].x += PIXER_PER_METER * bullets[i][j].look_vec.x * (AR_SPEED * overlapped_buffer->elapsed_time);
-						bullets[i][j].y += PIXER_PER_METER * bullets[i][j].look_vec.y * (AR_SPEED * overlapped_buffer->elapsed_time);
-						bullets[i][j].z += PIXER_PER_METER * bullets[i][j].look_vec.z * (AR_SPEED * overlapped_buffer->elapsed_time);
+						bullets[i][j].x += METER_PER_PIXEL * bullets[i][j].look_vec.x * (AR_SPEED * overlapped_buffer->elapsed_time);
+						bullets[i][j].y += METER_PER_PIXEL * bullets[i][j].look_vec.y * (AR_SPEED * overlapped_buffer->elapsed_time);
+						bullets[i][j].z += METER_PER_PIXEL * bullets[i][j].look_vec.z * (AR_SPEED * overlapped_buffer->elapsed_time);
 						//printf("총알 진행중\n");
 
 						XMFLOAT4X4 danwi(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, bullets[i][j].x, bullets[i][j].y, bullets[i][j].z, 1);
