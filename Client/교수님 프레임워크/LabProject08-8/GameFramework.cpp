@@ -604,29 +604,17 @@ LRESULT CALLBACK CGameFramework::OnProcessingWindowMessage(HWND hWnd, UINT nMess
 				m_pCamera = m_pPlayer[my_client_id]->GetCamera();
 				printf("카메라는 %d에 고정\n", my_client_id);
 				first_recv = false;
+
+				// 변경사항 (추가)
+				m_pPlayer[server_mgr.GetClientID()]->SetPosition(server_mgr.ReturnXMFLOAT3(server_mgr.GetClientID()));
 			}
-			m_pPlayer[server_mgr.GetClientID()]->SetPosition(server_mgr.ReturnXMFLOAT3(server_mgr.GetClientID()));
+
+			if (server_mgr.GetClientID() != my_client_id)
+				m_pPlayer[server_mgr.GetClientID()]->SetPosition(server_mgr.ReturnXMFLOAT3(server_mgr.GetClientID()));
+
 			m_pScene->m_ppShaders[2]->SetPosition(server_mgr.GetBullet().id,
 				XMFLOAT3(server_mgr.GetBullet().x, server_mgr.GetBullet().y, server_mgr.GetBullet().z));
-			//printf("충돌지점 x : %f, y : %f, z : %f\n", server_mgr.ReturnCollsionPosition().x,
-			//	server_mgr.ReturnCollsionPosition().y, server_mgr.ReturnCollsionPosition().z);
 
-			//server_mgr.ReturnCollsionPosition();
-
-
-
-
-				//printf("%d번 플레이어 좌표 FD_READ, x : %f, y : %f, z : %f\n", server_mgr.GetClientID()
-			
-			//server_mgr.ReturnCollsionPosition();
-			//printf("%d�� �÷��̾� ��ǥ FD_READ, x : %f, y : %f, z : %f\n", server_mgr.GetClientID()
-			//	, m_pPlayer[server_mgr.GetClientID()]->GetPosition().x,
-			//	m_pPlayer[server_mgr.GetClientID()]->GetPosition().y,
-			//	m_pPlayer[server_mgr.GetClientID()]->GetPosition().z);
-			//printf("%d번 플레이어 LOOKVEC FD_READ, x : %f, y : %f, z : %f\n", server_mgr.GetClientID()
-			//	, m_pPlayer[server_mgr.GetClientID()]->GetLookVector().x,
-			//	m_pPlayer[server_mgr.GetClientID()]->GetLookVector().y,
-			//	m_pPlayer[server_mgr.GetClientID()]->GetLookVector().z);
 
 			// 본인 플레이어 외의 플레이어가 올때만 LookVector을 셋팅해준다.
 			if (server_mgr.GetClientID() != my_client_id)
@@ -735,10 +723,10 @@ void CGameFramework::ProcessInput()
 	{
 		DWORD dwDirection = 0;
 		// 플레이어 움직임 (중요)
-		//if (pKeysBuffer[0x57] & 0xF0) dwDirection |= DIR_FORWARD;
-		//if (pKeysBuffer[0x53] & 0xF0) dwDirection |= DIR_BACKWARD;
-		//if (pKeysBuffer[0x41] & 0xF0) dwDirection |= DIR_LEFT;
-		//if (pKeysBuffer[0x44] & 0xF0) dwDirection |= DIR_RIGHT;
+		if (pKeysBuffer[0x57] & 0xF0) dwDirection |= DIR_FORWARD;
+		if (pKeysBuffer[0x53] & 0xF0) dwDirection |= DIR_BACKWARD;
+		if (pKeysBuffer[0x41] & 0xF0) dwDirection |= DIR_LEFT;
+		if (pKeysBuffer[0x44] & 0xF0) dwDirection |= DIR_RIGHT;
 		if (pKeysBuffer[VK_PRIOR] & 0xF0) dwDirection |= DIR_UP;
 		if (pKeysBuffer[VK_NEXT] & 0xF0) dwDirection |= DIR_DOWN;
 		/*if (pKeysBuffer[VK_SPACE] & 0xF0) {	// 총알발사
