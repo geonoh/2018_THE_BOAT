@@ -7,9 +7,10 @@
 #define MAXIMUM_PLAYER		2
 #define	WM_SOCKET			WM_USER + 1
 #define CLIENT_BUF_SIZE		1024
+#define MAX_BULLET_SIZE			30
 
 
-//Player Height
+//Player Height // 어차피 발바닥이 닿으므로 필요 없?
 #define PLAYER_HEIGHT		0.f
 
 // Server To Client
@@ -19,29 +20,17 @@
 #define SC_PLAYER_MOVE			4
 #define SC_PLAYER_LOOKVEC		5
 #define SC_BULLET_POS			6	// Bullet Position
+#define SC_COLLSION_PB			7	// Collsion Player to Bullet
 
 // Server To Server
-#define SS_COLLISION			7
-#define SS_PLAYER_POS_UPDATE	8
-#define SS_BULLET_GENERATE		9
-#define SS_BULLET_UPDATE		10
-#define SS_PLAYER_READY			11
+#define SS_COLLISION			8
+#define SS_PLAYER_POS_UPDATE	9
+#define SS_BULLET_GENERATE		10
+#define SS_BULLET_UPDATE		11
+#define SS_PLAYER_READY			12
+#define SS_PLAYER_MOVE			13
+#define SS_ITEM_GEN				14
 
-// Server To Client
-#define SC_COLLSION_PB			12	// Collsion Player to Bullet
-
-// Event Type
-#define SEND_TERM				50	// 0.05 초
-#define EVT_MOVE				13
-#define EVT_ITEM_GEN			14
-
-// 화기류 연사속도 
-#define AR_SHOOTER				0.2f
-#define AR_SPEED				400.f
-//#define AR_SPEED				20.f
-#define MAX_BULLET_SIZE			30
-#define RUN_SPEED				2.78f
-#define WALK_SPEED				1.67f
 
 // Client To Server
 #define CS_KEY_PRESS_UP			1
@@ -91,18 +80,6 @@ struct SC_PACKET_ENTER_PLAYER {
 	BYTE type;
 	WORD id;
 	float x, y, z;
-};
-
-struct SC_PACKET_MOVING {
-	BYTE size;
-	BYTE type;
-	WORD id;
-};
-
-struct SC_PACKET_RUNNING {
-	BYTE size;
-	BYTE type;
-	WORD id;
 };
 
 struct SC_PACKET_LOOCVEC {

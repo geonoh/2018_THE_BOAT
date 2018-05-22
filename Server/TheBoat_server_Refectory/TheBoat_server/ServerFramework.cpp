@@ -82,7 +82,7 @@ void ServerFramework::InitServer() {
 	}
 
 	// 플레이어에게 위치 정보 보내는거 Timer화 시키기
-	AddTimer(0, EVT_MOVE, GetTickCount() + SEND_TERM);
+	AddTimer(0, SS_PLAYER_MOVE, GetTickCount() + SEND_TERM);
 }
 
 void ServerFramework::AcceptPlayer() {
@@ -326,7 +326,7 @@ void ServerFramework::WorkerThread() {
 			}
 
 		}
-		else if (overlapped_buffer->command == EVT_MOVE) {
+		else if (overlapped_buffer->command == SS_PLAYER_MOVE) {
 			for (int i = 0; i < MAXIMUM_PLAYER; ++i) {
 				if (clients[i].in_use) {
 					if (clients[i].is_move_backward || clients[i].is_move_foward || clients[i].is_move_left || clients[i].is_move_right) {
@@ -349,7 +349,7 @@ void ServerFramework::WorkerThread() {
 				}
 			}
 
-			AddTimer(0, EVT_MOVE, GetTickCount() + SEND_TERM);
+			AddTimer(0, SS_PLAYER_MOVE, GetTickCount() + SEND_TERM);
 			delete overlapped_buffer;
 		}
 		else if (overlapped_buffer->command == SS_PLAYER_READY) {
@@ -365,15 +365,15 @@ void ServerFramework::WorkerThread() {
 			if (ready_count_buf == MAXIMUM_PLAYER) {
 				printf("모든플레이어 레디 게임 시작\n");
 				printf("2분 후 아이템 드랍이 시작 됩니다. \n");
-				AddTimer(0, EVT_ITEM_GEN, GetTickCount() + ITEM_GEN_TIME);
+				AddTimer(0, SS_ITEM_GEN, GetTickCount() + ITEM_GEN_TIME);
 			}
 		}
-		else if (overlapped_buffer->command == EVT_ITEM_GEN) {
+		else if (overlapped_buffer->command == SS_ITEM_GEN) {
 			printf("아이템 짠짠★\n");
 
 			// 첫 번째 부품 생성 후 그 이후 부품을 생성해야한다. 
 			printf("2분 후 아이템 드랍이 시작 됩니다. \n");
-			AddTimer(0, EVT_ITEM_GEN, GetTickCount() + ITEM_GEN_TIME);
+			AddTimer(0, SS_ITEM_GEN, GetTickCount() + ITEM_GEN_TIME);
 		}
 		else if (overlapped_buffer->command == CS_PLAYER_READY_CANCLE) {
 			player_ready[client_id] = true;
