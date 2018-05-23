@@ -345,10 +345,10 @@ void CGameFramework::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM
 			printf("마우스 벡터 x : %f, y : %f, z : %f \n", 
 				m_pPlayer[my_client_id]->GetLook().x, m_pPlayer[my_client_id]->GetLook().y, m_pPlayer[my_client_id]->GetLook().z);
 
-			server_mgr.SendPacket(CS_MOUSE_MOVE, m_pPlayer[my_client_id]->GetLook());
+			//server_mgr.SendPacket(CS_MOUSE_MOVE, m_pPlayer[my_client_id]->GetLook());
 			mouse_moving_counter = 0;
 		}
-
+		server_mgr.SendPacket(CS_MOUSE_MOVE, m_pPlayer[my_client_id]->GetLook());
 
 		mouse_moving_counter++;
 
@@ -609,8 +609,17 @@ LRESULT CALLBACK CGameFramework::OnProcessingWindowMessage(HWND hWnd, UINT nMess
 				m_pPlayer[server_mgr.GetClientID()]->SetPosition(server_mgr.ReturnXMFLOAT3(server_mgr.GetClientID()));
 			}
 
-			if (server_mgr.GetClientID() != my_client_id)
+			//m_pPlayer[server_mgr.GetClientID()]->SetPosition(server_mgr.ReturnXMFLOAT3(server_mgr.GetClientID()));
+			if (server_mgr.GetClientID() == my_client_id) {
+				player_moving_counter++;
+				if (player_moving_counter == 150) {
+					m_pPlayer[server_mgr.GetClientID()]->SetPosition(server_mgr.ReturnXMFLOAT3(server_mgr.GetClientID()));
+					player_moving_counter = 0;
+				}
+			}
+			else {
 				m_pPlayer[server_mgr.GetClientID()]->SetPosition(server_mgr.ReturnXMFLOAT3(server_mgr.GetClientID()));
+			}
 
 			m_pScene->m_ppShaders[2]->SetPosition(server_mgr.GetBullet().id,
 				XMFLOAT3(server_mgr.GetBullet().x, server_mgr.GetBullet().y, server_mgr.GetBullet().z));
@@ -664,7 +673,7 @@ void CGameFramework::OnDestroy()
 
 	if (m_pd3dFence) m_pd3dFence->Release();
 
-	m_pdxgiSwapChain->SetFullscreenState(FALSE, NULL);
+	m_pdxgiSwapChain->SetFullscreenState(TRUE, NULL);
 	if (m_pdxgiSwapChain) m_pdxgiSwapChain->Release();
 	if (m_pd3dDevice) m_pd3dDevice->Release();
 	if (m_pdxgiFactory) m_pdxgiFactory->Release();
@@ -761,7 +770,8 @@ void CGameFramework::ProcessInput()
 				}
 				if (dwDirection) {
 					for (int i = 0; i < MAXIMUM_PLAYER; ++i) {
-						m_pPlayer[i]->Move(dwDirection, 50.0f * m_GameTimer.GetTimeElapsed(), true);
+						// 중요
+						m_pPlayer[i]->Move(dwDirection, WALK_SPEED * METER_PER_PIXEL * m_GameTimer.GetTimeElapsed(), false);
 					}
 				}
 			}
@@ -776,7 +786,8 @@ void CGameFramework::ProcessInput()
 				}
 				if (dwDirection) {
 					for (int i = 0; i < MAXIMUM_PLAYER; ++i) {
-						m_pPlayer[i]->Move(dwDirection, 50.0f * m_GameTimer.GetTimeElapsed(), true);
+						// 중요
+						m_pPlayer[i]->Move(dwDirection, WALK_SPEED * METER_PER_PIXEL * m_GameTimer.GetTimeElapsed(), false);
 					}
 				}
 			}

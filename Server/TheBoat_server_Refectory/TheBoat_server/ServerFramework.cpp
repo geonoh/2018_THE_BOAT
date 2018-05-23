@@ -181,15 +181,22 @@ void ServerFramework::ProcessPacket(int cl_id, char* packet) {
 	switch (packet_buffer->type) {
 	case CS_KEY_PRESS_UP:
 		clients[cl_id].is_move_foward = true;
+		clients[cl_id].look_vec = packet_buffer->look_vec;
+
+		printf("%d 플레이어의 Look Vector %f, %f, %f\n",cl_id,clients[cl_id].look_vec.x,
+			clients[cl_id].look_vec.y, clients[cl_id].look_vec.z);
 		break;
 	case CS_KEY_PRESS_DOWN:
 		clients[cl_id].is_move_backward = true;
+		clients[cl_id].look_vec = packet_buffer->look_vec;
 		break;
 	case CS_KEY_PRESS_LEFT:
 		clients[cl_id].is_move_left = true;
+		clients[cl_id].look_vec = packet_buffer->look_vec;
 		break;
 	case CS_KEY_PRESS_RIGHT:
 		clients[cl_id].is_move_right = true;
+		clients[cl_id].look_vec = packet_buffer->look_vec;
 		break;
 
 	case CS_KEY_PRESS_1:

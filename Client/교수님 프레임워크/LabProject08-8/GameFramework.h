@@ -26,6 +26,7 @@ private:
 
 	// 마우스 움직임을 누적시켜 일정 이상이 될때만 서버에 전송한다.
 	int mouse_moving_counter = 0;
+	int player_moving_counter = 0;
 public:
 	static int my_client_id;
 public:

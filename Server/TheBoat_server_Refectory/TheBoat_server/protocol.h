@@ -9,6 +9,11 @@
 #define CLIENT_BUF_SIZE		1024
 #define MAX_BULLET_SIZE			30
 
+// 본인 클라이언트 및 서버에서 사용
+#define RUN_SPEED				2.78f
+#define METER_PER_PIXEL			20
+#define WALK_SPEED				1.67f
+
 
 //Player Height // 어차피 발바닥이 닿으므로 필요 없?
 #define PLAYER_HEIGHT		0.f

@@ -271,18 +271,22 @@ void ServerMgr::SendPacket(int type, XMFLOAT3& xmvector) {
 	switch (type) {
 	case CS_KEY_PRESS_UP:
 		packet_buffer->type = CS_KEY_PRESS_UP;
+		packet_buffer->look_vec = xmvector;
 		retval = WSASend(sock, &send_wsabuf, 1, &iobytes, 0, NULL, NULL);
 		break;
 	case CS_KEY_PRESS_DOWN:
 		packet_buffer->type = CS_KEY_PRESS_DOWN;
+		packet_buffer->look_vec = xmvector;
 		retval = WSASend(sock, &send_wsabuf, 1, &iobytes, 0, NULL, NULL);
 		break;
 	case CS_KEY_PRESS_RIGHT:
 		packet_buffer->type = CS_KEY_PRESS_RIGHT;
+		packet_buffer->look_vec = xmvector;
 		retval = WSASend(sock, &send_wsabuf, 1, &iobytes, 0, NULL, NULL);
 		break;
 	case CS_KEY_PRESS_LEFT:
 		packet_buffer->type = CS_KEY_PRESS_LEFT;
+		packet_buffer->look_vec = xmvector;
 		retval = WSASend(sock, &send_wsabuf, 1, &iobytes, 0, NULL, NULL);
 		break;
 
