@@ -80,15 +80,15 @@ CMeshTextured::CMeshTextured(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList
 CMeshTextured::CMeshTextured(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, UINT nVertices, XMFLOAT3 *pxmf3Positions, XMFLOAT2 *pxmf2UVs, UINT nIndices, UINT *pnIndices) : CMesh(pd3dDevice, pd3dCommandList)
 {
 	A = new UploadBuffer<Vertex1>(pd3dDevice, nVertices, true);
-	m_nStride = sizeof(CTexturedVertex);
+	m_nStride = sizeof(Vertex1);
 	m_nVertices = nVertices;
 
 	CTexturedVertex *pVertices = new CTexturedVertex[m_nVertices];
 	for (UINT i = 0; i < m_nVertices; i++) pVertices[i] = CTexturedVertex(pxmf3Positions[i], pxmf2UVs[i]);
 
-	m_pd3dVertexBuffer = ::CreateBufferResource(pd3dDevice, pd3dCommandList, pVertices, m_nStride * m_nVertices, D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, &m_pd3dVertexUploadBuffer);
-
-	m_d3dVertexBufferView.BufferLocation = m_pd3dVertexBuffer->GetGPUVirtualAddress();
+	//m_pd3dVertexBuffer = ::CreateBufferResource(pd3dDevice, pd3dCommandList, pVertices, m_nStride * m_nVertices, D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, &m_pd3dVertexUploadBuffer);
+	m_d3dVertexBufferView.BufferLocation = A->mUploadBuffer->GetGPUVirtualAddress();
+	//m_d3dVertexBufferView.BufferLocation = m_pd3dVertexBuffer->GetGPUVirtualAddress();
 	m_d3dVertexBufferView.StrideInBytes = m_nStride;
 	m_d3dVertexBufferView.SizeInBytes = m_nStride * m_nVertices;
 

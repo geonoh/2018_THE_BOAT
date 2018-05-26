@@ -453,9 +453,10 @@ void CGameObject::LoadFrameHierarchyFromFile(ID3D12Device *pd3dDevice, ID3D12Gra
 
 	ID3D12Resource *pd3dcbResource = CreateShaderVariables(pd3dDevice, pd3dCommandList);
 
-	CIlluminatedTexturedShader *pShader = new CIlluminatedTexturedShader();
+	
+	CTexturedShader *pShader = new CTexturedShader();
 	pShader->CreateShader(pd3dDevice, pd3dGraphicsRootSignature);
-	pShader->CreateShaderVariables(pd3dDevice, pd3dCommandList);
+	//pShader->CreateShaderVariables(pd3dDevice, pd3dCommandList);
 	pShader->CreateCbvAndSrvDescriptorHeaps(pd3dDevice, pd3dCommandList, 1, 1);
 	pShader->CreateConstantBufferViews(pd3dDevice, pd3dCommandList, 1, pd3dcbResource, ncbElementBytes);
 	pShader->CreateShaderResourceViews(pd3dDevice, pd3dCommandList, pTexture, 5, true);

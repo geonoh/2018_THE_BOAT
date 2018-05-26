@@ -305,7 +305,7 @@ bool LoadMD5Model(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dComma
 				//pMesh = new CMeshTextured(pd3dDevice, pd3dCommandList, subset.indices.size(), aaa, pxmf2texCoord, subset.indices.size(), pnIndices);
 
 				//pMesh = new CMeshTextured(pd3dDevice, pd3dCommandList, numVerts, pxmf3Positions, pxmf2texCoord, subset.indices.size(), pnIndices);
-				pMesh = new CMeshIlluminatedTextured(pd3dDevice, pd3dCommandList, numVerts, pxmf3Positions, pxmf3Normals, pxmf2texCoord, subset.indices.size(), pnIndices);
+				pMesh = new CMeshTextured(pd3dDevice, pd3dCommandList, numVerts, pxmf3Positions, pxmf2texCoord, subset.indices.size(), pnIndices);
 				
 				MD5Model.subsets.push_back(subset);
 			}
@@ -557,7 +557,7 @@ void UpdateMD5Model(Model3D & MD5Model, float deltaTime, int animation, CMesh*& 
 			MD5Model.subsets[k].vertices[i].pos = MD5Model.subsets[k].positions[i];
 			MD5Model.subsets[k].vertices[i].pos.x = MD5Model.subsets[k].positions[i].x;
 			MD5Model.subsets[k].vertices[i].pos.y = MD5Model.subsets[k].positions[i].y;
-			MD5Model.subsets[k].vertices[i].pos.z = -1 * MD5Model.subsets[k].positions[i].z;
+			MD5Model.subsets[k].vertices[i].pos.z = MD5Model.subsets[k].positions[i].z;
 		}
 		pMesh->A->CopyData(0, MD5Model.subsets[k].vertices[0], (MD5Model.subsets[k].vertices.size()));
 
