@@ -46,7 +46,6 @@ using namespace std;
 #include <assert.h>
 #include <algorithm>
 #include <memory.h>
-#include <fbxsdk.h>
 #include <atomic>
 
 #include "d3dx12.h"

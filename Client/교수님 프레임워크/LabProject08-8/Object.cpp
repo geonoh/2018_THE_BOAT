@@ -436,116 +436,33 @@ void CGameObject::Rotate(XMFLOAT4 *pxmf4Quaternion)
 
 void CGameObject::LoadFrameHierarchyFromFile(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, ID3D12RootSignature *pd3dGraphicsRootSignature, UINT nFrame, ModelSubset ModelData)
 {
-	XMFLOAT3 *pxmf3Positions = NULL, *pxmf3Normals = NULL;
-	XMFLOAT2 *pxmf3TextureCoords0 = NULL, *pxmf3TextureCoords1 = NULL;
-	UINT *pnIndices = NULL;
-
-	TCHAR pstrMeshName[64] = { '\0' };
-	TCHAR pstrAlbedoTextureName[64] = { '\0' };
-	TCHAR pstrToken[64] = { '\0' };
-	TCHAR pstrDebug[128] = { '\0' };
-
-	XMFLOAT3 xmf3FrameLocalPosition, xmf3FrameLocalRotation, xmf3FrameLocalScale, xmf3FrameScale;
-	XMFLOAT4 xmf4FrameLocalQuaternion, xmf4MaterialAlbedo;
-	int nVertices = 0, nNormals = 0, nTextureCoords = 0, nIndices = 0;
-
-
-	nVertices = nNormals = nTextureCoords = nIndices = 0;
-	xmf4MaterialAlbedo = XMFLOAT4(-1.0f, -1.0f, -1.0f, -1.0f);
-	pxmf3Positions = pxmf3Normals = NULL;
-	pxmf3TextureCoords0 = pxmf3TextureCoords1 = NULL;
-	pstrAlbedoTextureName[0] = '\0';
-	pnIndices = NULL;
-
-	nVertices = 1590;
-	pxmf3Positions = new XMFLOAT3[nVertices];
-	nNormals = 1590;
-	pxmf3Normals = new XMFLOAT3[nNormals];
 	CMesh *pMesh = NULL;
 	CMaterial *pMaterial = NULL;
-	if ((nNormals > 0) && (nTextureCoords > 0) && (pstrAlbedoTextureName[0] != '\0'))
-	{
-		LoadMD5Model(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, L"../Assets/Model/1313.MD5MESH", NewMD5Model, meshSRV, textureNameArray, pMesh);
-		LoadMD5Anim(L"../Assets/Model/WarriorIdle.MD5ANIM", NewMD5Model);
 
-		TCHAR pstrPathName[512] = { '\0' };
-		_tcscpy_s(pstrPathName, 512, _T("../Assets/Model/"));
-		_tcscat_s(pstrPathName, 512, _T("demo_soldier"));
-		_tcscat_s(pstrPathName, 512, _T(".dds"));
+	LoadMD5Model(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, L"../Assets/Model/66.MD5MESH", NewMD5Model, meshSRV, textureNameArray, pMesh);
+	LoadMD5Anim(L"../Assets/Model/898.MD5ANIM", NewMD5Model);
+	LoadMD5Anim(L"../Assets/Model/24.MD5ANIM", NewMD5Model);
 
-		//if (nVertices > 0) pMesh = new CMeshIlluminatedTextured(pd3dDevice, pd3dCommandList, nVertices, pxmf3Positions, pxmf3Normals, pxmf3TextureCoords0, nIndices, pnIndices);
+	CTexture *pTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0);
+	pTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Model/demo_soldier.dds", 0);
 
 
-		CTexture *pTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0);
-		pTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, pstrPathName, 0);
+	pMaterial = new CMaterial();
+	pMaterial->SetTexture(pTexture);
+	UINT ncbElementBytes = ((sizeof(CB_GAMEOBJECT_INFO) + 255) & ~255);
 
-		pMaterial = new CMaterial();
-		pMaterial->m_xmf4Albedo = xmf4MaterialAlbedo;
+	ID3D12Resource *pd3dcbResource = CreateShaderVariables(pd3dDevice, pd3dCommandList);
 
-		pMaterial->SetTexture(pTexture);
+	CIlluminatedTexturedShader *pShader = new CIlluminatedTexturedShader();
+	pShader->CreateShader(pd3dDevice, pd3dGraphicsRootSignature);
+	pShader->CreateShaderVariables(pd3dDevice, pd3dCommandList);
+	pShader->CreateCbvAndSrvDescriptorHeaps(pd3dDevice, pd3dCommandList, 1, 1);
+	pShader->CreateConstantBufferViews(pd3dDevice, pd3dCommandList, 1, pd3dcbResource, ncbElementBytes);
+	pShader->CreateShaderResourceViews(pd3dDevice, pd3dCommandList, pTexture, 5, true);
 
-		UINT ncbElementBytes = ((sizeof(CB_GAMEOBJECT_INFO) + 255) & ~255);
+	SetCbvGPUDescriptorHandle(pShader->GetGPUCbvDescriptorStartHandle());
 
-		ID3D12Resource *pd3dcbResource = CreateShaderVariables(pd3dDevice, pd3dCommandList);
-
-		CIlluminatedTexturedShader *pShader = new CIlluminatedTexturedShader();
-		pShader->CreateShader(pd3dDevice, pd3dGraphicsRootSignature);
-		pShader->CreateShaderVariables(pd3dDevice, pd3dCommandList);
-		pShader->CreateCbvAndSrvDescriptorHeaps(pd3dDevice, pd3dCommandList, 1, 1);
-		pShader->CreateConstantBufferViews(pd3dDevice, pd3dCommandList, 1, pd3dcbResource, ncbElementBytes);
-		pShader->CreateShaderResourceViews(pd3dDevice, pd3dCommandList, pTexture, 5, true);
-
-		SetCbvGPUDescriptorHandle(pShader->GetGPUCbvDescriptorStartHandle());
-
-		pMaterial->SetShader(pShader);
-	}
-	else if (nNormals > 0)
-	{
-		LoadMD5Model(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, L"../Assets/Model/66.MD5MESH", NewMD5Model, meshSRV, textureNameArray, pMesh);
-		LoadMD5Anim(L"../Assets/Model/898.MD5ANIM", NewMD5Model);
-		LoadMD5Anim(L"../Assets/Model/24.MD5ANIM", NewMD5Model);
-
-		TCHAR pstrPathName[512] = { '\0' };
-		_tcscpy_s(pstrPathName, 512, _T("../Assets/Model/"));
-		_tcscat_s(pstrPathName, 512, _T("demo_soldier"));
-		_tcscat_s(pstrPathName, 512, _T(".dds"));
-
-		//if (nVertices > 0) pMesh = new CMeshIlluminated(pd3dDevice, pd3dCommandList, nVertices, pxmf3Positions, pxmf3Normals, nIndices, pnIndices);
-
-		CTexture *pTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0);
-		pTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Model/demo_soldier.dds", 0);
-
-
-		pMaterial = new CMaterial();
-		pMaterial->m_xmf4Albedo = xmf4MaterialAlbedo;
-		//pMaterial->SetTexture(pTexture);
-		
-		
-
-		UINT ncbElementBytes = ((sizeof(CB_GAMEOBJECT_INFO) + 255) & ~255);
-
-		ID3D12Resource *pd3dcbResource = CreateShaderVariables(pd3dDevice, pd3dCommandList);
-
-		CIlluminatedShader *pShader = new CIlluminatedShader();
-		pShader->CreateShader(pd3dDevice, pd3dGraphicsRootSignature);
-		pShader->CreateShaderVariables(pd3dDevice, pd3dCommandList);
-		pShader->CreateCbvAndSrvDescriptorHeaps(pd3dDevice, pd3dCommandList, 1, 0);
-		pShader->CreateConstantBufferViews(pd3dDevice, pd3dCommandList, 1, pd3dcbResource, ncbElementBytes);
-		//pShader->CreateShaderResourceViews(pd3dDevice, pd3dCommandList, pTexture, 5, true);
-
-
-		SetCbvGPUDescriptorHandle(pShader->GetGPUCbvDescriptorStartHandle());
-
-		pMaterial->SetShader(pShader);
-	}
-	else if (nTextureCoords > 0)
-	{
-		if (nVertices > 0) pMesh = new CMeshTextured(pd3dDevice, pd3dCommandList, nVertices, pxmf3Positions, pxmf3TextureCoords0, nIndices, pnIndices);
-	}
-	else
-	{
-		if (nVertices > 0) pMesh = new CMesh(pd3dDevice, pd3dCommandList, nVertices, pxmf3Positions, nIndices, pnIndices);
-	}
+	pMaterial->SetShader(pShader);
 
 	if (pMesh)
 		SetMesh(0, pMesh);
@@ -553,12 +470,6 @@ void CGameObject::LoadFrameHierarchyFromFile(ID3D12Device *pd3dDevice, ID3D12Gra
 		ResizeMeshes(0);
 
 	if (pMaterial) SetMaterial(pMaterial);
-
-	if (pxmf3Positions) delete[] pxmf3Positions;
-	if (pxmf3Normals) delete[] pxmf3Normals;
-	if (pxmf3TextureCoords0) delete[] pxmf3TextureCoords0;
-	if (pxmf3TextureCoords1) delete[] pxmf3TextureCoords1;
-	if (pnIndices) delete[] pnIndices;
 }
 
 void CGameObject::PrintFrameInfo(CGameObject *pGameObject, CGameObject *pParent)
