@@ -609,17 +609,17 @@ LRESULT CALLBACK CGameFramework::OnProcessingWindowMessage(HWND hWnd, UINT nMess
 				m_pPlayer[server_mgr.GetClientID()]->SetPosition(server_mgr.ReturnXMFLOAT3(server_mgr.GetClientID()));
 			}
 
-			//m_pPlayer[server_mgr.GetClientID()]->SetPosition(server_mgr.ReturnXMFLOAT3(server_mgr.GetClientID()));
-			if (server_mgr.GetClientID() == my_client_id) {
-				player_moving_counter++;
-				if (player_moving_counter == 150) {
-					m_pPlayer[server_mgr.GetClientID()]->SetPosition(server_mgr.ReturnXMFLOAT3(server_mgr.GetClientID()));
-					player_moving_counter = 0;
-				}
-			}
-			else {
-				m_pPlayer[server_mgr.GetClientID()]->SetPosition(server_mgr.ReturnXMFLOAT3(server_mgr.GetClientID()));
-			}
+			m_pPlayer[server_mgr.GetClientID()]->SetPosition(server_mgr.ReturnXMFLOAT3(server_mgr.GetClientID()));
+			//if (server_mgr.GetClientID() == my_client_id) {
+			//	player_moving_counter++;
+			//	if (player_moving_counter == 150) {
+			//		m_pPlayer[server_mgr.GetClientID()]->SetPosition(server_mgr.ReturnXMFLOAT3(server_mgr.GetClientID()));
+			//		player_moving_counter = 0;
+			//	}
+			//}
+			//else {
+			//	m_pPlayer[server_mgr.GetClientID()]->SetPosition(server_mgr.ReturnXMFLOAT3(server_mgr.GetClientID()));
+			//}
 
 			m_pScene->m_ppShaders[2]->SetPosition(server_mgr.GetBullet().id,
 				XMFLOAT3(server_mgr.GetBullet().x, server_mgr.GetBullet().y, server_mgr.GetBullet().z));
@@ -732,10 +732,10 @@ void CGameFramework::ProcessInput()
 	{
 		DWORD dwDirection = 0;
 		// 플레이어 움직임 (중요)
-		if (pKeysBuffer[0x57] & 0xF0) dwDirection |= DIR_FORWARD;
-		if (pKeysBuffer[0x53] & 0xF0) dwDirection |= DIR_BACKWARD;
-		if (pKeysBuffer[0x41] & 0xF0) dwDirection |= DIR_LEFT;
-		if (pKeysBuffer[0x44] & 0xF0) dwDirection |= DIR_RIGHT;
+		//if (pKeysBuffer[0x57] & 0xF0) dwDirection |= DIR_FORWARD;
+		//if (pKeysBuffer[0x53] & 0xF0) dwDirection |= DIR_BACKWARD;
+		//if (pKeysBuffer[0x41] & 0xF0) dwDirection |= DIR_LEFT;
+		//if (pKeysBuffer[0x44] & 0xF0) dwDirection |= DIR_RIGHT;
 		if (pKeysBuffer[VK_PRIOR] & 0xF0) dwDirection |= DIR_UP;
 		if (pKeysBuffer[VK_NEXT] & 0xF0) dwDirection |= DIR_DOWN;
 		/*if (pKeysBuffer[VK_SPACE] & 0xF0) {	// 총알발사
