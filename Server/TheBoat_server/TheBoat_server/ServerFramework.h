@@ -24,7 +24,7 @@ class ServerFramework
 	// 5는 충돌체크전용
 	// 6은 플레이어 총알 생성
 	// 7은 총알 업데이트
-	OverlappedExtensionSet ol_ex[8];
+	OverlappedExtensionSet ol_ex[20];
 
 	Bullet bullets[4][MAX_BULLET_SIZE] = { 0 };
 	mutex bullet_lock;
@@ -42,7 +42,6 @@ public:
 	void SendPacket(int cl_id, void* packet);		//
 	void ProcessPacket(int cl_id, char* packet);	// 패킷 수신후 정리해서 송신
 	void DisconnectPlayer(int cl_id);				// 플레이어 접속 해지
-	bool IsStartGame();
 
 	// 이 함수는 ElaspsedTime을 측정하는 스레드 함수이다.
 	//void TimerFunc();
