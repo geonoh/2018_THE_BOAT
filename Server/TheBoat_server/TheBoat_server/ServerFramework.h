@@ -1,5 +1,20 @@
 #pragma once
 class CHeightMapImage;
+
+struct Event {
+	int id;
+	int type;
+	unsigned int start_time;
+	int target;
+};
+
+class Comp {
+public:
+	bool operator() (const Event& left, const Event& right) {
+		return (left.start_time > right.start_time);
+	}
+};
+
 class ServerFramework
 {
 	WSADATA wsa;
@@ -34,6 +49,8 @@ class ServerFramework
 
 	// 플레이어마다 bullet 시간을 가지고 있다. 
 	float bullet_times[4];
+
+	priority_queue < Event, vector<Event>, Comp> timer_queue;
 
 public:
 	void InitServer();
