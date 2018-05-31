@@ -320,7 +320,7 @@ void CGameFramework::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM
 		else
 			CShader::shootBullet = 0;
 
-		server_mgr.SendPacket(CS_MOUSE_MOVE, m_pPlayer[my_client_id]->GetLook());
+		//server_mgr.SendPacket(CS_MOUSE_MOVE, m_pPlayer[my_client_id]->GetLook());
 		server_mgr.SendPacket(CS_LEFT_BUTTON_DOWN, m_pPlayer[my_client_id]->GetLook());
 		break;
 	case WM_RBUTTONDOWN:
@@ -330,8 +330,9 @@ void CGameFramework::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM
 		m_pCamera = m_pPlayer[my_client_id]->ChangeCamera(SPACESHIP_CAMERA, m_GameTimer.GetTimeElapsed());	// 마우스 우클시 카메라 변환
 		printf("마우스 우클릭\n");
 		break;
+
 	case WM_LBUTTONUP:
-		server_mgr.SendPacket(CS_MOUSE_MOVE, m_pPlayer[my_client_id]->GetLook());
+		//server_mgr.SendPacket(CS_MOUSE_MOVE, m_pPlayer[my_client_id]->GetLook());
 		server_mgr.SendPacket(CS_LEFT_BUTTON_UP, m_pPlayer[my_client_id]->GetLook());
 		break;
 	case WM_RBUTTONUP:
@@ -341,16 +342,16 @@ void CGameFramework::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM
 	case WM_MOUSEMOVE:
 		//printf("마우스 벡터 x : %f, y : %f, z : %f \n", 
 		//	m_pPlayer[my_client_id]->GetLook().x, m_pPlayer[my_client_id]->GetLook().y, m_pPlayer[my_client_id]->GetLook().z);
-		if (mouse_moving_counter > 100) {
-			printf("마우스 벡터 x : %f, y : %f, z : %f \n", 
-				m_pPlayer[my_client_id]->GetLook().x, m_pPlayer[my_client_id]->GetLook().y, m_pPlayer[my_client_id]->GetLook().z);
+		//if (mouse_moving_counter > 100) {
+		//	printf("마우스 벡터 x : %f, y : %f, z : %f \n", 
+		//		m_pPlayer[my_client_id]->GetLook().x, m_pPlayer[my_client_id]->GetLook().y, m_pPlayer[my_client_id]->GetLook().z);
 
-			//server_mgr.SendPacket(CS_MOUSE_MOVE, m_pPlayer[my_client_id]->GetLook());
-			mouse_moving_counter = 0;
-		}
+		//	//server_mgr.SendPacket(CS_MOUSE_MOVE, m_pPlayer[my_client_id]->GetLook());
+		//	mouse_moving_counter = 0;
+		//}
 		server_mgr.SendPacket(CS_MOUSE_MOVE, m_pPlayer[my_client_id]->GetLook());
 
-		mouse_moving_counter++;
+		//mouse_moving_counter++;
 
 		//원래는 이거만 있어씀
 		//server_mgr.SendPacket(CS_MOUSE_MOVE, m_pPlayer[my_client_id]->GetLook());
@@ -604,12 +605,12 @@ LRESULT CALLBACK CGameFramework::OnProcessingWindowMessage(HWND hWnd, UINT nMess
 				m_pCamera = m_pPlayer[my_client_id]->GetCamera();
 				printf("카메라는 %d에 고정\n", my_client_id);
 				first_recv = false;
-
-				// 변경사항 (추가)
-				m_pPlayer[server_mgr.GetClientID()]->SetPosition(server_mgr.ReturnXMFLOAT3(server_mgr.GetClientID()));
 			}
 
 			m_pPlayer[server_mgr.GetClientID()]->SetPosition(server_mgr.ReturnXMFLOAT3(server_mgr.GetClientID()));
+			m_pScene->m_ppShaders[2]->SetPosition(server_mgr.GetBullet().id,
+				XMFLOAT3(server_mgr.GetBullet().x, server_mgr.GetBullet().y, server_mgr.GetBullet().z));
+
 			//if (server_mgr.GetClientID() == my_client_id) {
 			//	player_moving_counter++;
 			//	if (player_moving_counter == 150) {

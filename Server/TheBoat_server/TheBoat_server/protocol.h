@@ -4,13 +4,16 @@
 #define SERVER_PORT			4000
 #define MAX_BUFFER_SIZE		4000
 #define MAX_PACKET_SIZE		256
-#define MAXIMUM_PLAYER		4
+#define MAXIMUM_PLAYER		2
 #define	WM_SOCKET			WM_USER + 1
 #define CLIENT_BUF_SIZE		1024
-#define PIXER_PER_METER		50
+#define MAX_BULLET_SIZE			30
 
-//Player Height
-#define PLAYER_HEIGHT		0.f
+// 본인 클라이언트 및 서버에서 사용
+#define RUN_SPEED				2.78f
+#define METER_PER_PIXEL			20
+#define WALK_SPEED				1.67f
+
 
 // Server To Client
 #define SC_ENTER_PLAYER			1
@@ -19,23 +22,17 @@
 #define SC_PLAYER_MOVE			4
 #define SC_PLAYER_LOOKVEC		5
 #define SC_BULLET_POS			6	// Bullet Position
+#define SC_COLLSION_PB			7	// Collsion Player to Bullet
 
 // Server To Server
-#define SS_COLLISION			6
-#define SS_PLAYER_POS_UPDATE	7
-#define SS_BULLET_GENERATE		8
-#define SS_BULLET_UPDATE		9
+#define SS_COLLISION			8
+#define SS_PLAYER_POS_UPDATE	9
+#define SS_BULLET_GENERATE		10
+#define SS_BULLET_UPDATE		11
+#define SS_PLAYER_READY			12
+#define SS_PLAYER_MOVE			13
+#define SS_ITEM_GEN				14
 
-// Server To Client
-#define SC_COLLSION_PB			10	// Collsion Player to Bullet
-
-// 화기류 연사속도 
-#define AR_SHOOTER				0.2f
-#define AR_SPEED				400.f
-//#define AR_SPEED				20.f
-#define MAX_BULLET_SIZE			30
-#define RUN_SPEED				2.78f
-#define WALK_SPEED				1.67f
 
 // Client To Server
 #define CS_KEY_PRESS_UP			1
@@ -63,7 +60,8 @@
 #define CS_MOUSE_MOVE				21
 
 #define CS_PLAYER_READY		100
-#define CS_PLAYER_TEAM_SELECT	101
+#define CS_PLAYER_READY_CANCLE 101
+#define CS_PLAYER_TEAM_SELECT	102
 
 enum GameMode {
 	TEAM_MODE, MELEE
@@ -84,18 +82,6 @@ struct SC_PACKET_ENTER_PLAYER {
 	BYTE type;
 	WORD id;
 	float x, y, z;
-};
-
-struct SC_PACKET_MOVING {
-	BYTE size;
-	BYTE type;
-	WORD id;
-};
-
-struct SC_PACKET_RUNNING {
-	BYTE size;
-	BYTE type;
-	WORD id;
 };
 
 struct SC_PACKET_LOOCVEC {

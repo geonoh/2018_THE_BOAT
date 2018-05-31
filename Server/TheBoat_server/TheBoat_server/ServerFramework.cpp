@@ -61,7 +61,7 @@ void ServerFramework::InitServer() {
 	for (int i = 0; i < MAXIMUM_PLAYER; ++i) {
 		clients[i].x = 450.f;
 		clients[i].z = 800.f;
-		clients[i].y = height_map->GetHeight(clients[i].x, clients[i].z) + PLAYER_HEIGHT;
+		clients[i].y = height_map->GetHeight(clients[i].x, clients[i].z);
 		clients[i].hp = 100.f;
 	}
 	client_lock.unlock();
@@ -232,8 +232,13 @@ void ServerFramework::ProcessPacket(int cl_id, char* packet) {
 		break;
 
 	case CS_LEFT_BUTTON_DOWN:
+		printf("[%d] 플레이어 좌클릭\n", cl_id);
 		clients[cl_id].is_left_click = true;
-		//bullet_counter[cl_id]++;
+		ol_ex[6].command = SS_BULLET_GENERATE;
+		ol_ex[6].shooter_player_id = cl_id;
+		//ol_ex[6].elapsed_time = elapsed_time.count();
+		PostQueuedCompletionStatus(iocp_handle, 0, 6, reinterpret_cast<WSAOVERLAPPED*>(&ol_ex[6]));
+
 		break;
 	case CS_LEFT_BUTTON_UP:
 		clients[cl_id].is_left_click = false;
@@ -254,7 +259,12 @@ void ServerFramework::ProcessPacket(int cl_id, char* packet) {
 		break;
 	}
 	case CS_PLAYER_READY:
+		printf("%d 플레이어 레디\n", cl_id);
 		player_ready[cl_id] = true;
+		break;
+	case CS_PLAYER_READY_CANCLE:
+		printf("%d 플레이어 레디취소\n", cl_id);
+		player_ready[cl_id] = false;
 		break;
 	case CS_PLAYER_TEAM_SELECT:
 		break;
@@ -325,7 +335,7 @@ void ServerFramework::WorkerThread() {
 				packets.id = client_id;
 				packets.size = sizeof(SC_PACKET_POS);
 				packets.type = SC_POS;
-				clients[client_id].y = height_map->GetHeight(clients[client_id].x, clients[client_id].z) + PLAYER_HEIGHT;
+				clients[client_id].y = height_map->GetHeight(clients[client_id].x, clients[client_id].z);
 				packets.x = clients[client_id].x;
 				packets.y = clients[client_id].y;
 				packets.z = clients[client_id].z;
@@ -357,7 +367,8 @@ void ServerFramework::WorkerThread() {
 							packets.size = sizeof(SC_PACKET_COLLISION);
 							packets.type = SC_COLLSION_PB;
 							packets.x = clients[j].bounding_box.Center.x;
-							packets.y = clients[j].bounding_box.Center.y + PLAYER_HEIGHT;
+							// 플레이어의 키 만큼 반영해서
+							packets.y = clients[j].bounding_box.Center.y;
 							packets.z = clients[j].bounding_box.Center.z;
 							packets.client_id = j;
 							//
@@ -451,49 +462,49 @@ void ServerFramework::WorkerThread() {
 				clients[i].client_lock.lock();
 				if (clients[i].is_move_foward) {
 					if (clients[i].is_running) {
-						clients[i].z += PIXER_PER_METER * clients[i].look_vec.z * (RUN_SPEED * overlapped_buffer->elapsed_time);
-						clients[i].x += PIXER_PER_METER * clients[i].look_vec.x * (RUN_SPEED * overlapped_buffer->elapsed_time);
+						clients[i].z += METER_PER_PIXEL * clients[i].look_vec.z * (RUN_SPEED * overlapped_buffer->elapsed_time);
+						clients[i].x += METER_PER_PIXEL * clients[i].look_vec.x * (RUN_SPEED * overlapped_buffer->elapsed_time);
 					}
 					else {
-						clients[i].z += PIXER_PER_METER * clients[i].look_vec.z * (WALK_SPEED * overlapped_buffer->elapsed_time);
-						clients[i].x += PIXER_PER_METER * clients[i].look_vec.x * (WALK_SPEED * overlapped_buffer->elapsed_time);
+						clients[i].z += METER_PER_PIXEL * clients[i].look_vec.z * (WALK_SPEED * overlapped_buffer->elapsed_time);
+						clients[i].x += METER_PER_PIXEL * clients[i].look_vec.x * (WALK_SPEED * overlapped_buffer->elapsed_time);
 					}
 				}
 				if (clients[i].is_move_backward) {
 					if (clients[i].is_running) {
-						clients[i].z += (-1) * PIXER_PER_METER * clients[i].look_vec.z * (RUN_SPEED * overlapped_buffer->elapsed_time);
-						clients[i].x += (-1) * PIXER_PER_METER * clients[i].look_vec.x * (RUN_SPEED * overlapped_buffer->elapsed_time);
+						clients[i].z += (-1) * METER_PER_PIXEL * clients[i].look_vec.z * (RUN_SPEED * overlapped_buffer->elapsed_time);
+						clients[i].x += (-1) * METER_PER_PIXEL * clients[i].look_vec.x * (RUN_SPEED * overlapped_buffer->elapsed_time);
 					}
 					else {
-						clients[i].z += (-1) * PIXER_PER_METER * clients[i].look_vec.z * (WALK_SPEED * overlapped_buffer->elapsed_time);
-						clients[i].x += (-1) * PIXER_PER_METER * clients[i].look_vec.x * (WALK_SPEED * overlapped_buffer->elapsed_time);
+						clients[i].z += (-1) * METER_PER_PIXEL * clients[i].look_vec.z * (WALK_SPEED * overlapped_buffer->elapsed_time);
+						clients[i].x += (-1) * METER_PER_PIXEL * clients[i].look_vec.x * (WALK_SPEED * overlapped_buffer->elapsed_time);
 					}
 				}
 				if (clients[i].is_move_left) {
 					if (clients[i].is_running) {
-						clients[i].z += PIXER_PER_METER * clients[i].look_vec.x * (RUN_SPEED * overlapped_buffer->elapsed_time);
-						clients[i].x += (-1) * PIXER_PER_METER * clients[i].look_vec.z * (RUN_SPEED * overlapped_buffer->elapsed_time);
+						clients[i].z += METER_PER_PIXEL * clients[i].look_vec.x * (RUN_SPEED * overlapped_buffer->elapsed_time);
+						clients[i].x += (-1) * METER_PER_PIXEL * clients[i].look_vec.z * (RUN_SPEED * overlapped_buffer->elapsed_time);
 					}
 					else {
-						clients[i].z += PIXER_PER_METER * clients[i].look_vec.x * (WALK_SPEED * overlapped_buffer->elapsed_time);
-						clients[i].x += (-1) * PIXER_PER_METER * clients[i].look_vec.z * (WALK_SPEED * overlapped_buffer->elapsed_time);
+						clients[i].z += METER_PER_PIXEL * clients[i].look_vec.x * (WALK_SPEED * overlapped_buffer->elapsed_time);
+						clients[i].x += (-1) * METER_PER_PIXEL * clients[i].look_vec.z * (WALK_SPEED * overlapped_buffer->elapsed_time);
 					}
 				}
 				if (clients[i].is_move_right) {
 					if (clients[i].is_running) {
-						clients[i].z += (-1) * PIXER_PER_METER * clients[i].look_vec.x * (RUN_SPEED * overlapped_buffer->elapsed_time);
-						clients[i].x += PIXER_PER_METER * clients[i].look_vec.z * (RUN_SPEED * overlapped_buffer->elapsed_time);
+						clients[i].z += (-1) * METER_PER_PIXEL * clients[i].look_vec.x * (RUN_SPEED * overlapped_buffer->elapsed_time);
+						clients[i].x += METER_PER_PIXEL * clients[i].look_vec.z * (RUN_SPEED * overlapped_buffer->elapsed_time);
 					}
 					else {
-						clients[i].z += (-1) * PIXER_PER_METER * clients[i].look_vec.x * (WALK_SPEED * overlapped_buffer->elapsed_time);
-						clients[i].x += PIXER_PER_METER * clients[i].look_vec.z * (WALK_SPEED * overlapped_buffer->elapsed_time);
+						clients[i].z += (-1) * METER_PER_PIXEL * clients[i].look_vec.x * (WALK_SPEED * overlapped_buffer->elapsed_time);
+						clients[i].x += METER_PER_PIXEL * clients[i].look_vec.z * (WALK_SPEED * overlapped_buffer->elapsed_time);
 					}
 
 				}
 				clients[i].client_lock.unlock();
 				//client_lock.unlock();
 
-				XMFLOAT4X4 danwi(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, clients[i].x, height_map->GetHeight(clients[i].x, clients[i].z) + PLAYER_HEIGHT, clients[i].z, 1);
+				XMFLOAT4X4 danwi(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, clients[i].x, height_map->GetHeight(clients[i].x, clients[i].z), clients[i].z, 1);
 				clients[i].bounding_box.Transform(clients[i].bounding_box,
 					DirectX::XMLoadFloat4x4(&danwi));
 				XMStoreFloat4(&clients[i].bounding_box.Orientation, XMQuaternionNormalize(XMLoadFloat4(&clients[i].bounding_box.Orientation)));
@@ -503,30 +514,48 @@ void ServerFramework::WorkerThread() {
 			}
 		}
 		else if (overlapped_buffer->command == SS_BULLET_GENERATE) {
-			for (int i = 0; i < MAXIMUM_PLAYER; ++i) {
-				if (clients[i].is_left_click) {
-					bullet_lock.lock();
-					bullet_times[i] += overlapped_buffer->elapsed_time;
-					if (bullet_times[i] >= AR_SHOOTER) {
-						if (bullet_counter[i] > MAX_BULLET_SIZE - 2) {
-							for (int d = 0; d < MAX_BULLET_SIZE; ++d) {
-								bullets[i][d].in_use = false;
-							}
-							bullet_counter[i] = 0;
-							printf("총알 초기화\n");
-							//break;
-						}
-						bullets[i][bullet_counter[i]].x = clients[i].x;
-						bullets[i][bullet_counter[i]].y = clients[i].y;
-						bullets[i][bullet_counter[i]].z = clients[i].z;
-						bullets[i][bullet_counter[i]].look_vec = clients[i].look_vec;
-						bullets[i][bullet_counter[i]].in_use = true;
-						bullet_counter[i]++;
-						bullet_times[i] = 0;
-					}
-					bullet_lock.unlock();
+			int shooter_id = overlapped_buffer->shooter_player_id;
+			if (bullet_counter[shooter_id] > MAX_BULLET_SIZE - 2) {
+				for (int d = 0; d < MAX_BULLET_SIZE; ++d) {
+					bullets[shooter_id][d].in_use = false;
 				}
+				bullet_counter[shooter_id] = 0;
+				printf("총알 초기화\n");
+				//break;
 			}
+			bullets[shooter_id][bullet_counter[shooter_id]].x = clients[shooter_id].x;
+			bullets[shooter_id][bullet_counter[shooter_id]].y = clients[shooter_id].y;
+			bullets[shooter_id][bullet_counter[shooter_id]].z = clients[shooter_id].z;
+			bullets[shooter_id][bullet_counter[shooter_id]].look_vec = clients[shooter_id].look_vec;
+			bullets[shooter_id][bullet_counter[shooter_id]].in_use = true;
+			bullet_counter[shooter_id]++;
+			bullet_times[shooter_id] = 0;
+			printf("총알 생성\n");
+
+			//for (int i = 0; i < MAXIMUM_PLAYER; ++i) {
+			//	if (clients[i].is_left_click) {
+			//		bullet_lock.lock();
+			//		//bullet_times[i] += overlapped_buffer->elapsed_time;
+			//		//if (bullet_times[i] >= AR_SHOOTER) {
+			//			if (bullet_counter[i] > MAX_BULLET_SIZE - 2) {
+			//				for (int d = 0; d < MAX_BULLET_SIZE; ++d) {
+			//					bullets[i][d].in_use = false;
+			//				}
+			//				bullet_counter[i] = 0;
+			//				printf("총알 초기화\n");
+			//				//break;
+			//			}
+			//			bullets[i][bullet_counter[i]].x = clients[i].x;
+			//			bullets[i][bullet_counter[i]].y = clients[i].y;
+			//			bullets[i][bullet_counter[i]].z = clients[i].z;
+			//			bullets[i][bullet_counter[i]].look_vec = clients[i].look_vec;
+			//			bullets[i][bullet_counter[i]].in_use = true;
+			//			bullet_counter[i]++;
+			//			bullet_times[i] = 0;
+			//		//}
+			//		bullet_lock.unlock();
+			//	}
+			//}
 		}
 		else if (overlapped_buffer->command == SS_BULLET_UPDATE) {
 			// i 가 플레이어
@@ -535,9 +564,9 @@ void ServerFramework::WorkerThread() {
 				for (int j = 0; j < MAX_BULLET_SIZE; ++j) {
 					//bullet_lock.lock();
 					if (bullets[i][j].in_use) {
-						bullets[i][j].x += PIXER_PER_METER * bullets[i][j].look_vec.x * (AR_SPEED * overlapped_buffer->elapsed_time);
-						bullets[i][j].y += PIXER_PER_METER * bullets[i][j].look_vec.y * (AR_SPEED * overlapped_buffer->elapsed_time);
-						bullets[i][j].z += PIXER_PER_METER * bullets[i][j].look_vec.z * (AR_SPEED * overlapped_buffer->elapsed_time);
+						bullets[i][j].x += METER_PER_PIXEL * bullets[i][j].look_vec.x * (AR_SPEED * overlapped_buffer->elapsed_time);
+						bullets[i][j].y += METER_PER_PIXEL * bullets[i][j].look_vec.y * (AR_SPEED * overlapped_buffer->elapsed_time);
+						bullets[i][j].z += METER_PER_PIXEL * bullets[i][j].look_vec.z * (AR_SPEED * overlapped_buffer->elapsed_time);
 						//printf("총알 진행중\n");
 
 						XMFLOAT4X4 danwi(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, bullets[i][j].x, bullets[i][j].y, bullets[i][j].z, 1);
@@ -547,6 +576,10 @@ void ServerFramework::WorkerThread() {
 						bullets[i][j].bounding_box.Extents.x = OBB_SCALE_BULLET_X;
 						bullets[i][j].bounding_box.Extents.y = OBB_SCALE_BULLET_Y;
 						bullets[i][j].bounding_box.Extents.z = OBB_SCALE_BULLET_Z;
+						//printf("[%d] Bullet pos [ %f, %f, %f ] \n", j,
+						//	bullets[i][j].x,
+						//	bullets[i][j].y,
+						//	bullets[i][j].z);
 
 					}
 					if (bullets[i][j].x >= 4000.f || bullets[i][j].x <= 0) {
@@ -630,18 +663,6 @@ void ServerFramework::DisconnectPlayer(int cl_id) {
 
 }
 
-bool ServerFramework::IsStartGame() {
-	int ready_counter = 0;
-	for (auto i = 0; i < MAXIMUM_PLAYER; ++i) {
-		if (player_ready[i] == true)
-			ready_counter++;
-	}
-	if (ready_counter == 4)
-		return true;
-	else
-		return false;
-}
-
 void ServerFramework::Update(duration<float>& elapsed_time) {
 
 	Sleep(1);   // 이거 붙여야 뒤쪽 이동할때 잘 가는데
@@ -655,9 +676,6 @@ void ServerFramework::Update(duration<float>& elapsed_time) {
 
 	// bool 변수 클라이언트마다 배정.
 	// 시간값을 overlapped로 넘겨줘서 
-	ol_ex[6].command = SS_BULLET_GENERATE;
-	ol_ex[6].elapsed_time = elapsed_time.count();
-	PostQueuedCompletionStatus(iocp_handle, 0, 6, reinterpret_cast<WSAOVERLAPPED*>(&ol_ex[6]));
 
 	// Bullet이 실제로 날아가는건 여기서 관리해야할거같다.
 	ol_ex[7].command = SS_BULLET_UPDATE;
