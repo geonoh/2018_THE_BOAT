@@ -48,7 +48,7 @@ CGameFramework::~CGameFramework()
 bool CGameFramework::OnCreate(HINSTANCE hInstance, HWND hMainWnd)
 {
 	// 이거 주석치고 아이피 부분 확인
-	//server_mgr.IPInput();
+	server_mgr.IPInput();
 	m_hInstance = hInstance;
 	m_hWnd = hMainWnd;
 

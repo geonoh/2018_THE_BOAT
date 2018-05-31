@@ -258,10 +258,24 @@ void ServerFramework::ProcessPacket(int cl_id, char* packet) {
 		}
 		break;
 	}
-	case CS_PLAYER_READY:
+	case CS_PLAYER_READY: {
+		int ready_count = 0;
 		printf("%d 플레이어 레디\n", cl_id);
 		player_ready[cl_id] = true;
+		for (int i = 0; i < MAXIMUM_PLAYER; ++i) {
+			if (player_ready[i]) {
+				ready_count++;
+			}
+		}
+		if (ready_count == MAXIMUM_PLAYER) {
+			printf("게임 시작\n");
+			//AddTimer();
+			// 플레이어 위치 다시 세팅하고, 모든거 초기화 후 
+
+			// Item Timer 시작
+		}
 		break;
+	}
 	case CS_PLAYER_READY_CANCLE:
 		printf("%d 플레이어 레디취소\n", cl_id);
 		player_ready[cl_id] = false;
