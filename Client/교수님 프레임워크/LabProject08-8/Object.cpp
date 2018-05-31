@@ -444,10 +444,11 @@ void CGameObject::LoadFrameHierarchyFromFile(ID3D12Device *pd3dDevice, ID3D12Gra
 	LoadMD5Anim(L"../Assets/Model/24.MD5ANIM", NewMD5Model);*/
 	LoadMD5Model(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, L"../Assets/Model/idle3.MD5MESH", NewMD5Model, meshSRV, textureNameArray, pMesh);
 	LoadMD5Anim(L"../Assets/Model/idle3.MD5ANIM", NewMD5Model);
+	LoadMD5Anim(L"../Assets/Model/run.MD5ANIM", NewMD5Model);
 	//LoadMD5Anim(L"../Assets/Model/WarriorAttack.MD5ANIM", NewMD5Model);
 
 	CTexture *pTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0);
-	pTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Model/soldier1.dds", 0);
+	pTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Model/soldier3.dds", 0);
 
 
 	pMaterial = new CMaterial();
