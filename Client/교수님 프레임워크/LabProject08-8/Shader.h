@@ -43,7 +43,7 @@ public:
 
 	virtual void UpdateShaderVariable(ID3D12GraphicsCommandList *pd3dCommandList, XMFLOAT4X4 *pxmf4x4World);
 
-	virtual void BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, void *pContext=NULL) { }
+	virtual void BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, void *pContext = NULL) { }
 	virtual void AnimateObjects(float fTimeElapsed, CCamera *pCamera) { }
 	virtual void ReleaseObjects() { }
 
@@ -63,7 +63,7 @@ public:
 	D3D12_GPU_DESCRIPTOR_HANDLE GetGPUSrvDescriptorStartHandle() { return(m_d3dSrvGPUDescriptorStartHandle); }
 
 protected:
-	ID3D12PipelineState				**m_ppd3dPipelineStates = NULL;
+	ID3D12PipelineState * *m_ppd3dPipelineStates = NULL;
 	int								m_nPipelineStates = 0;
 
 	ID3D12DescriptorHeap			*m_pd3dCbvSrvDescriptorHeap = NULL;
@@ -147,7 +147,7 @@ public:
 	CObjectsShader();
 	virtual ~CObjectsShader();
 
-	virtual void BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, void *pContext=NULL);
+	virtual void BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, void *pContext = NULL);
 	virtual void AnimateObjects(float fTimeElapsed);
 	virtual void ReleaseObjects();
 
@@ -160,7 +160,7 @@ public:
 	virtual void Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera);
 
 protected:
-	CGameObject						**m_ppObjects = 0;
+	CGameObject * *m_ppObjects = 0;
 	int								m_nObjects = 0;
 
 	ID3D12Resource					*m_pd3dcbGameObjects = NULL;
@@ -208,7 +208,7 @@ public:
 class CTreeShader : public CTexturedShader
 {
 protected:
-	CBillboard					**m_ppTree = 0;
+	CRotatingObject * *m_ppTree = 0;
 	int								m_nTree = 0;
 	int								setRedDot = 0;
 
@@ -233,12 +233,15 @@ public:
 	virtual void UpdateShaderVariables(ID3D12GraphicsCommandList *pd3dCommandList);
 	virtual void ReleaseShaderVariables();
 	virtual D3D12_BLEND_DESC CreateBlendState();
+	virtual D3D12_DEPTH_STENCIL_DESC CreateDepthStencilState();
+	virtual D3D12_SHADER_BYTECODE CreateVertexShader(ID3DBlob **ppd3dShaderBlob);
+	virtual D3D12_SHADER_BYTECODE CreatePixelShader(ID3DBlob **ppd3dShaderBlob);
 };
 
 class CFlowerShader : public CTexturedShader
 {
 protected:
-	CBillboard				**m_ppTree = 0;
+	CBillboard * *m_ppTree = 0;
 	int								m_nTree = 0;
 
 #ifdef _WITH_BATCH_MATERIAL
@@ -261,6 +264,7 @@ public:
 	virtual void UpdateShaderVariables(ID3D12GraphicsCommandList *pd3dCommandList);
 	virtual void ReleaseShaderVariables();
 	virtual D3D12_BLEND_DESC CreateBlendState();
+	virtual D3D12_DEPTH_STENCIL_DESC CreateDepthStencilState();
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -268,7 +272,7 @@ public:
 class CBulletShader : public CTexturedShader
 {
 protected:
-	CBillboard						**m_ppBullet = 0;
+	CBillboard * *m_ppBullet = 0;
 	int								m_nBullet = 0;
 	int								BulletCount = 0;
 	bool							death = 1;
