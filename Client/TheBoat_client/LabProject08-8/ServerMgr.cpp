@@ -155,7 +155,10 @@ void ServerMgr::ProcessPacket(char* ptr) {
 	}
 	}
 }
+float ServerMgr::GetPlayerHP(int p_n) {
+	return client_hp[p_n];
 
+}
 bool ServerMgr::IsItemGen() {
 	return is_item_gen;
 }

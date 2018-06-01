@@ -51,4 +51,7 @@ public:
 	// 아이템 생성 후 위치 Return
 	bool IsItemGen();
 	XMFLOAT3 ReturnItemPosition();
+
+	// 플레이어 체력
+	float GetPlayerHP(int p_n);
 };

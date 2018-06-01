@@ -617,6 +617,10 @@ LRESULT CALLBACK CGameFramework::OnProcessingWindowMessage(HWND hWnd, UINT nMess
 			if (server_mgr.IsItemGen()) {
 				server_mgr.ReturnItemPosition();
 			}
+
+			// 플레이어 체력	(PlayerNum을 인자로 받음)
+			server_mgr.GetPlayerHP(1);
+
 			break;
 		case FD_CLOSE:
 			closesocket((SOCKET)wParam);
