@@ -37,8 +37,8 @@ void ServerFramework::InitServer() {
 	// 비동기 방식의 Listen 소켓 생성
 	listen_socket = WSASocketW(AF_INET, SOCK_STREAM,
 		IPPROTO_TCP, NULL, 0, WSA_FLAG_OVERLAPPED);
-	char opt_val = TRUE;
-	setsockopt(listen_socket, IPPROTO_TCP, TCP_NODELAY, &opt_val, sizeof(opt_val));
+	int opt_val = TRUE;
+	setsockopt(listen_socket, IPPROTO_TCP, TCP_NODELAY, (char*)&opt_val, sizeof(opt_val));
 	if (listen_socket == INVALID_SOCKET)
 		printf("listen_socket 생성 오류\n");
 
@@ -94,8 +94,8 @@ void ServerFramework::AcceptPlayer() {
 	int new_key = -1;
 	auto client_socket = WSAAccept(listen_socket, reinterpret_cast<SOCKADDR*>(&c_addr), &addr_len, NULL, NULL);
 	// Nagle알고리즘
-	char opt_val = TRUE;
-	setsockopt(client_socket, IPPROTO_TCP, TCP_NODELAY, &opt_val, sizeof(opt_val));
+	int opt_val = TRUE;
+	setsockopt(listen_socket, IPPROTO_TCP, TCP_NODELAY, (char*)&opt_val, sizeof(opt_val));
 	//
 	printf("[TCP 서버] 클라이언트 접속: IP 주소=%s, 포트 번호=%d\n",
 		inet_ntoa(c_addr.sin_addr), ntohs(c_addr.sin_port));
@@ -292,6 +292,30 @@ void ServerFramework::ProcessPacket(int cl_id, char* packet) {
 }
 
 void ServerFramework::GameStart() {
+	// Timer은 
+
+	for (int i = 0; i < MAXIMUM_PLAYER; ++i) {
+		clients[i].x = rand() % 4000;
+		clients[i].z = rand() % 4000;
+		clients[i].y = height_map->GetHeight(clients[i].x, clients[i].z);
+		clients[i].hp = 100.f;
+	}
+	client_lock.unlock();
+
+	// OOBB 셋
+	for (int i = 0; i < MAXIMUM_PLAYER; ++i) {
+		//clients[i].SetOOBB(XMFLOAT3(0, 0, 0), XMFLOAT3(10.f, 10.f, 10.f), XMFLOAT4(0, 0, 0, 1));
+		clients[i].SetOOBB(XMFLOAT3(clients[i].x, clients[i].y, clients[i].z), XMFLOAT3(OBB_SCALE_PLAYER_X, OBB_SCALE_PLAYER_Y, OBB_SCALE_PLAYER_Z), XMFLOAT4(0, 0, 0, 1));
+	}
+
+	// Bullet의 OBB
+	for (int j = 0; j < MAXIMUM_PLAYER; ++j) {
+		for (int i = 0; i < MAX_BULLET_SIZE; ++i) {
+			bullets[j][i].SetOOBB(XMFLOAT3(bullets[j][i].x, bullets[j][i].y, bullets[j][i].z),
+				XMFLOAT3(OBB_SCALE_BULLET_X, OBB_SCALE_BULLET_Y, OBB_SCALE_BULLET_Z),
+				XMFLOAT4(0, 0, 0, 1));
+		}
+	}
 
 }
 
