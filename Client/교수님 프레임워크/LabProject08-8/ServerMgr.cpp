@@ -34,8 +34,8 @@ void ServerMgr::Initialize(HWND& hwnd) {
 	ServerAddr.sin_family = AF_INET;
 	ServerAddr.sin_port = htons(SERVER_PORT);
 	// ¾ÆÀÌÇÇ
-	//ServerAddr.sin_addr.s_addr = inet_addr(server_ip.c_str());
-	ServerAddr.sin_addr.s_addr = inet_addr("127.0.0.1");
+	ServerAddr.sin_addr.s_addr = inet_addr(server_ip.c_str());
+	//ServerAddr.sin_addr.s_addr = inet_addr("127.0.0.1");
 	//ServerAddr.sin_addr.s_addr = inet_addr("114.204.69.71");
 
 
