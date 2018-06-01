@@ -37,7 +37,8 @@ void ServerFramework::InitServer() {
 	// 비동기 방식의 Listen 소켓 생성
 	listen_socket = WSASocketW(AF_INET, SOCK_STREAM,
 		IPPROTO_TCP, NULL, 0, WSA_FLAG_OVERLAPPED);
-
+	char opt_val = TRUE;
+	setsockopt(listen_socket, IPPROTO_TCP, TCP_NODELAY, &opt_val, sizeof(opt_val));
 	if (listen_socket == INVALID_SOCKET)
 		printf("listen_socket 생성 오류\n");
 
@@ -92,7 +93,10 @@ void ServerFramework::AcceptPlayer() {
 
 	int new_key = -1;
 	auto client_socket = WSAAccept(listen_socket, reinterpret_cast<SOCKADDR*>(&c_addr), &addr_len, NULL, NULL);
-
+	// Nagle알고리즘
+	char opt_val = TRUE;
+	setsockopt(client_socket, IPPROTO_TCP, TCP_NODELAY, &opt_val, sizeof(opt_val));
+	//
 	printf("[TCP 서버] 클라이언트 접속: IP 주소=%s, 포트 번호=%d\n",
 		inet_ntoa(c_addr.sin_addr), ntohs(c_addr.sin_port));
 
@@ -270,6 +274,7 @@ void ServerFramework::ProcessPacket(int cl_id, char* packet) {
 		if (ready_count == MAXIMUM_PLAYER) {
 			printf("게임 시작\n");
 			//AddTimer();
+			GameStart();
 			// 플레이어 위치 다시 세팅하고, 모든거 초기화 후 
 
 			// Item Timer 시작
@@ -283,6 +288,10 @@ void ServerFramework::ProcessPacket(int cl_id, char* packet) {
 	case CS_PLAYER_TEAM_SELECT:
 		break;
 	}
+
+}
+
+void ServerFramework::GameStart() {
 
 }
 

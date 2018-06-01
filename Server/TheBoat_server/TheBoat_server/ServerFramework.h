@@ -4,14 +4,14 @@ class CHeightMapImage;
 struct Event {
 	int id;
 	int type;
-	unsigned int start_time;
+	float time;
 	int target;
 };
 
 class Comp {
 public:
 	bool operator() (const Event& left, const Event& right) {
-		return (left.start_time > right.start_time);
+		return (left.time > right.time);
 	}
 };
 
@@ -50,7 +50,6 @@ class ServerFramework
 	// 플레이어마다 bullet 시간을 가지고 있다. 
 	float bullet_times[4];
 
-	priority_queue < Event, vector<Event>, Comp> timer_queue;
 
 public:
 	void InitServer();
@@ -60,12 +59,16 @@ public:
 	void ProcessPacket(int cl_id, char* packet);	// 패킷 수신후 정리해서 송신
 	void DisconnectPlayer(int cl_id);				// 플레이어 접속 해지
 
-	// 이 함수는 ElaspsedTime을 측정하는 스레드 함수이다.
 	//void TimerFunc();
+	ServerFramework();
+	~ServerFramework();
+
+
+	// 이 함수는 ElaspsedTime을 측정하는 스레드 함수이다.
 	void TimerSend(duration<float>& elapsed_time);
 	// ElapsedTime을 받아와서 업데이트 하는 함수이다. 
 	void Update(duration<float>& elapsed_time);
-	ServerFramework();
-	~ServerFramework();
+
+	void GameStart();
 };
 

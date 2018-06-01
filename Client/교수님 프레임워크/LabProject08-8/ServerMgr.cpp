@@ -26,6 +26,8 @@ void ServerMgr::Initialize(HWND& hwnd) {
 	WSAStartup(MAKEWORD(2, 2), &wsadata);
 
 	sock = WSASocket(AF_INET, SOCK_STREAM, IPPROTO_TCP, NULL, 0, 0);
+	char opt_val = TRUE;
+	setsockopt(sock, IPPROTO_TCP, TCP_NODELAY, &opt_val, sizeof(opt_val));
 
 	SOCKADDR_IN ServerAddr;
 	ZeroMemory(&ServerAddr, sizeof(SOCKADDR_IN));
