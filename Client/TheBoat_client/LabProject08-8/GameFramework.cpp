@@ -606,29 +606,17 @@ LRESULT CALLBACK CGameFramework::OnProcessingWindowMessage(HWND hWnd, UINT nMess
 				printf("카메라는 %d에 고정\n", my_client_id);
 				first_recv = false;
 			}
+			if (server_mgr.GetClientID() != my_client_id)
+				m_pPlayer[server_mgr.GetClientID()]->SetLook(server_mgr.ReturnLookVector());
 
 			m_pPlayer[server_mgr.GetClientID()]->SetPosition(server_mgr.ReturnXMFLOAT3(server_mgr.GetClientID()));
 			m_pScene->m_ppShaders[2]->SetPosition(server_mgr.GetBullet().id,
 				XMFLOAT3(server_mgr.GetBullet().x, server_mgr.GetBullet().y, server_mgr.GetBullet().z));
 
-			//if (server_mgr.GetClientID() == my_client_id) {
-			//	player_moving_counter++;
-			//	if (player_moving_counter == 150) {
-			//		m_pPlayer[server_mgr.GetClientID()]->SetPosition(server_mgr.ReturnXMFLOAT3(server_mgr.GetClientID()));
-			//		player_moving_counter = 0;
-			//	}
-			//}
-			//else {
-			//	m_pPlayer[server_mgr.GetClientID()]->SetPosition(server_mgr.ReturnXMFLOAT3(server_mgr.GetClientID()));
-			//}
-
-			m_pScene->m_ppShaders[2]->SetPosition(server_mgr.GetBullet().id,
-				XMFLOAT3(server_mgr.GetBullet().x, server_mgr.GetBullet().y, server_mgr.GetBullet().z));
-
-
-			// 본인 플레이어 외의 플레이어가 올때만 LookVector을 셋팅해준다.
-			if (server_mgr.GetClientID() != my_client_id)
-				m_pPlayer[server_mgr.GetClientID()]->SetLook(server_mgr.ReturnLookVector());
+			// 아이템생성
+			if (server_mgr.IsItemGen()) {
+				server_mgr.ReturnItemPosition();
+			}
 			break;
 		case FD_CLOSE:
 			closesocket((SOCKET)wParam);

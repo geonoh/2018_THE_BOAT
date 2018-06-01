@@ -23,10 +23,12 @@ private:
 
 	bool player_ready = false;
 
+	// 아이템 생성
+	bool is_item_gen = false;
+	float item_x = 0.f;
+	float item_y = 0.f;
+	float item_z = 0.f;
 
-	// 마우스 움직임을 누적시켜 일정 이상이 될때만 서버에 전송한다.
-	int mouse_moving_counter = 0;
-	int player_moving_counter = 0;
 public:
 	static int my_client_id;
 public:

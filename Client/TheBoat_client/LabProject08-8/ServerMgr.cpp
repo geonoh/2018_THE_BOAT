@@ -143,7 +143,26 @@ void ServerMgr::ProcessPacket(char* ptr) {
 
 		break;
 	}
+	case SC_ITEM_GEN: {
+		// 아이템 생성
+		SC_PACKET_ITEM_GEN* packets = reinterpret_cast<SC_PACKET_ITEM_GEN*>(ptr);
+		item_pos.x = packets->x;
+		item_pos.y = packets->y;
+		item_pos.z = packets->z;
+		printf("아템 생성\n");
+		is_item_gen = true;
+		break;
 	}
+	}
+}
+
+bool ServerMgr::IsItemGen() {
+	return is_item_gen;
+}
+
+XMFLOAT3 ServerMgr::ReturnItemPosition() {
+	is_item_gen = false;
+	return item_pos;
 }
 
 XMFLOAT3 ServerMgr::ReturnCollsionPosition() {
