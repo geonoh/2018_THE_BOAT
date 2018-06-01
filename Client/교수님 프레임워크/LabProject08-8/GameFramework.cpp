@@ -399,44 +399,44 @@ void CGameFramework::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPA
 		switch (key_buffer) {
 		case 'w':
 		case 'W':
-			if (is_pushed[CS_KEY_PRESS_UP] == false) {
+			if (is_pushed[CS_KEY_PRESS_DOWN] == false) {
 				//server_mgr.SendPacket(CS_KEY_PRESS_UP);
 				m_pPlayer[my_client_id]->GetKeyInput(1);
-				server_mgr.SendPacket(CS_KEY_PRESS_UP, m_pPlayer[my_client_id]->GetLook());
+				server_mgr.SendPacket(CS_KEY_PRESS_DOWN, m_pPlayer[my_client_id]->GetLook());
 				//printf("Look Vector : %lf, %lf, %lf\n", m_pPlayer[my_client_id]->GetLook().x, m_pPlayer[my_client_id]->GetLook().y, m_pPlayer[my_client_id]->GetLook().z);
 				//printf("w를 눌렀는데 my_client_id는 이거임  %d  \n", my_client_id);
-				is_pushed[CS_KEY_PRESS_UP] = true;
+				is_pushed[CS_KEY_PRESS_DOWN] = true;
 				//sndPlaySound(L"../Assets/Sounds/FootStep.wav", SND_ASYNC);	//���� ���
 			}
 			break;
 		case 'a':
 		case 'A':
-			if (is_pushed[CS_KEY_PRESS_LEFT] == false) {
-				//server_mgr.SendPacket(CS_KEY_PRESS_LEFT);
-				m_pPlayer[my_client_id]->GetKeyInput(1);
-				server_mgr.SendPacket(CS_KEY_PRESS_LEFT, m_pPlayer[my_client_id]->GetLook());
-
-				is_pushed[CS_KEY_PRESS_LEFT] = true;
-			}
-			break;
-		case 's':
-		case 'S':
-			if (is_pushed[CS_KEY_PRESS_DOWN] == false) {
-				//server_mgr.SendPacket(CS_KEY_PRESS_DOWN);
-				m_pPlayer[my_client_id]->GetKeyInput(1);
-				server_mgr.SendPacket(CS_KEY_PRESS_DOWN, m_pPlayer[my_client_id]->GetLook());
-
-				is_pushed[CS_KEY_PRESS_DOWN] = true;
-			}
-			break;
-		case 'd':
-		case 'D':
 			if (is_pushed[CS_KEY_PRESS_RIGHT] == false) {
-				//server_mgr.SendPacket(CS_KEY_PRESS_RIGHT);
+				//server_mgr.SendPacket(CS_KEY_PRESS_LEFT);
 				m_pPlayer[my_client_id]->GetKeyInput(1);
 				server_mgr.SendPacket(CS_KEY_PRESS_RIGHT, m_pPlayer[my_client_id]->GetLook());
 
 				is_pushed[CS_KEY_PRESS_RIGHT] = true;
+			}
+			break;
+		case 's':
+		case 'S':
+			if (is_pushed[CS_KEY_PRESS_UP] == false) {
+				//server_mgr.SendPacket(CS_KEY_PRESS_DOWN);
+				m_pPlayer[my_client_id]->GetKeyInput(1);
+				server_mgr.SendPacket(CS_KEY_PRESS_UP, m_pPlayer[my_client_id]->GetLook());
+
+				is_pushed[CS_KEY_PRESS_UP] = true;
+			}
+			break;
+		case 'd':
+		case 'D':
+			if (is_pushed[CS_KEY_PRESS_LEFT] == false) {
+				//server_mgr.SendPacket(CS_KEY_PRESS_RIGHT);
+				m_pPlayer[my_client_id]->GetKeyInput(1);
+				server_mgr.SendPacket(CS_KEY_PRESS_LEFT, m_pPlayer[my_client_id]->GetLook());
+
+				is_pushed[CS_KEY_PRESS_LEFT] = true;
 			}
 			break;
 
@@ -476,38 +476,38 @@ void CGameFramework::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPA
 		switch (key_buffer) {
 		case 'w':
 		case 'W':
-			if (is_pushed[CS_KEY_PRESS_UP] == true) {
-				printf("[WM_KEYDOWN] : w,W키 놓음 \n");
-				m_pPlayer[my_client_id]->GetKeyInput(0);
-				server_mgr.SendPacket(CS_KEY_RELEASE_UP);
-				is_pushed[CS_KEY_PRESS_UP] = false;
-			}
-			break;
-		case 'a':
-		case 'A':
-			if (is_pushed[CS_KEY_PRESS_LEFT] == true) {
-				printf("[WM_KEYDOWN] : a,A키 놓음 \n");
-				m_pPlayer[my_client_id]->GetKeyInput(0);
-				server_mgr.SendPacket(CS_KEY_RELEASE_LEFT);
-				is_pushed[CS_KEY_PRESS_LEFT] = false;
-			}
-			break;
-		case 's':
-		case 'S':
 			if (is_pushed[CS_KEY_PRESS_DOWN] == true) {
-				printf("[WM_KEYDOWN] : s,S키 놓음 \n");
+				printf("[WM_KEYDOWN] : w,W키 놓음 \n");
 				m_pPlayer[my_client_id]->GetKeyInput(0);
 				server_mgr.SendPacket(CS_KEY_RELEASE_DOWN);
 				is_pushed[CS_KEY_PRESS_DOWN] = false;
 			}
 			break;
-		case 'd':
-		case 'D':
+		case 'a':
+		case 'A':
 			if (is_pushed[CS_KEY_PRESS_RIGHT] == true) {
-				printf("[WM_KEYDOWN] : d,D키 놓음 \n");
+				printf("[WM_KEYDOWN] : a,A키 놓음 \n");
 				m_pPlayer[my_client_id]->GetKeyInput(0);
 				server_mgr.SendPacket(CS_KEY_RELEASE_RIGHT);
 				is_pushed[CS_KEY_PRESS_RIGHT] = false;
+			}
+			break;
+		case 's':
+		case 'S':
+			if (is_pushed[CS_KEY_PRESS_UP] == true) {
+				printf("[WM_KEYDOWN] : s,S키 놓음 \n");
+				m_pPlayer[my_client_id]->GetKeyInput(0);
+				server_mgr.SendPacket(CS_KEY_RELEASE_UP);
+				is_pushed[CS_KEY_PRESS_UP] = false;
+			}
+			break;
+		case 'd':
+		case 'D':
+			if (is_pushed[CS_KEY_PRESS_LEFT] == true) {
+				printf("[WM_KEYDOWN] : d,D키 놓음 \n");
+				m_pPlayer[my_client_id]->GetKeyInput(0);
+				server_mgr.SendPacket(CS_KEY_RELEASE_LEFT);
+				is_pushed[CS_KEY_PRESS_LEFT] = false;
 			}
 			break;
 

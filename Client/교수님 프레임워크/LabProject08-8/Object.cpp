@@ -205,7 +205,8 @@ void CGameObject::SetMesh(int nIndex, CMesh *pMesh)
 {
 	if (m_ppMeshes)
 	{
-		if (m_ppMeshes[nIndex]) m_ppMeshes[nIndex]->Release();
+		if (m_ppMeshes[nIndex]) 
+			m_ppMeshes[nIndex]->Release();
 		m_ppMeshes[nIndex] = pMesh;
 		if (pMesh) pMesh->AddRef();
 	}
@@ -438,17 +439,24 @@ void CGameObject::LoadFrameHierarchyFromFile(ID3D12Device *pd3dDevice, ID3D12Gra
 {
 	CMesh *pMesh = NULL;
 	CMaterial *pMaterial = NULL;
-
+	ResizeMeshes(2);
 	/*LoadMD5Model(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, L"../Assets/Model/66.MD5MESH", NewMD5Model, meshSRV, textureNameArray, pMesh);
 	LoadMD5Anim(L"../Assets/Model/898.MD5ANIM", NewMD5Model);
 	LoadMD5Anim(L"../Assets/Model/24.MD5ANIM", NewMD5Model);*/
-	LoadMD5Model(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, L"../Assets/Model/idle3.MD5MESH", NewMD5Model, meshSRV, textureNameArray, pMesh);
+	/*LoadMD5Model(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, L"../Assets/Model/idle3.MD5MESH", NewMD5Model, meshSRV, textureNameArray, pMesh);
 	LoadMD5Anim(L"../Assets/Model/idle3.MD5ANIM", NewMD5Model);
-	LoadMD5Anim(L"../Assets/Model/run.MD5ANIM", NewMD5Model);
+	LoadMD5Anim(L"../Assets/Model/run.MD5ANIM", NewMD5Model);*/
+	LoadMD5Model(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, L"../Assets/Model/7810.MD5MESH", NewMD5Model, meshSRV, textureNameArray, pMesh);
+	SetMesh(0, pMesh);
+	CMesh *pMesh1 = NULL;
+	LoadMD5Model(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, L"../Assets/Model/7810.MD5MESH", NewMD5Model, meshSRV, textureNameArray, pMesh1);
+	SetMesh(1, pMesh1);
+	LoadMD5Anim(L"../Assets/Model/7811.MD5ANIM", NewMD5Model);
+	LoadMD5Anim(L"../Assets/Model/7812.MD5ANIM", NewMD5Model);
 	//LoadMD5Anim(L"../Assets/Model/WarriorAttack.MD5ANIM", NewMD5Model);
 
 	CTexture *pTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0);
-	pTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Model/soldier3.dds", 0);
+	pTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Model/demo_soldier.dds", 0);
 
 
 	pMaterial = new CMaterial();
@@ -469,10 +477,10 @@ void CGameObject::LoadFrameHierarchyFromFile(ID3D12Device *pd3dDevice, ID3D12Gra
 
 	pMaterial->SetShader(pShader);
 
-	if (pMesh)
+	/*if (pMesh)
 		SetMesh(0, pMesh);
 	else
-		ResizeMeshes(0);
+		ResizeMeshes(0);*/
 
 	if (pMaterial) SetMaterial(pMaterial);
 }

@@ -436,7 +436,7 @@ void CScene::AnimateObjects(float fTimeElapsed, CCamera *pCamera)
 	}
 
 	for (int i = 0; i < 4; ++i) {
-		m_pPlayer[i]->SetScale(0.1, 0.1, 0.1);	// 캐릭터 크기 조정
+		m_pPlayer[i]->SetScale(0.2, 0.2, 0.2);	// 캐릭터 크기 조정
 	}
 }
 
