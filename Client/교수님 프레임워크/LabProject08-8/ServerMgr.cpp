@@ -26,17 +26,23 @@ void ServerMgr::Initialize(HWND& hwnd) {
 	WSAStartup(MAKEWORD(2, 2), &wsadata);
 
 	sock = WSASocket(AF_INET, SOCK_STREAM, IPPROTO_TCP, NULL, 0, 0);
-	char opt_val = TRUE;
-	setsockopt(sock, IPPROTO_TCP, TCP_NODELAY, &opt_val, sizeof(opt_val));
+	int opt_val = TRUE;
+	setsockopt(sock, IPPROTO_TCP, TCP_NODELAY, (char*)&opt_val, sizeof(opt_val));
 
 	SOCKADDR_IN ServerAddr;
 	ZeroMemory(&ServerAddr, sizeof(SOCKADDR_IN));
 	ServerAddr.sin_family = AF_INET;
 	ServerAddr.sin_port = htons(SERVER_PORT);
 	// æ∆¿Ã««
+<<<<<<< HEAD
 	//ServerAddr.sin_addr.s_addr = inet_addr(server_ip.c_str());
 	ServerAddr.sin_addr.s_addr = inet_addr("127.0.0.1");
 	//ServerAddr.sin_addr.s_addr = inet_addr("192.168.25.197");
+=======
+	ServerAddr.sin_addr.s_addr = inet_addr(server_ip.c_str());
+	//ServerAddr.sin_addr.s_addr = inet_addr("127.0.0.1");
+	//ServerAddr.sin_addr.s_addr = inet_addr("114.204.69.71");
+>>>>>>> cb59abd7a29d4efefe342de13aaad3c57ec47948
 
 
 	int retval = WSAConnect(sock, (sockaddr *)&ServerAddr, sizeof(ServerAddr), NULL, NULL, NULL, NULL);
