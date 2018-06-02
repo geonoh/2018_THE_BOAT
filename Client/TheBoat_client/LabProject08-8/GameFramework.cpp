@@ -604,6 +604,13 @@ LRESULT CALLBACK CGameFramework::OnProcessingWindowMessage(HWND hWnd, UINT nMess
 				my_client_id = server_mgr.ReturnCameraID();
 				m_pCamera = m_pPlayer[my_client_id]->GetCamera();
 				printf("카메라는 %d에 고정\n", my_client_id);
+				server_mgr.ReturnBuildingPosition(&building_pos[0]);
+				for (int i = 0; i < OBJECT_BUILDING; ++i) {
+					printf("[%d]번 빌딩 [%f, %f, %f] \ n", i, building_pos[i].x,
+						building_pos[i].y,
+						building_pos[i].z);
+				}
+
 				first_recv = false;
 			}
 			if (server_mgr.GetClientID() != my_client_id)
@@ -613,11 +620,11 @@ LRESULT CALLBACK CGameFramework::OnProcessingWindowMessage(HWND hWnd, UINT nMess
 			m_pScene->m_ppShaders[2]->SetPosition(server_mgr.GetBullet().id,
 				XMFLOAT3(server_mgr.GetBullet().x, server_mgr.GetBullet().y, server_mgr.GetBullet().z));
 
+
 			// 아이템생성
 			if (server_mgr.IsItemGen()) {
 				server_mgr.ReturnItemPosition();
 			}
-
 			// 플레이어 체력	(PlayerNum을 인자로 받음)
 			server_mgr.GetPlayerHP(1);
 
