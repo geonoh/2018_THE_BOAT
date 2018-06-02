@@ -33,6 +33,9 @@ class ServerMgr
 	// 아이템 생성 부분
 	XMFLOAT3 item_pos;
 	bool is_item_gen;
+
+	XMFLOAT3 building_pos[OBJECT_BUILDING];
+
 public:
 	void IPInput();
 	void Initialize(HWND& hwnd);
@@ -54,4 +57,7 @@ public:
 
 	// 플레이어 체력
 	float GetPlayerHP(int p_n);
+
+	// 
+	void ReturnBuildingPosition(XMFLOAT3* building_pos);
 };

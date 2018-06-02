@@ -25,9 +25,9 @@ private:
 
 	// 아이템 생성
 	bool is_item_gen = false;
-	float item_x = 0.f;
-	float item_y = 0.f;
-	float item_z = 0.f;
+	XMFLOAT3 item_pos;
+	//빌딩
+	XMFLOAT3 building_pos[OBJECT_BUILDING];
 
 public:
 	static int my_client_id;

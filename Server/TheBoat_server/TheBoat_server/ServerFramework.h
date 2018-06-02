@@ -1,5 +1,7 @@
 #pragma once
+
 class CHeightMapImage;
+class Building;
 
 struct Event {
 	int id;
@@ -51,6 +53,10 @@ class ServerFramework
 
 	// 플레이어마다 bullet 시간을 가지고 있다. 
 	float bullet_times[4];
+
+	// Building obejct는 총 10개
+	//Object* object_mother;
+	Building* building[OBJECT_BUILDING];
 
 
 public:
