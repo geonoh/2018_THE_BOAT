@@ -182,15 +182,20 @@ void CScene::BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *p
 
 	// UI
 
-	m_nUIShaders = 2;
+	m_nUIShaders = 3;
 	m_ppUIShaders = new CShader*[m_nUIShaders];
 
 	CMiniMapShader *pMiniMapShader = new CMiniMapShader();
 	pMiniMapShader->CreateShader(pd3dDevice, m_pd3dGraphicsRootSignature);
 	pMiniMapShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pTerrain);
 
+	CHpBarShader *pHpBarShader = new CHpBarShader();
+	pHpBarShader->CreateShader(pd3dDevice, m_pd3dGraphicsRootSignature);
+	pHpBarShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pTerrain);
+
 	m_ppUIShaders[0] = pMiniMapShader;
 	m_ppUIShaders[1] = pTreeShader;
+	m_ppUIShaders[2] = pHpBarShader;
 
 
 	BuildLightsAndMaterials();
@@ -285,7 +290,7 @@ ID3D12RootSignature *CScene::CreateGraphicsRootSignature(ID3D12Device *pd3dDevic
 	pd3dDescriptorRanges[4].OffsetInDescriptorsFromTableStart = 0;
 
 	pd3dDescriptorRanges[5].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
-	pd3dDescriptorRanges[5].NumDescriptors = 6;
+	pd3dDescriptorRanges[5].NumDescriptors = 1;
 	pd3dDescriptorRanges[5].BaseShaderRegister = 5; //t5: Texture[6]
 	pd3dDescriptorRanges[5].RegisterSpace = 0;
 	pd3dDescriptorRanges[5].OffsetInDescriptorsFromTableStart = 0;

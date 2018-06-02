@@ -888,10 +888,12 @@ void CGameFramework::FrameAdvance()
 			m_pPlayer[i]->Render(m_pd3dCommandList, m_pCamera);
 	}
 
+	
 	m_pScene->m_ppUIShaders[0]->Render(m_pd3dCommandList, m_pCamera);
+	
 	if(m_pCamera->GetMode() == SPACESHIP_CAMERA)
 		m_pScene->m_ppUIShaders[1]->Render(m_pd3dCommandList, m_pCamera);// UI렌더 바꿔야함.
-	
+	m_pScene->m_ppUIShaders[2]->Render(m_pd3dCommandList, m_pCamera);
 
 	d3dResourceBarrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
 	d3dResourceBarrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;
