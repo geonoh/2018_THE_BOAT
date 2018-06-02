@@ -77,6 +77,15 @@ void ServerFramework::InitServer() {
 	for (int i = 0; i < MAXIMUM_PLAYER; ++i) {
 		//clients[i].SetOOBB(XMFLOAT3(0, 0, 0), XMFLOAT3(10.f, 10.f, 10.f), XMFLOAT4(0, 0, 0, 1));
 		clients[i].SetOOBB(XMFLOAT3(clients[i].x, clients[i].y, clients[i].z), XMFLOAT3(OBB_SCALE_PLAYER_X, OBB_SCALE_PLAYER_Y, OBB_SCALE_PLAYER_Z), XMFLOAT4(0, 0, 0, 1));
+		printf("[%d]플레이어의 OBB : [%f, %f, %f], Extents [%f, %f, %f] \n", i,
+			clients[i].bounding_box.Center.x,
+			clients[i].bounding_box.Center.y,
+			clients[i].bounding_box.Center.z,
+			clients[i].bounding_box.Extents.x,
+			clients[i].bounding_box.Extents.y,
+			clients[i].bounding_box.Extents.z
+			);
+		clients[i].bounding_box.Center;
 	}
 
 	// Bullet의 OBB
@@ -84,7 +93,7 @@ void ServerFramework::InitServer() {
 		for (int i = 0; i < MAX_BULLET_SIZE; ++i) {
 			bullets[j][i].SetOOBB(XMFLOAT3(bullets[j][i].x, bullets[j][i].y, bullets[j][i].z),
 				XMFLOAT3(OBB_SCALE_BULLET_X, OBB_SCALE_BULLET_Y, OBB_SCALE_BULLET_Z),
-				XMFLOAT4(0, 0, 0, 1));
+				XMFLOAT4(0, 0, 0, 1)); 
 		}
 	}
 
@@ -92,7 +101,8 @@ void ServerFramework::InitServer() {
 		building[i] = new Building;
 		XMFLOAT3 input_buffer = XMFLOAT3{ static_cast<float>(rand() % 4000), 0.f, static_cast<float>(rand() % 4000) };
 		input_buffer.y = height_map->GetHeight(input_buffer.x, input_buffer.z);
-		building[i]->SetPosition(input_buffer);
+		building[i]->SetPosition(input_buffer, height_map);
+		//building[i]->SetObbExtents(i)
 		//printf("[%d]건물 위치 [%f, %f, %f] \n", i,
 		//	building[i]->GetPosition().x,
 		//	building[i]->GetPosition().y,
@@ -327,6 +337,7 @@ void ServerFramework::GameStart() {
 	// Timer은 
 	printf("게임 시작\n");
 
+	// 플레이어  위치 섞기
 	for (int i = 0; i < MAXIMUM_PLAYER; ++i) {
 		clients[i].x = rand() % 4000;
 		clients[i].z = rand() % 4000;
@@ -601,14 +612,15 @@ void ServerFramework::WorkerThread() {
 				}
 				clients[i].client_lock.unlock();
 				//client_lock.unlock();
+				clients[i].SetOOBB(XMFLOAT3(clients[i].x, clients[i].y, clients[i].z), XMFLOAT3(OBB_SCALE_PLAYER_X, OBB_SCALE_PLAYER_Y, OBB_SCALE_PLAYER_Z), XMFLOAT4(0, 0, 0, 1));
 
-				XMFLOAT4X4 danwi(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, clients[i].x, height_map->GetHeight(clients[i].x, clients[i].z), clients[i].z, 1);
-				clients[i].bounding_box.Transform(clients[i].bounding_box,
-					DirectX::XMLoadFloat4x4(&danwi));
-				XMStoreFloat4(&clients[i].bounding_box.Orientation, XMQuaternionNormalize(XMLoadFloat4(&clients[i].bounding_box.Orientation)));
-				clients[i].bounding_box.Extents.x = OBB_SCALE_PLAYER_X;
-				clients[i].bounding_box.Extents.y = OBB_SCALE_PLAYER_Y;
-				clients[i].bounding_box.Extents.z = OBB_SCALE_PLAYER_Z;
+				//XMFLOAT4X4 danwi(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, clients[i].x, height_map->GetHeight(clients[i].x, clients[i].z), clients[i].z, 1);
+				//clients[i].bounding_box.Transform(clients[i].bounding_box,
+				//	DirectX::XMLoadFloat4x4(&danwi));
+				//XMStoreFloat4(&clients[i].bounding_box.Orientation, XMQuaternionNormalize(XMLoadFloat4(&clients[i].bounding_box.Orientation)));
+				//clients[i].bounding_box.Extents.x = OBB_SCALE_PLAYER_X;
+				//clients[i].bounding_box.Extents.y = OBB_SCALE_PLAYER_Y;
+				//clients[i].bounding_box.Extents.z = OBB_SCALE_PLAYER_Z;
 			}
 		}
 		else if (overlapped_buffer->command == SS_BULLET_GENERATE) {
@@ -667,13 +679,20 @@ void ServerFramework::WorkerThread() {
 						bullets[i][j].z += METER_PER_PIXEL * bullets[i][j].look_vec.z * (AR_SPEED * overlapped_buffer->elapsed_time);
 						//printf("총알 진행중\n");
 
-						XMFLOAT4X4 danwi(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, bullets[i][j].x, bullets[i][j].y, bullets[i][j].z, 1);
-						bullets[i][j].bounding_box.Transform(bullets[i][j].bounding_box,
-							DirectX::XMLoadFloat4x4(&danwi));
-						XMStoreFloat4(&bullets[i][j].bounding_box.Orientation, XMQuaternionNormalize(XMLoadFloat4(&bullets[i][j].bounding_box.Orientation)));
-						bullets[i][j].bounding_box.Extents.x = OBB_SCALE_BULLET_X;
-						bullets[i][j].bounding_box.Extents.y = OBB_SCALE_BULLET_Y;
-						bullets[i][j].bounding_box.Extents.z = OBB_SCALE_BULLET_Z;
+
+						bullets[i][j].SetOOBB(
+							XMFLOAT3(bullets[i][j].x, bullets[i][j].y, bullets[i][j].z),
+							XMFLOAT3(OBB_SCALE_BULLET_X, OBB_SCALE_BULLET_Y, OBB_SCALE_BULLET_Z),
+							XMFLOAT4(0, 0, 0, 1));
+
+
+						//XMFLOAT4X4 danwi(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, bullets[i][j].x, bullets[i][j].y, bullets[i][j].z, 1);
+						//bullets[i][j].bounding_box.Transform(bullets[i][j].bounding_box,
+						//	DirectX::XMLoadFloat4x4(&danwi));
+						//XMStoreFloat4(&bullets[i][j].bounding_box.Orientation, XMQuaternionNormalize(XMLoadFloat4(&bullets[i][j].bounding_box.Orientation)));
+						//bullets[i][j].bounding_box.Extents.x = OBB_SCALE_BULLET_X;
+						//bullets[i][j].bounding_box.Extents.y = OBB_SCALE_BULLET_Y;
+						//bullets[i][j].bounding_box.Extents.z = OBB_SCALE_BULLET_Z;
 						//printf("[%d] Bullet pos [ %f, %f, %f ] \n", j,
 						//	bullets[i][j].x,
 						//	bullets[i][j].y,
