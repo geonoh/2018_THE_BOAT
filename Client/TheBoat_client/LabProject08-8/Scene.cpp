@@ -180,7 +180,17 @@ void CScene::BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *p
 	m_ppShaders[2] = pBulletShader;
 	m_ppShaders[3] = pParticleShader;
 
-	m_pUIShader = pTreeShader;
+	// UI
+
+	m_nUIShaders = 2;
+	m_ppUIShaders = new CShader*[m_nUIShaders];
+
+	CMiniMapShader *pMiniMapShader = new CMiniMapShader();
+	pMiniMapShader->CreateShader(pd3dDevice, m_pd3dGraphicsRootSignature);
+	pMiniMapShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pTerrain);
+
+	m_ppUIShaders[0] = pMiniMapShader;
+	m_ppUIShaders[1] = pTreeShader;
 
 
 	BuildLightsAndMaterials();
@@ -217,7 +227,11 @@ void CScene::ReleaseObjects()
 	if (m_pLights) delete m_pLights;
 	if (m_pMaterials) delete m_pMaterials;
 	if (m_pBuildings) delete m_pBuildings;
-	if (m_pUIShader) delete m_pUIShader;
+	if (m_ppUIShaders)
+	{
+		for (int i = 0; i < m_nUIShaders; i++) delete m_ppUIShaders[i];
+		delete[] m_ppUIShaders;
+	}
 }
 
 void CScene::ReleaseUploadBuffers()
@@ -229,7 +243,8 @@ void CScene::ReleaseUploadBuffers()
 
 	if (m_pTerrain) m_pTerrain->ReleaseUploadBuffers();
 	if (m_pSkyBox) m_pSkyBox->ReleaseUploadBuffers();
-	if (m_pUIShader) m_pUIShader->ReleaseUploadBuffers();
+
+	for (int i = 0; i < m_nUIShaders; i++) m_ppUIShaders[i]->ReleaseUploadBuffers();
 	
 }
 
@@ -443,7 +458,7 @@ void CScene::AnimateObjects(float fTimeElapsed, CCamera *pCamera)
 		m_pPlayer[i]->SetScale(0.2, 0.2, 0.2);	// 캐릭터 크기 조정
 	}
 
-	m_pUIShader->AnimateObjects(fTimeElapsed, pCamera);
+	for (int i = 0; i < m_nObjects; i++) m_ppUIShaders[i]->AnimateObjects(fTimeElapsed, pCamera);
 }
 
 void CScene::Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera)
