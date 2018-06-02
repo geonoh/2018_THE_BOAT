@@ -180,6 +180,8 @@ void CScene::BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *p
 	m_ppShaders[2] = pBulletShader;
 	m_ppShaders[3] = pParticleShader;
 
+	m_pUIShader = pTreeShader;
+
 
 	BuildLightsAndMaterials();
 
@@ -215,6 +217,7 @@ void CScene::ReleaseObjects()
 	if (m_pLights) delete m_pLights;
 	if (m_pMaterials) delete m_pMaterials;
 	if (m_pBuildings) delete m_pBuildings;
+	if (m_pUIShader) delete m_pUIShader;
 }
 
 void CScene::ReleaseUploadBuffers()
@@ -226,6 +229,7 @@ void CScene::ReleaseUploadBuffers()
 
 	if (m_pTerrain) m_pTerrain->ReleaseUploadBuffers();
 	if (m_pSkyBox) m_pSkyBox->ReleaseUploadBuffers();
+	if (m_pUIShader) m_pUIShader->ReleaseUploadBuffers();
 	
 }
 
@@ -438,6 +442,8 @@ void CScene::AnimateObjects(float fTimeElapsed, CCamera *pCamera)
 	for (int i = 0; i < 4; ++i) {
 		m_pPlayer[i]->SetScale(0.2, 0.2, 0.2);	// 캐릭터 크기 조정
 	}
+
+	m_pUIShader->AnimateObjects(fTimeElapsed, pCamera);
 }
 
 void CScene::Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera)
@@ -460,11 +466,9 @@ void CScene::Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera
 	if (m_pTerrain) m_pTerrain->Render(pd3dCommandList, pCamera);
 	
 	if (m_pBuildings) m_pBuildings->Render(pd3dCommandList, pCamera);
-	if(CGameFramework::m_pCamera->GetMode() == SPACESHIP_CAMERA)
-		m_ppShaders[0]->Render(pd3dCommandList, pCamera);
+	
 	for (int i = 1; i < m_nShaders; i++) m_ppShaders[i]->Render(pd3dCommandList, pCamera);
 	for (int i = 0; i < m_nObjects; i++) m_ppObjects[i]->UpdateTransform(NULL);
 	for (int i = 0; i < m_nObjects; i++) m_ppObjects[i]->Render(pd3dCommandList, pCamera);
-
 }
 

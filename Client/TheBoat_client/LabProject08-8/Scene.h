@@ -94,6 +94,8 @@ public:
 	CShader						**m_ppShaders = NULL;
 	int							m_nShaders = 0;
 
+	CShader						*m_pUIShader = NULL;
+
 protected:
 	CShader						*m_pBuildings = NULL;
 
