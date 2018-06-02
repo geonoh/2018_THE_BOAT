@@ -557,7 +557,7 @@ void UpdateMD5Model(Model3D & MD5Model, float deltaTime, int animation, CMesh*& 
 			MD5Model.subsets[k].vertices[i].pos = MD5Model.subsets[k].positions[i];
 			MD5Model.subsets[k].vertices[i].pos.x = MD5Model.subsets[k].positions[i].x;
 			MD5Model.subsets[k].vertices[i].pos.y = MD5Model.subsets[k].positions[i].y;
-			MD5Model.subsets[k].vertices[i].pos.z = MD5Model.subsets[k].positions[i].z;
+			MD5Model.subsets[k].vertices[i].pos.z = -1 * MD5Model.subsets[k].positions[i].z;
 		}
 		pMesh->A->CopyData(0, MD5Model.subsets[k].vertices[0], (MD5Model.subsets[k].vertices.size()));
 
