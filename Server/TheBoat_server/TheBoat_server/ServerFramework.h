@@ -1,5 +1,7 @@
 #pragma once
+
 class CHeightMapImage;
+class Building;
 
 struct Event {
 	int id;
@@ -32,6 +34,8 @@ class ServerFramework
 	CHeightMapImage* height_map;
 	time_point<system_clock> prev_time = system_clock::now();
 	float sender_time = 0;
+	float item_gen_timer = 0;
+	bool is_item_gen = false;
 	mutex client_lock;
 
 	// Timer전용 OverlappedExtensionSetd
@@ -49,6 +53,10 @@ class ServerFramework
 
 	// 플레이어마다 bullet 시간을 가지고 있다. 
 	float bullet_times[4];
+
+	// Building obejct는 총 10개
+	//Object* object_mother;
+	Building* building[OBJECT_BUILDING];
 
 
 public:

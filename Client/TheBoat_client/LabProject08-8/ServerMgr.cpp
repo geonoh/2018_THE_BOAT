@@ -106,6 +106,18 @@ void ServerMgr::ProcessPacket(char* ptr) {
 
 		break;
 	}
+	case SC_BUILDING_GEN: {
+		SC_PACKET_ENTER_PLAYER* packets = reinterpret_cast<SC_PACKET_ENTER_PLAYER*>(ptr);
+		building_pos[packets->id].x = packets->x;
+		building_pos[packets->id].y = packets->y;
+		building_pos[packets->id].z = packets->z;
+		printf("[%d] 빌딩 [%f, %f, %f] \n", packets->id,
+			building_pos[packets->id].x,
+			building_pos[packets->id].y,
+			building_pos[packets->id].z);
+		break;
+	}
+
 	case SC_POS: {
 		SC_PACKET_POS* packets = reinterpret_cast<SC_PACKET_POS*>(ptr);
 		clients_id = packets->id;
@@ -143,7 +155,37 @@ void ServerMgr::ProcessPacket(char* ptr) {
 
 		break;
 	}
+	case SC_ITEM_GEN: {
+		// 아이템 생성
+		SC_PACKET_ITEM_GEN* packets = reinterpret_cast<SC_PACKET_ITEM_GEN*>(ptr);
+		item_pos.x = packets->x;
+		item_pos.y = packets->y;
+		item_pos.z = packets->z;
+		printf("아템 생성\n");
+		is_item_gen = true;
+		break;
 	}
+	}
+}
+float ServerMgr::GetPlayerHP(int p_n) {
+	return client_hp[p_n];
+
+}
+bool ServerMgr::IsItemGen() {
+	return is_item_gen;
+}
+
+void ServerMgr::ReturnBuildingPosition(XMFLOAT3* input_building_pos) {
+	for (int i = 0; i < OBJECT_BUILDING; ++i) {
+		input_building_pos[i].x = building_pos[i].x;
+		input_building_pos[i].y = building_pos[i].y;
+		input_building_pos[i].z = building_pos[i].z;
+	}
+}
+
+XMFLOAT3 ServerMgr::ReturnItemPosition() {
+	is_item_gen = false;
+	return item_pos;
 }
 
 XMFLOAT3 ServerMgr::ReturnCollsionPosition() {

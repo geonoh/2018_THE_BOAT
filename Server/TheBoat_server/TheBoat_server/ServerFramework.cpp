@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "ServerFramework.h"
 #include "CHeightMapImage.h"
+#include "Building.h"
+#include "Object.h"
 
 void ErrorDisplay(const char* msg, int err_no) {
 	WCHAR *lpMsgBuf;
@@ -22,10 +24,14 @@ ServerFramework::ServerFramework()
 
 ServerFramework::~ServerFramework()
 {
+	for (int i = 0; i < OBJECT_BUILDING; ++i) {
+		delete building[i];
+	}
 	delete height_map;
 }
 
 void ServerFramework::InitServer() {
+	srand(unsigned(time(NULL)));
 	int retval = 0;
 	if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0)
 		printf("WSAStartup() 에러\n");
@@ -80,6 +86,17 @@ void ServerFramework::InitServer() {
 				XMFLOAT3(OBB_SCALE_BULLET_X, OBB_SCALE_BULLET_Y, OBB_SCALE_BULLET_Z),
 				XMFLOAT4(0, 0, 0, 1));
 		}
+	}
+
+	for (int i = 0; i < OBJECT_BUILDING; ++i) {
+		building[i] = new Building;
+		XMFLOAT3 input_buffer = XMFLOAT3{ static_cast<float>(rand() % 4000), 0.f, static_cast<float>(rand() % 4000) };
+		input_buffer.y = height_map->GetHeight(input_buffer.x, input_buffer.z);
+		building[i]->SetPosition(input_buffer);
+		//printf("[%d]건물 위치 [%f, %f, %f] \n", i,
+		//	building[i]->GetPosition().x,
+		//	building[i]->GetPosition().y,
+		//	building[i]->GetPosition().z);
 	}
 }
 
@@ -155,6 +172,26 @@ void ServerFramework::AcceptPlayer() {
 			SendPacket(i, &packet);
 		}
 	}
+	// 건물 정보 보내주기
+
+	for (int j = 0; j < OBJECT_BUILDING; ++j) {
+		SC_PACKET_ENTER_PLAYER packet;
+		packet.id = j;
+		packet.size = sizeof(SC_PACKET_ENTER_PLAYER);
+		packet.type = SC_BUILDING_GEN;
+		packet.x = building[j]->GetPosition().x;
+		packet.y = building[j]->GetPosition().y;
+		packet.z = building[j]->GetPosition().z;
+		for (int i = 0; i < MAXIMUM_PLAYER; ++i) {
+			if (clients[i].in_use) {
+				SendPacket(i, &packet);
+			}
+		}
+	}
+
+
+
+
 
 	// 해당 클라이언트에게도 다른 클라이언트의 위치를 보내줘야한당!~
 	for (int i = 0; i < MAXIMUM_PLAYER; ++i) {
@@ -272,12 +309,7 @@ void ServerFramework::ProcessPacket(int cl_id, char* packet) {
 			}
 		}
 		if (ready_count == MAXIMUM_PLAYER) {
-			printf("게임 시작\n");
-			//AddTimer();
 			GameStart();
-			// 플레이어 위치 다시 세팅하고, 모든거 초기화 후 
-
-			// Item Timer 시작
 		}
 		break;
 	}
@@ -293,6 +325,7 @@ void ServerFramework::ProcessPacket(int cl_id, char* packet) {
 
 void ServerFramework::GameStart() {
 	// Timer은 
+	printf("게임 시작\n");
 
 	for (int i = 0; i < MAXIMUM_PLAYER; ++i) {
 		clients[i].x = rand() % 4000;
@@ -316,7 +349,11 @@ void ServerFramework::GameStart() {
 				XMFLOAT4(0, 0, 0, 1));
 		}
 	}
-
+	for (int i = 0; i < MAXIMUM_PLAYER; ++i) {
+		ol_ex[i].command = SC_PLAYER_MOVE;
+		PostQueuedCompletionStatus(iocp_handle, 0, i, reinterpret_cast<WSAOVERLAPPED*>(&ol_ex[i]));
+	}
+	is_item_gen = true;
 }
 
 void ServerFramework::WorkerThread() {
@@ -376,6 +413,20 @@ void ServerFramework::WorkerThread() {
 		}
 		// TimerThread에서 호출
 		// 1/20 마다 모든 플레이어에게 정보 전송
+		else if (overlapped_buffer->command == SS_ITEM_GEN) {
+			printf("아이템 생성띠\n");
+			SC_PACKET_ITEM_GEN packets;
+			packets.size = sizeof(SC_PACKET_ITEM_GEN);
+			packets.type = SC_ITEM_GEN;
+			packets.x = rand() % 4000;
+			packets.z = rand() % 4000;
+			packets.y = height_map->GetHeight(packets.x, packets.z);
+			for (int i = 0; i < MAXIMUM_PLAYER; ++i) {
+				if (clients[i].in_use == true) {
+					SendPacket(i, &packets);
+				}
+			}
+		}
 		else if (overlapped_buffer->command == SC_PLAYER_MOVE) {
 			if (clients[client_id].in_use) {
 				SC_PACKET_POS packets;
@@ -740,5 +791,14 @@ void ServerFramework::TimerSend(duration<float>& elapsed_time) {
 			}
 		}
 		sender_time = 0;
+	}
+	if (is_item_gen) {
+		item_gen_timer += elapsed_time.count();
+		if (item_gen_timer >= ITEM_GEN_TIME) {
+			ol_ex[8].command = SS_ITEM_GEN;
+			PostQueuedCompletionStatus(iocp_handle, 0, 0, reinterpret_cast<WSAOVERLAPPED*>(&ol_ex[8]));
+			item_gen_timer = 0.f;
+			is_item_gen = false;
+		}
 	}
 }

@@ -14,6 +14,10 @@
 #define METER_PER_PIXEL			20
 #define WALK_SPEED				1.67f
 
+// Object °¹¼ö Á¤¸® 
+#define OBJECT_BUILDING			10
+
+
 
 // Server To Client
 #define SC_ENTER_PLAYER			1
@@ -23,15 +27,17 @@
 #define SC_PLAYER_LOOKVEC		5
 #define SC_BULLET_POS			6	// Bullet Position
 #define SC_COLLSION_PB			7	// Collsion Player to Bullet
+#define SC_ITEM_GEN				8	// Actually Item gen packet
+#define SC_BUILDING_GEN			9
 
 // Server To Server
-#define SS_COLLISION			8
-#define SS_PLAYER_POS_UPDATE	9
-#define SS_BULLET_GENERATE		10
-#define SS_BULLET_UPDATE		11
-#define SS_PLAYER_READY			12
-#define SS_PLAYER_MOVE			13
-#define SS_ITEM_GEN				14
+#define SS_COLLISION			10
+#define SS_PLAYER_POS_UPDATE	11
+#define SS_BULLET_GENERATE		12
+#define SS_BULLET_UPDATE		13
+#define SS_PLAYER_READY			14
+#define SS_PLAYER_MOVE			15
+#define SS_ITEM_GEN				16	// Event
 
 
 // Client To Server
@@ -104,6 +110,12 @@ struct SC_PACKET_COLLISION {
 	WORD client_id;
 	float x, y, z;
 	float hp;
+};
+
+struct SC_PACKET_ITEM_GEN {
+	BYTE size;
+	BYTE type;
+	float x, y, z;
 };
 
 

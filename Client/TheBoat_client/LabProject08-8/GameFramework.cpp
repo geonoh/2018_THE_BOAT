@@ -604,31 +604,30 @@ LRESULT CALLBACK CGameFramework::OnProcessingWindowMessage(HWND hWnd, UINT nMess
 				my_client_id = server_mgr.ReturnCameraID();
 				m_pCamera = m_pPlayer[my_client_id]->GetCamera();
 				printf("카메라는 %d에 고정\n", my_client_id);
+				server_mgr.ReturnBuildingPosition(&building_pos[0]);
+				for (int i = 0; i < OBJECT_BUILDING; ++i) {
+					printf("[%d]번 빌딩 [%f, %f, %f] \ n", i, building_pos[i].x,
+						building_pos[i].y,
+						building_pos[i].z);
+				}
+
 				first_recv = false;
 			}
+			if (server_mgr.GetClientID() != my_client_id)
+				m_pPlayer[server_mgr.GetClientID()]->SetLook(server_mgr.ReturnLookVector());
 
 			m_pPlayer[server_mgr.GetClientID()]->SetPosition(server_mgr.ReturnXMFLOAT3(server_mgr.GetClientID()));
 			m_pScene->m_ppShaders[2]->SetPosition(server_mgr.GetBullet().id,
 				XMFLOAT3(server_mgr.GetBullet().x, server_mgr.GetBullet().y, server_mgr.GetBullet().z));
 
-			//if (server_mgr.GetClientID() == my_client_id) {
-			//	player_moving_counter++;
-			//	if (player_moving_counter == 150) {
-			//		m_pPlayer[server_mgr.GetClientID()]->SetPosition(server_mgr.ReturnXMFLOAT3(server_mgr.GetClientID()));
-			//		player_moving_counter = 0;
-			//	}
-			//}
-			//else {
-			//	m_pPlayer[server_mgr.GetClientID()]->SetPosition(server_mgr.ReturnXMFLOAT3(server_mgr.GetClientID()));
-			//}
 
-			m_pScene->m_ppShaders[2]->SetPosition(server_mgr.GetBullet().id,
-				XMFLOAT3(server_mgr.GetBullet().x, server_mgr.GetBullet().y, server_mgr.GetBullet().z));
+			// 아이템생성
+			if (server_mgr.IsItemGen()) {
+				server_mgr.ReturnItemPosition();
+			}
+			// 플레이어 체력	(PlayerNum을 인자로 받음)
+			server_mgr.GetPlayerHP(1);
 
-
-			// 본인 플레이어 외의 플레이어가 올때만 LookVector을 셋팅해준다.
-			if (server_mgr.GetClientID() != my_client_id)
-				m_pPlayer[server_mgr.GetClientID()]->SetLook(server_mgr.ReturnLookVector());
 			break;
 		case FD_CLOSE:
 			closesocket((SOCKET)wParam);
@@ -876,7 +875,7 @@ void CGameFramework::FrameAdvance()
 
 	m_pd3dCommandList->OMSetRenderTargets(1, &d3dRtvCPUDescriptorHandle, TRUE, &d3dDsvCPUDescriptorHandle);
 
-	m_pScene->Render(m_pd3dCommandList, m_pCamera);
+	m_pScene->Render(m_pd3dCommandList, m_pCamera);			
 
 #ifdef _WITH_PLAYER_TOP
 	m_pd3dCommandList->ClearDepthStencilView(d3dDsvCPUDescriptorHandle, D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, NULL);
@@ -887,7 +886,9 @@ void CGameFramework::FrameAdvance()
 		else
 			m_pPlayer[i]->Render(m_pd3dCommandList, m_pCamera);
 	}
-
+	if(m_pCamera->GetMode() == SPACESHIP_CAMERA)
+		m_pScene->m_pUIShader->Render(m_pd3dCommandList, m_pCamera);// UI렌더 바꿔야함.
+	
 	d3dResourceBarrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
 	d3dResourceBarrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;
 	d3dResourceBarrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;

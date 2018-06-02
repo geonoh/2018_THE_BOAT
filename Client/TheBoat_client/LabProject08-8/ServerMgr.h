@@ -29,6 +29,13 @@ class ServerMgr
 	float client_hp[4] = { 0 };
 	int camera_id = 0;
 	string server_ip;
+
+	// 아이템 생성 부분
+	XMFLOAT3 item_pos;
+	bool is_item_gen;
+
+	XMFLOAT3 building_pos[OBJECT_BUILDING];
+
 public:
 	void IPInput();
 	void Initialize(HWND& hwnd);
@@ -44,4 +51,13 @@ public:
 	XMFLOAT3 ReturnXMFLOAT3(int client_id);
 	XMFLOAT3 ReturnLookVector();
 	XMFLOAT3 ReturnCollsionPosition();
+	// 아이템 생성 후 위치 Return
+	bool IsItemGen();
+	XMFLOAT3 ReturnItemPosition();
+
+	// 플레이어 체력
+	float GetPlayerHP(int p_n);
+
+	// 
+	void ReturnBuildingPosition(XMFLOAT3* building_pos);
 };
