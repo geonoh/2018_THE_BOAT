@@ -716,7 +716,6 @@ void CSkyBoxShader::CreateShader(ID3D12Device *pd3dDevice, ID3D12RootSignature *
 
 
 CTreeShader::CTreeShader() {
-
 }
 CTreeShader::~CTreeShader() {
 }
@@ -788,7 +787,7 @@ void CTreeShader::BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandLi
 	pCubeMaterial->SetTexture(pTexture);
 #endif
 
-	CBillboardMesh *pCubeMesh = new CBillboardMesh(pd3dDevice, pd3dCommandList, 30.0f, 30.0f, 1.0f);
+	CUIMesh *pCubeMesh = new CUIMesh(pd3dDevice, pd3dCommandList, 30.0f, 30.0f, 1.0f);
 
 	m_ppTree = new CRotatingObject*[m_nTree];
 
@@ -808,7 +807,7 @@ void CTreeShader::BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandLi
 				float xPosition = 800;
 				float zPosition = 800;
 				float fHeight = pTerrain->GetHeight(xPosition, zPosition);
-				pRotatingObject->SetPosition(800, 0, 1000);
+				//pRotatingObject->SetPosition(800, 0, 1000);
 				if (y == 0)
 				{
 					xmf3SurfaceNormal = pTerrain->GetNormal(xPosition, zPosition);
@@ -841,10 +840,12 @@ void CTreeShader::AnimateObjects(float fTimeElapsed, CCamera *pCamera)
 	{
 		m_ppTree[j]->Animate(fTimeElapsed);
 	}
-	m_ppTree[0]->SetPosition(XMFLOAT3(CGameFramework::m_pPlayer[CGameFramework::my_client_id]->GetPosition().x + 15 * CGameFramework::m_pCamera->GetLookVector().x,
+	/*m_ppTree[0]->SetPosition(XMFLOAT3(CGameFramework::m_pPlayer[CGameFramework::my_client_id]->GetPosition().x + 15 * CGameFramework::m_pCamera->GetLookVector().x,
 		CGameFramework::m_pPlayer[CGameFramework::my_client_id]->GetPosition().y + 15 + 15 * CGameFramework::m_pCamera->GetLookVector().y,
 		CGameFramework::m_pPlayer[CGameFramework::my_client_id]->GetPosition().z + 15 * CGameFramework::m_pCamera->GetLookVector().z));
-
+	*/
+	/*m_ppTree[0]->SetPosition(XMFLOAT3(-1.0, -1.0, 1.0));
+	m_ppTree[0]->SetScale(0.1, 0.1, 0.1);*/
 }
 
 void CTreeShader::ReleaseUploadBuffers()
@@ -884,11 +885,11 @@ void CTreeShader::CreateShaderVariables(ID3D12Device *pd3dDevice, ID3D12Graphics
 void CTreeShader::UpdateShaderVariables(ID3D12GraphicsCommandList *pd3dCommandList)
 {
 	UINT ncbElementBytes = ((sizeof(CB_GAMEOBJECT_INFO) + 255) & ~255);
-	for (int j = 0; j < m_nTree; j++)
+	/*for (int j = 0; j < m_nTree; j++)
 	{
 		CB_GAMEOBJECT_INFO *pbMappedcbGameObject = (CB_GAMEOBJECT_INFO *)((UINT8 *)m_pcbMappedGameObjects + (j * ncbElementBytes));
 		XMStoreFloat4x4(&pbMappedcbGameObject->m_xmf4x4World, XMMatrixTranspose(XMLoadFloat4x4(&m_ppTree[j]->m_xmf4x4World)));
-	}
+	}*/
 }
 
 void CTreeShader::ReleaseShaderVariables()
