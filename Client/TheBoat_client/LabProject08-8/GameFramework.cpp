@@ -606,7 +606,7 @@ LRESULT CALLBACK CGameFramework::OnProcessingWindowMessage(HWND hWnd, UINT nMess
 				printf("카메라는 %d에 고정\n", my_client_id);
 				server_mgr.ReturnBuildingPosition(&building_pos[0]);
 				for (int i = 0; i < OBJECT_BUILDING; ++i) {
-					printf("[%d]번 빌딩 [%f, %f, %f] \ n", i, building_pos[i].x,
+					printf("[%d]번 빌딩 [%f, %f, %f] \n", i, building_pos[i].x,
 						building_pos[i].y,
 						building_pos[i].z);
 				}
@@ -627,7 +627,7 @@ LRESULT CALLBACK CGameFramework::OnProcessingWindowMessage(HWND hWnd, UINT nMess
 			}
 			// 플레이어 체력	(PlayerNum을 인자로 받음)
 			server_mgr.GetPlayerHP(1);
-
+			// 빌딩은 총 10개 0~9 로 접근 가능.
 			break;
 		case FD_CLOSE:
 			closesocket((SOCKET)wParam);
