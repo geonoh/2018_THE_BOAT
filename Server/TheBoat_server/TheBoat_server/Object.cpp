@@ -13,6 +13,7 @@ Object::Object()
 }
 void Object::SetOBB(XMFLOAT3 xmCenter, XMFLOAT3 xmExtents, XMFLOAT4 xmOrientation) {
 	bounding_box = BoundingOrientedBox(xmCenter, xmExtents, xmOrientation);
+	printf("오브젝트의 OBB : [%f, %f, %f] \n", xmExtents.x, xmExtents.y, xmExtents.z);
 }
 
 
@@ -22,6 +23,10 @@ void Object::SetPosition(XMFLOAT3& input_pos, XMFLOAT3& extents) {
 	position.y = input_pos.y;
 	position.z = input_pos.z;
 
+}
+
+XMFLOAT3 Object::GetExtents() {
+	return bounding_box.Extents;
 }
 
 XMFLOAT3 Object::GetPosition() {

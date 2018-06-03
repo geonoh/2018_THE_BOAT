@@ -88,6 +88,8 @@ struct SC_PACKET_ENTER_PLAYER {
 	BYTE type;
 	WORD id;
 	float x, y, z;
+	// 건물 크기 보낼 때만 사용
+	float size_x, size_y, size_z;
 };
 
 struct SC_PACKET_LOOCVEC {
@@ -101,6 +103,7 @@ struct SC_PACKET_POS {
 	BYTE size;
 	BYTE type;
 	WORD id;
+	int player_status;
 	float x, y, z;
 };
 
@@ -117,6 +120,7 @@ struct SC_PACKET_ITEM_GEN {
 	BYTE type;
 	float x, y, z;
 };
+
 
 
 // 클라->서버

@@ -18,7 +18,7 @@ private:
 	bool is_pushed[11] = { 0 };
 
 	XMFLOAT3 sc_player_pos[4];
-	bool first_recv = true;
+	bool first_recv;
 	int recvd_client_id;
 
 	bool player_ready = false;
@@ -28,7 +28,7 @@ private:
 	XMFLOAT3 item_pos;
 	//ºôµù
 	XMFLOAT3 building_pos[OBJECT_BUILDING];
-
+	XMFLOAT3 buliding_extents[OBJECT_BUILDING];
 public:
 	static int my_client_id;
 public:

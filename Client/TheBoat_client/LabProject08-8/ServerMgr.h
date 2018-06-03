@@ -1,4 +1,12 @@
 #pragma once
+
+// Server 에서 받아오는 Player의 정보 
+struct SPlayer {
+	XMFLOAT3 pos;
+	int player_status;
+};
+
+
 class ServerMgr
 {
 	WSADATA wsa;
@@ -22,7 +30,7 @@ class ServerMgr
 	DWORD in_packet_size = 0;
 	DWORD saved_packet_size = 0;
 
-	XMFLOAT3 sc_vec_buff[4];
+	SPlayer sc_vec_buff[4];
 	XMFLOAT3 sc_look_vec;
 
 	XMFLOAT3 collision_pos;
@@ -35,7 +43,7 @@ class ServerMgr
 	bool is_item_gen;
 
 	XMFLOAT3 building_pos[OBJECT_BUILDING];
-
+	XMFLOAT3 building_extents[OBJECT_BUILDING];
 public:
 	void IPInput();
 	void Initialize(HWND& hwnd);
@@ -48,7 +56,7 @@ public:
 	int GetClientID();
 	int ReturnCameraID();
 	Bullet GetBullet();
-	XMFLOAT3 ReturnXMFLOAT3(int client_id);
+	SPlayer ReturnPlayerPosStatus(int client_id);
 	XMFLOAT3 ReturnLookVector();
 	XMFLOAT3 ReturnCollsionPosition();
 	// 아이템 생성 후 위치 Return
@@ -60,4 +68,5 @@ public:
 
 	// 
 	void ReturnBuildingPosition(XMFLOAT3* building_pos);
+	void ReturnBuildingExtents(XMFLOAT3* building_pos);
 };

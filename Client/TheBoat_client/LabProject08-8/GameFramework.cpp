@@ -60,6 +60,7 @@ bool CGameFramework::OnCreate(HINSTANCE hInstance, HWND hMainWnd)
 	BuildObjects();
 
 	// 여기서 핸들을 받아서 비동기 방식으로 통신하면 됨
+	first_recv = true;
 	printf("통신모듈 초기화 시작\n");
 	server_mgr.Initialize(hMainWnd);
 	printf("통신모듈 초기화 끝\n");
@@ -601,22 +602,38 @@ LRESULT CALLBACK CGameFramework::OnProcessingWindowMessage(HWND hWnd, UINT nMess
 			XMFLOAT3 read_buf;
 			server_mgr.ReadPacket();
 			if (first_recv) {
+				printf("드루와\n"); 
+				first_recv = false;
 				my_client_id = server_mgr.ReturnCameraID();
 				m_pCamera = m_pPlayer[my_client_id]->GetCamera();
 				printf("카메라는 %d에 고정\n", my_client_id);
-				server_mgr.ReturnBuildingPosition(&building_pos[0]);
+				server_mgr.ReturnBuildingPosition(building_pos);
+				server_mgr.ReturnBuildingExtents(buliding_extents);
 				for (int i = 0; i < OBJECT_BUILDING; ++i) {
-					printf("[%d]번 빌딩 [%f, %f, %f] \n", i, building_pos[i].x,
+					//printf("[%d]번 빌딩 [%f, %f, %f] \n", i, building_pos[i].x,
+					//	building_pos[i].y,
+					//	building_pos[i].z);
+
+					printf("[%d] 빌딩 [%f, %f, %f] 크기 : [%f, %f, %f] \n", i,
+						building_pos[i].x,
 						building_pos[i].y,
-						building_pos[i].z);
+						building_pos[i].z,
+						buliding_extents[i].x,
+						buliding_extents[i].y,
+						buliding_extents[i].z);
+
 				}
 
-				first_recv = false;
 			}
 			if (server_mgr.GetClientID() != my_client_id)
 				m_pPlayer[server_mgr.GetClientID()]->SetLook(server_mgr.ReturnLookVector());
 
-			m_pPlayer[server_mgr.GetClientID()]->SetPosition(server_mgr.ReturnXMFLOAT3(server_mgr.GetClientID()));
+			m_pPlayer[server_mgr.GetClientID()]->SetPosition(server_mgr.ReturnPlayerPosStatus(server_mgr.GetClientID()).pos);
+
+
+			server_mgr.ReturnPlayerPosStatus(server_mgr.GetClientID()).player_status;
+
+
 			m_pScene->m_ppShaders[2]->SetPosition(server_mgr.GetBullet().id,
 				XMFLOAT3(server_mgr.GetBullet().x, server_mgr.GetBullet().y, server_mgr.GetBullet().z));
 

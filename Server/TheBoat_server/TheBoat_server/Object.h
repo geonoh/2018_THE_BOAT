@@ -12,6 +12,7 @@ public:
 	void SetPosition(XMFLOAT3& input_pos, XMFLOAT3& extents);
 
 	virtual XMFLOAT3 GetPosition();
+	virtual XMFLOAT3 GetExtents();
 	Object();
 	~Object();
 };

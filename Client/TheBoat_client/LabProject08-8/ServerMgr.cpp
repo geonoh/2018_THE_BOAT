@@ -99,9 +99,9 @@ void ServerMgr::ProcessPacket(char* ptr) {
 			camera_id = packets->id;
 			first_set_id = false;
 		}
-		sc_vec_buff[packets->id].x = packets->x;
-		sc_vec_buff[packets->id].y = packets->y;
-		sc_vec_buff[packets->id].z = packets->z;
+		sc_vec_buff[packets->id].pos.x = packets->x;
+		sc_vec_buff[packets->id].pos.y = packets->y;
+		sc_vec_buff[packets->id].pos.z = packets->z;
 		printf("[SC_ENTER_PLAYER] : %d ÇÃ·¹ÀÌ¾î ÀÔÀå\n", packets->id);
 
 		break;
@@ -111,19 +111,28 @@ void ServerMgr::ProcessPacket(char* ptr) {
 		building_pos[packets->id].x = packets->x;
 		building_pos[packets->id].y = packets->y;
 		building_pos[packets->id].z = packets->z;
-		printf("[%d] ºôµù [%f, %f, %f] \n", packets->id,
-			building_pos[packets->id].x,
-			building_pos[packets->id].y,
-			building_pos[packets->id].z);
+
+		building_extents[packets->id].x = packets->size_x;
+		building_extents[packets->id].y = packets->size_y;
+		building_extents[packets->id].z = packets->size_z;
+		//printf("[%d] ºôµù [%f, %f, %f] Å©±â : [%f, %f, %f] \n", packets->id,
+		//	building_pos[packets->id].x,
+		//	building_pos[packets->id].y,
+		//	building_pos[packets->id].z,
+		//	building_extents[packets->id].x,
+		//	building_extents[packets->id].y,
+		//	building_extents[packets->id].z);
 		break;
 	}
 
 	case SC_POS: {
 		SC_PACKET_POS* packets = reinterpret_cast<SC_PACKET_POS*>(ptr);
 		clients_id = packets->id;
-		sc_vec_buff[packets->id].x = packets->x;
-		sc_vec_buff[packets->id].y = packets->y;
-		sc_vec_buff[packets->id].z = packets->z;
+		sc_vec_buff[packets->id].pos.x = packets->x;
+		sc_vec_buff[packets->id].pos.y = packets->y;
+		sc_vec_buff[packets->id].pos.z = packets->z;
+		// 0 ¼û½¬±â, 1: °È±â, 2: ¶Ù±â
+		sc_vec_buff[packets->id].player_status = packets->player_status;
 		break;
 	}
 	case SC_PLAYER_LOOKVEC: {
@@ -182,6 +191,15 @@ void ServerMgr::ReturnBuildingPosition(XMFLOAT3* input_building_pos) {
 		input_building_pos[i].z = building_pos[i].z;
 	}
 }
+
+void ServerMgr::ReturnBuildingExtents(XMFLOAT3* input_building_extents) {
+	for (int i = 0; i < OBJECT_BUILDING; ++i) {
+		input_building_extents[i].x = building_extents[i].x;
+		input_building_extents[i].y = building_extents[i].y;
+		input_building_extents[i].z = building_extents[i].z;
+	}
+}
+
 
 XMFLOAT3 ServerMgr::ReturnItemPosition() {
 	is_item_gen = false;
@@ -423,7 +441,7 @@ void ServerMgr::ClientError() {
 	exit(-1);
 }
 
-XMFLOAT3 ServerMgr::ReturnXMFLOAT3(int client_id) {
+SPlayer ServerMgr::ReturnPlayerPosStatus(int client_id) {
 	return sc_vec_buff[client_id];
 }
 

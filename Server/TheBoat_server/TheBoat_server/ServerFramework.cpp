@@ -100,7 +100,7 @@ void ServerFramework::InitServer() {
 	for (int i = 0; i < OBJECT_BUILDING; ++i) {
 		building[i] = new Building;
 		XMFLOAT3 input_buffer = XMFLOAT3{ static_cast<float>(rand() % 4000), 0.f, static_cast<float>(rand() % 4000) };
-		XMFLOAT3 input_extents;
+		XMFLOAT3 input_extents = XMFLOAT3{ static_cast<float>(rand() % 20 + 10),static_cast<float>(rand() % 20 + 10), static_cast<float>(rand() % 20 + 10) };
 		input_buffer.y = height_map->GetHeight(input_buffer.x, input_buffer.z);
 		building[i]->SetPosition(input_buffer, input_extents);
 		//building[i]->SetObbExtents(i)
@@ -193,6 +193,9 @@ void ServerFramework::AcceptPlayer() {
 		packet.x = building[j]->GetPosition().x;
 		packet.y = building[j]->GetPosition().y;
 		packet.z = building[j]->GetPosition().z;
+		packet.size_x = building[j]->GetExtents().x;
+		packet.size_y = building[j]->GetExtents().y;
+		packet.size_z = building[j]->GetExtents().z;
 		for (int i = 0; i < MAXIMUM_PLAYER; ++i) {
 			if (clients[i].in_use) {
 				SendPacket(i, &packet);
@@ -449,6 +452,20 @@ void ServerFramework::WorkerThread() {
 				packets.x = clients[client_id].x;
 				packets.y = clients[client_id].y;
 				packets.z = clients[client_id].z;
+
+				// 플레이어가 뒤는 상황
+				if (clients[client_id].is_running) {
+					packets.player_status = 2;
+				}
+				// 걷는 상황
+				else if ((clients[client_id].is_move_foward || clients[client_id].is_move_left || clients[client_id].is_move_right || clients[client_id].is_move_backward) ){
+					packets.player_status = 1;
+				}
+				// 걷지도 뛰지도 않는 상황
+				else {
+					packets.player_status = 0;
+				}
+				//packets.player_status = clients[client_id].is_running;
 				//printf("높이 : %f\n", clients[client_id].y);
 				for (int i = 0; i < MAXIMUM_PLAYER; ++i) {
 					if (clients[i].in_use == true) {
@@ -461,8 +478,13 @@ void ServerFramework::WorkerThread() {
 		else if (overlapped_buffer->command == SS_COLLISION) {
 			// OBB 충돌체크  
 			for (int j = 0; j < MAXIMUM_PLAYER - 1; ++j) {
+				//
+				for (int k = 0; k < OBJECT_BUILDING; ++k) {
+
+				}
+				//
 				for (int i = 0; i < MAX_BULLET_SIZE; ++i) {
-					if (bullets[j + 1][i].in_use) {
+					if (bullets[j + 1][i].in_use && clients[j].in_use) {
 						ContainmentType containType = clients[j].bounding_box.Contains(bullets[j + 1][i].bounding_box);
 						switch (containType)
 						{
@@ -512,7 +534,7 @@ void ServerFramework::WorkerThread() {
 							break;
 						}
 					}
-					if (bullets[j][i].in_use) {
+					if (bullets[j][i].in_use && clients[j + 1].in_use) {
 						//ContainmentType containType_rev = clients[j].bounding_box.Contains(bullets[j + 1][i].bounding_box);
 						ContainmentType containType_rev = bullets[j][i].bounding_box.Contains(clients[j + 1].bounding_box);
 						switch (containType_rev)
