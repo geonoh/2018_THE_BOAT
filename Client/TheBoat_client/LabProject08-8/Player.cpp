@@ -241,7 +241,9 @@ CCamera *CPlayer::OnChangeCamera(DWORD nNewCameraMode, DWORD nCurrentCameraMode)
 
 void CPlayer::Animate(float fTimeElapsed)
 {
-	UpdateMD5Model(NewMD5Model, fTimeElapsed *1, animation_status, m_ppMeshes[0]);
+	for (int i = 0; i < NewMD5Model.subsets.size(); ++i)
+		UpdateMD5Model(NewMD5Model, fTimeElapsed *1, animation_status, m_ppMeshes[i]);
+
 	//printf("%f %f %f \n", GetPosition().x, GetPosition().y, GetPosition().z);
 	//m_ppMeshes[0]->Upload();
 	m_xmf4x4ToParentTransform._11 = m_xmf3Right.x; m_xmf4x4ToParentTransform._12 = m_xmf3Right.y; m_xmf4x4ToParentTransform._13 = m_xmf3Right.z;

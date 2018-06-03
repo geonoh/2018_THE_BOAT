@@ -274,7 +274,7 @@ bool LoadMD5Model(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dComma
 				{
 					pxmf3Positions[i].x = subset.vertices[i].pos.x;
 					pxmf3Positions[i].y = subset.vertices[i].pos.y;
-					pxmf3Positions[i].z = subset.vertices[i].pos.z;
+					pxmf3Positions[i].z = -1 * subset.vertices[i].pos.z;
 				}
 				pxmf3Normals = new XMFLOAT3[nVertices];
 				for (int i = 0; i < nVertices; i++)
@@ -305,7 +305,9 @@ bool LoadMD5Model(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dComma
 				//pMesh = new CMeshTextured(pd3dDevice, pd3dCommandList, subset.indices.size(), aaa, pxmf2texCoord, subset.indices.size(), pnIndices);
 
 				//pMesh = new CMeshTextured(pd3dDevice, pd3dCommandList, numVerts, pxmf3Positions, pxmf2texCoord, subset.indices.size(), pnIndices);
-				pMesh = new CMeshTextured(pd3dDevice, pd3dCommandList, numVerts, pxmf3Positions, pxmf2texCoord, subset.indices.size(), pnIndices);
+				pMesh = new CMeshIlluminatedTextured(pd3dDevice, pd3dCommandList, numVerts, pxmf3Positions, pxmf3Normals, pxmf2texCoord, subset.indices.size(), pnIndices);
+
+				//pMesh = new CMeshTextured(pd3dDevice, pd3dCommandList, numVerts, pxmf3Positions, pxmf2texCoord, subset.indices.size(), pnIndices);
 				
 				MD5Model.subsets.push_back(subset);
 			}

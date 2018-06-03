@@ -165,6 +165,8 @@ CGameObject::~CGameObject()
 	if (m_pChild) delete m_pChild;
 }
 
+void CGameObject::Release() { if (--m_nReferences <= 0) delete this; }
+
 void CGameObject::ResizeMeshes(int nMeshes)
 {
 	if (m_ppMeshes)
@@ -439,7 +441,10 @@ void CGameObject::LoadFrameHierarchyFromFile(ID3D12Device *pd3dDevice, ID3D12Gra
 {
 	CMesh *pMesh = NULL;
 	CMaterial *pMaterial = NULL;
+	printf("%d", m_nReferences);
+
 	ResizeMeshes(2);
+	
 	/*LoadMD5Model(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, L"../Assets/Model/66.MD5MESH", NewMD5Model, meshSRV, textureNameArray, pMesh);
 	LoadMD5Anim(L"../Assets/Model/898.MD5ANIM", NewMD5Model);
 	LoadMD5Anim(L"../Assets/Model/24.MD5ANIM", NewMD5Model);*/
@@ -448,13 +453,19 @@ void CGameObject::LoadFrameHierarchyFromFile(ID3D12Device *pd3dDevice, ID3D12Gra
 	LoadMD5Anim(L"../Assets/Model/run.MD5ANIM", NewMD5Model);*/
 	LoadMD5Model(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, L"../Assets/Model/7810.MD5MESH", NewMD5Model, meshSRV, textureNameArray, pMesh);
 	SetMesh(0, pMesh);
+	//AddRef();
 	CMesh *pMesh1 = NULL;
-	LoadMD5Model(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, L"../Assets/Model/7810.MD5MESH", NewMD5Model, meshSRV, textureNameArray, pMesh1);
+	LoadMD5Model(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, L"../Assets/Model/7814.MD5MESH", NewMD5Model, meshSRV, textureNameArray, pMesh1);
 	SetMesh(1, pMesh1);
 	LoadMD5Anim(L"../Assets/Model/7811.MD5ANIM", NewMD5Model);
 	LoadMD5Anim(L"../Assets/Model/7812.MD5ANIM", NewMD5Model);
 	//LoadMD5Anim(L"../Assets/Model/WarriorAttack.MD5ANIM", NewMD5Model);
-
+	if (m_ppMeshes[0])
+		printf("mesh0\n");
+	if (m_ppMeshes[1])
+		printf("mesh1\n");
+	
+	printf("%d\n", m_nReferences);
 	CTexture *pTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0);
 	pTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Model/demo_soldier.dds", 0);
 

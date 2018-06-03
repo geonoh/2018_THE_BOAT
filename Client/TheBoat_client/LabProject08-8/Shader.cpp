@@ -90,7 +90,7 @@ D3D12_RASTERIZER_DESC CShader::CreateRasterizerState()
 	d3dRasterizerDesc.DepthBias = 0;
 	d3dRasterizerDesc.DepthBiasClamp = 0.0f;
 	d3dRasterizerDesc.SlopeScaledDepthBias = 0.0f;
-	d3dRasterizerDesc.DepthClipEnable = TRUE;
+	d3dRasterizerDesc.DepthClipEnable = FALSE;
 	d3dRasterizerDesc.MultisampleEnable = FALSE;
 	d3dRasterizerDesc.AntialiasedLineEnable = FALSE;
 	d3dRasterizerDesc.ForcedSampleCount = 0;
