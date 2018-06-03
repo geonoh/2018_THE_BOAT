@@ -77,14 +77,14 @@ void ServerFramework::InitServer() {
 	for (int i = 0; i < MAXIMUM_PLAYER; ++i) {
 		//clients[i].SetOOBB(XMFLOAT3(0, 0, 0), XMFLOAT3(10.f, 10.f, 10.f), XMFLOAT4(0, 0, 0, 1));
 		clients[i].SetOOBB(XMFLOAT3(clients[i].x, clients[i].y, clients[i].z), XMFLOAT3(OBB_SCALE_PLAYER_X, OBB_SCALE_PLAYER_Y, OBB_SCALE_PLAYER_Z), XMFLOAT4(0, 0, 0, 1));
-		printf("[%d]플레이어의 OBB : [%f, %f, %f], Extents [%f, %f, %f] \n", i,
-			clients[i].bounding_box.Center.x,
-			clients[i].bounding_box.Center.y,
-			clients[i].bounding_box.Center.z,
-			clients[i].bounding_box.Extents.x,
-			clients[i].bounding_box.Extents.y,
-			clients[i].bounding_box.Extents.z
-			);
+		//printf("[%d]플레이어의 OBB : [%f, %f, %f], Extents [%f, %f, %f] \n", i,
+		//	clients[i].bounding_box.Center.x,
+		//	clients[i].bounding_box.Center.y,
+		//	clients[i].bounding_box.Center.z,
+		//	clients[i].bounding_box.Extents.x,
+		//	clients[i].bounding_box.Extents.y,
+		//	clients[i].bounding_box.Extents.z
+		//	);
 		clients[i].bounding_box.Center;
 	}
 
@@ -476,13 +476,110 @@ void ServerFramework::WorkerThread() {
 			}
 		}
 		else if (overlapped_buffer->command == SS_COLLISION) {
-			// OBB 충돌체크  
-			for (int j = 0; j < MAXIMUM_PLAYER - 1; ++j) {
-				//
-				for (int k = 0; k < OBJECT_BUILDING; ++k) {
+			// OBB 충돌체크 
+			for (int i = 0; i < OBJECT_BUILDING; ++i) {
+				for (int j = 0; j < MAX_BULLET_SIZE; ++j) {
+					for (int k = 0; (k < MAXIMUM_PLAYER); ++k) {
+						if (bullets[k][j].in_use) {
+							ContainmentType contain_type = building[i]->bounding_box.Contains(bullets[k][j].bounding_box);
+							switch (contain_type) {
+							case DISJOINT:
+								break;
+							case INTERSECTS:
+								SC_PACKET_COLLISION packets;
+								packets.size = sizeof(SC_PACKET_COLLISION);
+								packets.type = SC_COLLSION_BB;
+								packets.x = clients[j].bounding_box.Center.x;
+								// 플레이어의 키 만큼 반영해서
+								packets.y = clients[j].bounding_box.Center.y;
+								packets.z = clients[j].bounding_box.Center.z;
+								packets.client_id = j;
+								//
+								// 플레이어 체력은 안깎아도 됭
+								//clients[j].hp -= 25.f;
+								//
+								packets.hp = clients[j].hp;
 
+								SendPacket(j, &packets);
+								SendPacket(j + 1, &packets);
+								bullets[k][j].in_use = false;
+
+								printf("건물 총알 충돌 시작\n");
+								break;
+							case CONTAINS: {
+								SC_PACKET_COLLISION packets;
+								packets.size = sizeof(SC_PACKET_COLLISION);
+								packets.type = SC_COLLSION_BB;
+								packets.x = clients[j].bounding_box.Center.x;
+								packets.y = clients[j].bounding_box.Center.y;
+								packets.z = clients[j].bounding_box.Center.z;
+								packets.client_id = j;
+
+								// 플레이어 체력은 안깎아도 됨
+								//clients[j].hp -= 25.f;
+								packets.hp = clients[j].hp;
+
+								SendPacket(j, &packets);
+								SendPacket(j + 1, &packets);
+								bullets[k][j].in_use = false;
+
+								printf("건물 총알 충돌 !!!!!!!!!!!!!!\n");
+								break;
+							}
+							}
+						}
+					}
 				}
-				//
+			}
+			for (int j = 0; (j < MAXIMUM_PLAYER - 1); ++j) {
+				// 
+				for (int k = 0; k < OBJECT_BUILDING; ++k) {
+					if (clients[j].in_use && clients[j + 1].in_use) {
+						ContainmentType contain_type = building[k]->bounding_box.Contains(clients[j].bounding_box);
+						switch (contain_type) {
+						case DISJOINT:
+							break;
+						case INTERSECTS:
+							SC_PACKET_COLLISION packets;
+							packets.size = sizeof(SC_PACKET_COLLISION);
+							packets.type = SC_COLLSION_BDP;
+							packets.x = clients[j].bounding_box.Center.x;
+							// 플레이어의 키 만큼 반영해서
+							packets.y = clients[j].bounding_box.Center.y;
+							packets.z = clients[j].bounding_box.Center.z;
+							packets.client_id = j;
+							//
+							// 플레이어 체력은 안깎아도 됭
+							//clients[j].hp -= 25.f;
+							//
+							packets.hp = clients[j].hp;
+
+							SendPacket(j, &packets);
+							SendPacket(j + 1, &packets);
+							printf("건물과 충돌 시작\n");
+							break;
+						case CONTAINS: {
+							SC_PACKET_COLLISION packets;
+							packets.size = sizeof(SC_PACKET_COLLISION);
+							packets.type = SC_COLLSION_BDP;
+							packets.x = clients[j].bounding_box.Center.x;
+							packets.y = clients[j].bounding_box.Center.y;
+							packets.z = clients[j].bounding_box.Center.z;
+							packets.client_id = j;
+
+							// 플레이어 체력은 안깎아도 됨
+							//clients[j].hp -= 25.f;
+							packets.hp = clients[j].hp;
+
+							SendPacket(j, &packets);
+							SendPacket(j + 1, &packets);
+							printf("건물과 충돌!!!!\n");
+							break;
+						}
+						}
+					}
+				}
+				// 
 				for (int i = 0; i < MAX_BULLET_SIZE; ++i) {
 					if (bullets[j + 1][i].in_use && clients[j].in_use) {
 						ContainmentType containType = clients[j].bounding_box.Contains(bullets[j + 1][i].bounding_box);
@@ -534,7 +631,7 @@ void ServerFramework::WorkerThread() {
 							break;
 						}
 					}
-					if (bullets[j][i].in_use && clients[j + 1].in_use) {
+					if (bullets[j][i].in_use) {
 						//ContainmentType containType_rev = clients[j].bounding_box.Contains(bullets[j + 1][i].bounding_box);
 						ContainmentType containType_rev = bullets[j][i].bounding_box.Contains(clients[j + 1].bounding_box);
 						switch (containType_rev)
