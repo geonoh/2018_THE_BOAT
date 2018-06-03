@@ -614,13 +614,13 @@ LRESULT CALLBACK CGameFramework::OnProcessingWindowMessage(HWND hWnd, UINT nMess
 					//	building_pos[i].y,
 					//	building_pos[i].z);
 
-					printf("[%d] 빌딩 [%f, %f, %f] 크기 : [%f, %f, %f] \n", i,
-						building_pos[i].x,
-						building_pos[i].y,
-						building_pos[i].z,
-						buliding_extents[i].x,
-						buliding_extents[i].y,
-						buliding_extents[i].z);
+					//printf("[%d] 빌딩 [%f, %f, %f] 크기 : [%f, %f, %f] \n", i,
+					//	building_pos[i].x,
+					//	building_pos[i].y,
+					//	building_pos[i].z,
+					//	buliding_extents[i].x,
+					//	buliding_extents[i].y,
+					//	buliding_extents[i].z);
 
 					buildingPos[i] = XMFLOAT3(building_pos[i].x, building_pos[i].y, building_pos[i].z);
 				}
@@ -636,7 +636,7 @@ LRESULT CALLBACK CGameFramework::OnProcessingWindowMessage(HWND hWnd, UINT nMess
 			
 			if (server_mgr.GetClientID() != my_client_id) {
 				m_pPlayer[server_mgr.GetClientID()]->GetKeyInput(server_mgr.ReturnPlayerPosStatus(server_mgr.GetClientID()).player_status);
-				printf("AA %d\n", server_mgr.ReturnPlayerPosStatus(server_mgr.GetClientID()).player_status);
+				//printf("AA %d\n", server_mgr.ReturnPlayerPosStatus(server_mgr.GetClientID()).player_status);
 			}
 			
 			m_pScene->m_ppShaders[2]->SetPosition(server_mgr.GetBullet().id,

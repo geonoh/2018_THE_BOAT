@@ -287,7 +287,7 @@ void ServerFramework::ProcessPacket(int cl_id, char* packet) {
 		break;
 
 	case CS_LEFT_BUTTON_DOWN:
-		printf("[%d] 플레이어 좌클릭\n", cl_id);
+		//printf("[%d] 플레이어 좌클릭\n", cl_id);
 		clients[cl_id].is_left_click = true;
 		ol_ex[6].command = SS_BULLET_GENERATE;
 		ol_ex[6].shooter_player_id = cl_id;
@@ -469,18 +469,15 @@ void ServerFramework::WorkerThread() {
 				// 플레이어가 뒤는 상황
 				if (clients[client_id].is_running) {
 					packets.player_status = 2;
-					printf("뛰어\n");
 				}
 				// 걷는 상황
 				else if ((clients[client_id].is_move_foward || clients[client_id].is_move_left || clients[client_id].is_move_right || clients[client_id].is_move_backward) ){
 					packets.player_status = 1;
-					printf("걸어\n");
 				}
 				// 걷지도 뛰지도 않는 상황
 				else if (clients[client_id].is_move_backward == false && clients[client_id].is_move_foward == false &&
 					clients[client_id].is_move_left == false && clients[client_id].is_move_right == false) {
 					packets.player_status = 0;
-					printf("서\n");
 				}
 				//packets.player_status = clients[client_id].is_running;
 				//printf("높이 : %f\n", clients[client_id].y);
@@ -777,7 +774,6 @@ void ServerFramework::WorkerThread() {
 			bullets[shooter_id][bullet_counter[shooter_id]].in_use = true;
 			bullet_counter[shooter_id]++;
 			bullet_times[shooter_id] = 0;
-			printf("총알 생성\n");
 
 			//for (int i = 0; i < MAXIMUM_PLAYER; ++i) {
 			//	if (clients[i].is_left_click) {
