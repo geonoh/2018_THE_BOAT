@@ -306,7 +306,7 @@ bool LoadMD5Model(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dComma
 
 				//pMesh = new CMeshTextured(pd3dDevice, pd3dCommandList, numVerts, pxmf3Positions, pxmf2texCoord, subset.indices.size(), pnIndices);
 				pMesh = new CMeshIlluminatedTextured(pd3dDevice, pd3dCommandList, numVerts, pxmf3Positions, pxmf3Normals, pxmf2texCoord, subset.indices.size(), pnIndices);
-
+				
 				//pMesh = new CMeshTextured(pd3dDevice, pd3dCommandList, numVerts, pxmf3Positions, pxmf2texCoord, subset.indices.size(), pnIndices);
 				
 				MD5Model.subsets.push_back(subset);
@@ -499,7 +499,7 @@ bool LoadMD5Anim(std::wstring filename, Model3D & MD5Model) {
 	return true;
 }
 
-void UpdateMD5Model(Model3D & MD5Model, float deltaTime, int animation, CMesh*& pMesh) {
+void UpdateMD5Model(Model3D & MD5Model, float deltaTime, int animation, CMesh*& pMesh, int meshnum) {
 	//printf("%f", MD5Model.animations[animation].currAnimTime);
 	MD5Model.animations[animation].currAnimTime += deltaTime; // Update the current animation time 
 	if (MD5Model.animations[animation].currAnimTime > MD5Model.animations[animation].totalAnimTime)
@@ -525,16 +525,16 @@ void UpdateMD5Model(Model3D & MD5Model, float deltaTime, int animation, CMesh*& 
 		XMStoreFloat4(&tempJoint.orientation, XMQuaternionSlerp(joint0Orient, joint1Orient, interpolation));
 		interpolatedSkeleton.push_back(tempJoint); // Push the joint back into our interpolated skeleton
 	}
-	for (int k = 0; k < MD5Model.numSubsets; k++)
-	{
-		for (int i = 0; i < MD5Model.subsets[k].vertices.size(); ++i)
+	/*for (int k = 0; k < MD5Model.numSubsets; k++), int meshnum
+	{*/
+		for (int i = 0; i < MD5Model.subsets[meshnum].vertices.size(); ++i)
 		{
-			Vertex1 tempVert = MD5Model.subsets[k].vertices[i];
+			Vertex1 tempVert = MD5Model.subsets[meshnum].vertices[i];
 			tempVert.pos = XMFLOAT3(0, 0, 0); // Make sure the vertex's pos is cleared first
 			tempVert.normal = XMFLOAT3(0, 0, 0); // Clear vertices normal // Sum up the joints and weights information to get vertex's position and normal
 			for (int j = 0; j < tempVert.WeightCount; ++j)
 			{
-				Weight tempWeight = MD5Model.subsets[k].weights[tempVert.StartWeight + j];
+				Weight tempWeight = MD5Model.subsets[meshnum].weights[tempVert.StartWeight + j];
 				Joint tempJoint = interpolatedSkeleton[tempWeight.jointID]; // Convert joint orientation and weight pos to vectors for easier computation
 				XMVECTOR tempJointOrientation = XMVectorSet(tempJoint.orientation.x, tempJoint.orientation.y, tempJoint.orientation.z, tempJoint.orientation.w);
 				XMVECTOR tempWeightPos = XMVectorSet(tempWeight.pos.x, tempWeight.pos.y, tempWeight.pos.z, 0.0f); // We will need to use the conjugate of the joint orientation quaternion
@@ -550,18 +550,18 @@ void UpdateMD5Model(Model3D & MD5Model, float deltaTime, int animation, CMesh*& 
 				tempVert.normal.y -= rotatedPoint.y * tempWeight.bias;
 				tempVert.normal.z -= rotatedPoint.z * tempWeight.bias;
 			}
-			MD5Model.subsets[k].positions[i] = tempVert.pos; // Store the vertices position in the position vector instead of straight into the vertex vector
-			MD5Model.subsets[k].vertices[i].normal = tempVert.normal; // Store the vertices normal
-			XMStoreFloat3(&MD5Model.subsets[k].vertices[i].normal, XMVector3Normalize(XMLoadFloat3(&MD5Model.subsets[k].vertices[i].normal)));
+			MD5Model.subsets[meshnum].positions[i] = tempVert.pos; // Store the vertices position in the position vector instead of straight into the vertex vector
+			MD5Model.subsets[meshnum].vertices[i].normal = tempVert.normal; // Store the vertices normal
+			XMStoreFloat3(&MD5Model.subsets[meshnum].vertices[i].normal, XMVector3Normalize(XMLoadFloat3(&MD5Model.subsets[meshnum].vertices[i].normal)));
 		} 
-		for (int i = 0; i < MD5Model.subsets[k].vertices.size(); i++)
+		for (int i = 0; i < MD5Model.subsets[meshnum].vertices.size(); i++)
 		{
-			MD5Model.subsets[k].vertices[i].pos = MD5Model.subsets[k].positions[i];
-			MD5Model.subsets[k].vertices[i].pos.x = MD5Model.subsets[k].positions[i].x;
-			MD5Model.subsets[k].vertices[i].pos.y = MD5Model.subsets[k].positions[i].y;
-			MD5Model.subsets[k].vertices[i].pos.z = -1 * MD5Model.subsets[k].positions[i].z;
+			MD5Model.subsets[meshnum].vertices[i].pos = MD5Model.subsets[meshnum].positions[i];
+			MD5Model.subsets[meshnum].vertices[i].pos.x = MD5Model.subsets[meshnum].positions[i].x;
+			MD5Model.subsets[meshnum].vertices[i].pos.y = MD5Model.subsets[meshnum].positions[i].y;
+			MD5Model.subsets[meshnum].vertices[i].pos.z = -1 * MD5Model.subsets[meshnum].positions[i].z;
 		}
-		pMesh->A->CopyData(0, MD5Model.subsets[k].vertices[0], (MD5Model.subsets[k].vertices.size()));
+		pMesh->A->CopyData(0, MD5Model.subsets[meshnum].vertices[0], (MD5Model.subsets[meshnum].vertices.size()));
 
-	}
+	//}
 }

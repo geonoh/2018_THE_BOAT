@@ -451,14 +451,15 @@ void CGameObject::LoadFrameHierarchyFromFile(ID3D12Device *pd3dDevice, ID3D12Gra
 	/*LoadMD5Model(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, L"../Assets/Model/idle3.MD5MESH", NewMD5Model, meshSRV, textureNameArray, pMesh);
 	LoadMD5Anim(L"../Assets/Model/idle3.MD5ANIM", NewMD5Model);
 	LoadMD5Anim(L"../Assets/Model/run.MD5ANIM", NewMD5Model);*/
-	LoadMD5Model(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, L"../Assets/Model/7810.MD5MESH", NewMD5Model, meshSRV, textureNameArray, pMesh);
+	LoadMD5Model(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, L"../Assets/Model/Soldier_Mesh.MD5MESH", NewMD5Model, meshSRV, textureNameArray, pMesh);
 	SetMesh(0, pMesh);
 	//AddRef();
 	CMesh *pMesh1 = NULL;
-	LoadMD5Model(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, L"../Assets/Model/7814.MD5MESH", NewMD5Model, meshSRV, textureNameArray, pMesh1);
+	LoadMD5Model(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, L"../Assets/Model/Soldier_Rifle.MD5MESH", NewMD5Model, meshSRV, textureNameArray, pMesh1);
 	SetMesh(1, pMesh1);
-	LoadMD5Anim(L"../Assets/Model/7811.MD5ANIM", NewMD5Model);
-	LoadMD5Anim(L"../Assets/Model/7812.MD5ANIM", NewMD5Model);
+	LoadMD5Anim(L"../Assets/Model/Soldier_Idle.MD5ANIM", NewMD5Model);
+	LoadMD5Anim(L"../Assets/Model/Soldier_Run.MD5ANIM", NewMD5Model);
+	LoadMD5Anim(L"../Assets/Model/Soldier_Shot.MD5ANIM", NewMD5Model);
 	//LoadMD5Anim(L"../Assets/Model/WarriorAttack.MD5ANIM", NewMD5Model);
 	if (m_ppMeshes[0])
 		printf("mesh0\n");
