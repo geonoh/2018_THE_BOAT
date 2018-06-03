@@ -622,7 +622,6 @@ LRESULT CALLBACK CGameFramework::OnProcessingWindowMessage(HWND hWnd, UINT nMess
 						buliding_extents[i].y,
 						buliding_extents[i].z);
 
-				} 
 					buildingPos[i] = XMFLOAT3(building_pos[i].x, building_pos[i].y, building_pos[i].z);
 				}
 
