@@ -137,7 +137,7 @@ void ServerMgr::ProcessPacket(char* ptr) {
 	}
 	case SC_PLAYER_LOOKVEC: {
 		SC_PACKET_LOOCVEC* packets = reinterpret_cast<SC_PACKET_LOOCVEC*>(ptr);
-		clients_id = packets->id; 
+		clients_id = packets->id;
 		sc_look_vec = packets->look_vec;
 		break;
 	}
@@ -159,7 +159,18 @@ void ServerMgr::ProcessPacket(char* ptr) {
 		collision_pos.y = packets->y;
 		collision_pos.z = packets->z;
 		client_hp[packets->client_id] = packets->hp;
-		printf("%d 플레이어의 충돌지점 x : %f, y : %f, z : %f, 체력 : %f \n",packets->client_id, collision_pos.x,
+		printf("%d 플레이어의 충돌지점 x : %f, y : %f, z : %f, 체력 : %f \n", packets->client_id, collision_pos.x,
+			collision_pos.y, collision_pos.z, client_hp[packets->client_id]);
+
+		break;
+	}
+	case SC_COLLSION_BDP: {	// building to player
+		SC_PACKET_COLLISION* packets = reinterpret_cast<SC_PACKET_COLLISION*>(ptr);
+		collision_pos.x = packets->x;
+		collision_pos.y = packets->y;
+		collision_pos.z = packets->z;
+		//client_hp[packets->client_id] = packets->hp;
+		printf("%d 플레이어 벽과 꽈당 [%f, %f, %f] \n", packets->client_id, collision_pos.x,
 			collision_pos.y, collision_pos.z, client_hp[packets->client_id]);
 
 		break;

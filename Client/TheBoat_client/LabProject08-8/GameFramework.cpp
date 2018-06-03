@@ -632,8 +632,12 @@ LRESULT CALLBACK CGameFramework::OnProcessingWindowMessage(HWND hWnd, UINT nMess
 
 
 			server_mgr.ReturnPlayerPosStatus(server_mgr.GetClientID()).player_status;
-
-
+			
+			if (server_mgr.GetClientID() != my_client_id) {
+				m_pPlayer[server_mgr.GetClientID()]->GetKeyInput(server_mgr.ReturnPlayerPosStatus(server_mgr.GetClientID()).player_status);
+				printf("AA %d\n", server_mgr.ReturnPlayerPosStatus(server_mgr.GetClientID()).player_status);
+			}
+			
 			m_pScene->m_ppShaders[2]->SetPosition(server_mgr.GetBullet().id,
 				XMFLOAT3(server_mgr.GetBullet().x, server_mgr.GetBullet().y, server_mgr.GetBullet().z));
 
