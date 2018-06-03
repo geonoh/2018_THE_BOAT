@@ -100,6 +100,7 @@ struct SC_PACKET_LOOCVEC {
 	BYTE type;
 	WORD id;
 	DirectX::XMFLOAT3 look_vec;
+	int player_status;
 };
 
 struct SC_PACKET_POS {

@@ -622,7 +622,7 @@ LRESULT CALLBACK CGameFramework::OnProcessingWindowMessage(HWND hWnd, UINT nMess
 						buliding_extents[i].y,
 						buliding_extents[i].z);
 
-				}
+				} 
 
 			}
 			if (server_mgr.GetClientID() != my_client_id)
@@ -631,7 +631,7 @@ LRESULT CALLBACK CGameFramework::OnProcessingWindowMessage(HWND hWnd, UINT nMess
 			m_pPlayer[server_mgr.GetClientID()]->SetPosition(server_mgr.ReturnPlayerPosStatus(server_mgr.GetClientID()).pos);
 
 
-			server_mgr.ReturnPlayerPosStatus(server_mgr.GetClientID()).player_status;
+			//printf("상태 : %d\n",server_mgr.ReturnPlayerPosStatus(server_mgr.GetClientID()).player_status);
 			
 			m_pPlayer[server_mgr.GetClientID()]->GetKeyInput(server_mgr.ReturnPlayerPosStatus(server_mgr.GetClientID()).player_status);
 			m_pScene->m_ppShaders[2]->SetPosition(server_mgr.GetBullet().id,

@@ -133,12 +133,16 @@ void ServerMgr::ProcessPacket(char* ptr) {
 		sc_vec_buff[packets->id].pos.z = packets->z;
 		// 0 ¼û½¬±â, 1: °È±â, 2: ¶Ù±â
 		sc_vec_buff[packets->id].player_status = packets->player_status;
+		
+
 		break;
 	}
 	case SC_PLAYER_LOOKVEC: {
 		SC_PACKET_LOOCVEC* packets = reinterpret_cast<SC_PACKET_LOOCVEC*>(ptr);
 		clients_id = packets->id;
 		sc_look_vec = packets->look_vec;
+		sc_vec_buff[packets->id].player_status = packets->player_status;
+
 		break;
 	}
 	case SC_BULLET_POS: {
