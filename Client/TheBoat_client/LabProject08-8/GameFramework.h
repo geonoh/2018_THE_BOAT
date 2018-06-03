@@ -31,6 +31,7 @@ private:
 	XMFLOAT3 buliding_extents[OBJECT_BUILDING];
 public:
 	static int my_client_id;
+	static XMFLOAT3 buildingPos[OBJECT_BUILDING];
 public:
 	CGameFramework();
 	~CGameFramework();

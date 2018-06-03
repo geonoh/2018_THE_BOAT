@@ -9,6 +9,7 @@
 
 CPlayer* CGameFramework::m_pPlayer[];
 int CGameFramework::my_client_id;
+XMFLOAT3 CGameFramework::buildingPos[];
 //CCamera* CGameFramework::m_pCamera;
 
 CShader::CShader()
@@ -561,7 +562,7 @@ void CObjectsShader::BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsComman
 #endif
 				float xPosition = 2000, zPosition = 2000;
 				float fHeight = pTerrain->GetHeight(xPosition, zPosition);
-				pRotatingObject->SetPosition(xPosition + 1000 * x, fHeight + 100, zPosition + 1000 * z);
+				pRotatingObject->SetPosition(XMFLOAT3(0,0,0));
 				pRotatingObject->SetRotationAxis(XMFLOAT3(0.0f, 1.0f, 0.0f));
 				pRotatingObject->SetRotationSpeed(10.0f * (i % 10));
 				pRotatingObject->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize * i));
@@ -584,12 +585,16 @@ void CObjectsShader::ReleaseObjects()
 #endif
 }
 
-void CObjectsShader::AnimateObjects(float fTimeElapsed)
+void CObjectsShader::AnimateObjects(float fTimeElapsed, CCamera *pCamera)
 {
+	for (int i = 0; i<10; ++i)
+		m_ppObjects[i]->SetPosition(CGameFramework::buildingPos[i]);
+
 	for (int j = 0; j < m_nObjects; j++)
 	{
 		m_ppObjects[j]->Animate(fTimeElapsed);
 	}
+	
 }
 
 void CObjectsShader::ReleaseUploadBuffers()
@@ -612,7 +617,7 @@ void CObjectsShader::Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera 
 	if (m_pMaterial) m_pMaterial->UpdateShaderVariables(pd3dCommandList);
 #endif
 
-	for (int j = 0; j < m_nObjects; j++)
+	for (int j = 0; j < 10; j++)
 	{
 		if (m_ppObjects[j]) m_ppObjects[j]->Render(pd3dCommandList, pCamera);
 	}
