@@ -37,6 +37,8 @@ protected:
 	LPVOID						m_pPlayerUpdatedContext = NULL;
 	LPVOID						m_pCameraUpdatedContext = NULL;
 
+	int							playerHp = 100;
+
 	CCamera						*m_pCamera = NULL;
 	bool animation_status = false;
 public:
