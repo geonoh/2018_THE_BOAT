@@ -100,8 +100,9 @@ void ServerFramework::InitServer() {
 	for (int i = 0; i < OBJECT_BUILDING; ++i) {
 		building[i] = new Building;
 		XMFLOAT3 input_buffer = XMFLOAT3{ static_cast<float>(rand() % 4000), 0.f, static_cast<float>(rand() % 4000) };
+		XMFLOAT3 input_extents;
 		input_buffer.y = height_map->GetHeight(input_buffer.x, input_buffer.z);
-		building[i]->SetPosition(input_buffer, height_map);
+		building[i]->SetPosition(input_buffer, input_extents);
 		//building[i]->SetObbExtents(i)
 		//printf("[%d]건물 위치 [%f, %f, %f] \n", i,
 		//	building[i]->GetPosition().x,
