@@ -20,7 +20,7 @@ void Object::SetOBB(XMFLOAT3 xmCenter, XMFLOAT3 xmExtents, XMFLOAT4 xmOrientatio
 void Object::SetPosition(XMFLOAT3& input_pos, XMFLOAT3& extents) {
 	SetOBB(input_pos, extents, XMFLOAT4(0, 0, 0, 1));
 	position.x = input_pos.x;
-	position.y = input_pos.y;
+	position.y = input_pos.y + 100;
 	position.z = input_pos.z;
 
 }
