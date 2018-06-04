@@ -826,14 +826,29 @@ void CGameFramework::AnimateObjects(CCamera *pCamera)
 	for (int i = 0; i < 4; ++i)
 		if (m_pPlayer) m_pPlayer[i]->Animate(fTimeElapsed);
 	if (m_pScene) m_pScene->AnimateObjects(fTimeElapsed, pCamera);
-	
-	//printf("%f", server_mgr.ReturnCollsionPosition().x);
-	if (server_mgr.ReturnCollsionPosition().x != 0.0) {
-		m_pScene->m_ppShaders[3]->SetPosition(0, XMFLOAT3(server_mgr.ReturnCollsionPosition().x,
-			server_mgr.ReturnCollsionPosition().y + 70.f, server_mgr.ReturnCollsionPosition().z));
-		//- 10 * m_pPlayer[my_client_id]->GetLook().z
-		//printf("좌표변경!");
+
+	bool dummy_bool;
+	server_mgr.ReturnCollsionPosition(&is_collide);
+	if (is_collide)
+		collide_frame = 0;
+	if (collide_frame < 100) {
+		m_pScene->m_ppShaders[3]->SetPosition(0, XMFLOAT3(server_mgr.ReturnCollsionPosition(&dummy_bool).x,
+			server_mgr.ReturnCollsionPosition(&dummy_bool).y + 70.f, server_mgr.ReturnCollsionPosition(&dummy_bool).z));
+		collide_frame++;
+		//printf("collide_frame : %d \n", collide_frame);
 	}
+	else {
+		m_pScene->m_ppShaders[3]->SetPosition(0, XMFLOAT3(-1000.f,
+			-1000.f, -1000.f));
+	}
+
+	//if ((server_mgr.ReturnCollsionPosition(&is_collide).x != 0.0)) {
+	//	m_pScene->m_ppShaders[3]->SetPosition(0, XMFLOAT3(server_mgr.ReturnCollsionPosition(&is_collide).x,
+	//		server_mgr.ReturnCollsionPosition(&is_collide).y + 70.f, server_mgr.ReturnCollsionPosition(&is_collide).z));
+	//	collide_frame++;
+	//	//- 10 * m_pPlayer[my_client_id]->GetLook().z
+	//	//printf("좌표변경!");
+	//}
 }
 
 void CGameFramework::WaitForGpuComplete()

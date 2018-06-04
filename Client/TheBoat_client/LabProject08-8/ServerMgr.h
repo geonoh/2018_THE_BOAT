@@ -44,6 +44,8 @@ class ServerMgr
 
 	XMFLOAT3 building_pos[OBJECT_BUILDING];
 	XMFLOAT3 building_extents[OBJECT_BUILDING];
+
+	bool s_is_collide = false;
 public:
 	void IPInput();
 	void Initialize(HWND& hwnd);
@@ -58,7 +60,7 @@ public:
 	Bullet GetBullet();
 	SPlayer ReturnPlayerPosStatus(int client_id);
 	XMFLOAT3 ReturnLookVector();
-	XMFLOAT3 ReturnCollsionPosition();
+	XMFLOAT3 ReturnCollsionPosition(bool* is_collide);
 	// 아이템 생성 후 위치 Return
 	bool IsItemGen();
 	XMFLOAT3 ReturnItemPosition();

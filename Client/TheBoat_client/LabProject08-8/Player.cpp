@@ -27,7 +27,7 @@ CPlayer::CPlayer(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dComman
 }
 
 void CPlayer::GetKeyInput(int key) {
-	printf("[애니메이션] : %d키 누름\n",key);
+	//printf("[애니메이션] : %d키 누름\n",key);
 	animation_status = key;
 }
 

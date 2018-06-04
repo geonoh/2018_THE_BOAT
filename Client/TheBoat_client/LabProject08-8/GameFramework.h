@@ -29,6 +29,10 @@ private:
 	//ºôµù
 	XMFLOAT3 building_pos[OBJECT_BUILDING];
 	XMFLOAT3 buliding_extents[OBJECT_BUILDING];
+
+	// ÃÑ¾Ë Ãæµ¹ÇÁ·¹ÀÓ
+	bool is_collide = false;
+	int collide_frame = 100;
 public:
 	static int my_client_id;
 	static XMFLOAT3 buildingPos[OBJECT_BUILDING];

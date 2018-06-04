@@ -162,6 +162,7 @@ void ServerMgr::ProcessPacket(char* ptr) {
 		collision_pos.x = packets->x;
 		collision_pos.y = packets->y;
 		collision_pos.z = packets->z;
+		s_is_collide = true;
 		client_hp[packets->client_id] = packets->hp;
 		printf("%d 플레이어의 충돌지점 x : %f, y : %f, z : %f, 체력 : %f \n", packets->client_id, collision_pos.x,
 			collision_pos.y, collision_pos.z, client_hp[packets->client_id]);
@@ -221,7 +222,9 @@ XMFLOAT3 ServerMgr::ReturnItemPosition() {
 	return item_pos;
 }
 
-XMFLOAT3 ServerMgr::ReturnCollsionPosition() {
+XMFLOAT3 ServerMgr::ReturnCollsionPosition(bool* is_collide) {
+	*is_collide = s_is_collide;
+	s_is_collide = false;
 	return collision_pos;
 }
 
