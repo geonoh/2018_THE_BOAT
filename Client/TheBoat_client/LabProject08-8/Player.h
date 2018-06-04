@@ -41,8 +41,19 @@ protected:
 
 	CCamera						*m_pCamera = NULL;
 	int animation_status = 0;
+
+	bool isShot = false;
+	float shotTime = 0.0f;
 public:
-	
+	void ActiveShot() { 
+		isShot = true; shotTime = 0.0f;
+		//if (isShot == false) {
+		//	isShot = true; shotTime = 0.0f;
+		//}
+		//else {
+		//	isShot = false;
+		//}
+	}
 	CPlayer(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, ID3D12RootSignature *pd3dGraphicsRootSignature, void *pContext=NULL, int nMeshes = 1);
 	virtual ~CPlayer();
 

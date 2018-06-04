@@ -241,12 +241,20 @@ CCamera *CPlayer::OnChangeCamera(DWORD nNewCameraMode, DWORD nCurrentCameraMode)
 
 void CPlayer::Animate(float fTimeElapsed)
 {
-	
-	for (int i = 0; i < NewMD5Model.subsets.size(); ++i)
-		UpdateMD5Model(NewMD5Model, fTimeElapsed *0.4, animation_status, m_ppMeshes[i],i);
-	
-	//printf("%f %f %f \n", GetPosition().x, GetPosition().y, GetPosition().z);
-	//m_ppMeshes[0]->Upload();
+	if (isShot) {
+		for (int i = 0; i < NewMD5Model.subsets.size(); ++i)
+			UpdateMD5Model(NewMD5Model, fTimeElapsed *0.4, 2, m_ppMeshes[i], i);
+		shotTime += fTimeElapsed;
+	}
+	else {
+		for (int i = 0; i < NewMD5Model.subsets.size(); ++i)
+			UpdateMD5Model(NewMD5Model, fTimeElapsed *0.4, animation_status, m_ppMeshes[i], i);
+	}
+	if (shotTime > 0.5) {
+		shotTime = 0.0f;
+		isShot = false;
+	}
+
 	m_xmf4x4ToParentTransform._11 = m_xmf3Right.x; m_xmf4x4ToParentTransform._12 = m_xmf3Right.y; m_xmf4x4ToParentTransform._13 = m_xmf3Right.z;
 	m_xmf4x4ToParentTransform._21 = m_xmf3Up.x; m_xmf4x4ToParentTransform._22 = m_xmf3Up.y; m_xmf4x4ToParentTransform._23 = m_xmf3Up.z;
 	m_xmf4x4ToParentTransform._31 = m_xmf3Look.x; m_xmf4x4ToParentTransform._32 = m_xmf3Look.y; m_xmf4x4ToParentTransform._33 = m_xmf3Look.z;

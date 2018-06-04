@@ -92,6 +92,7 @@ struct SC_PACKET_ENTER_PLAYER {
 	WORD id;
 	float x, y, z;
 	// 건물 크기 보낼 때만 사용
+	float hp;
 	float size_x, size_y, size_z;
 };
 

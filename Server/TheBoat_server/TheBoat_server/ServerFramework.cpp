@@ -173,6 +173,7 @@ void ServerFramework::AcceptPlayer() {
 	packet.id = client_id;
 	packet.size = sizeof(SC_PACKET_ENTER_PLAYER);
 	packet.type = SC_ENTER_PLAYER;
+	packet.hp = clients[client_id].hp;
 	packet.x = clients[client_id].x;
 	packet.y = clients[client_id].y;
 	packet.z = clients[client_id].z;
@@ -307,18 +308,27 @@ void ServerFramework::ProcessPacket(int cl_id, char* packet) {
 		packets.type = SC_PLAYER_LOOKVEC;
 		packets.look_vec = clients[cl_id].look_vec;
 		// 플레이어가 뒤는 상황
-		if (clients[cl_id].is_running) {
+
+		//if (clients[cl_id].is_left_click) {
+		//	packets.player_status = 3;
+		//}
+		//else if (clients[cl_id].is_running) {
+		//	packets.player_status = 2;
+		//}
+		// 걷지도 뛰지도 않는 상황
+
+		if (clients[cl_id].is_left_click) {
 			packets.player_status = 2;
+		}
+		else if (clients[cl_id].is_move_backward == false && clients[cl_id].is_move_foward == false &&
+			clients[cl_id].is_move_left == false && clients[cl_id].is_move_right == false) {
+			packets.player_status = 0;
 		}
 		// 걷는 상황
 		else if ((clients[cl_id].is_move_foward || clients[cl_id].is_move_left || clients[cl_id].is_move_right || clients[cl_id].is_move_backward)) {
 			packets.player_status = 1;
 		}
-		// 걷지도 뛰지도 않는 상황
-		else if (clients[cl_id].is_move_backward == false && clients[cl_id].is_move_foward == false &&
-			clients[cl_id].is_move_left == false && clients[cl_id].is_move_right == false) {
-			packets.player_status = 0;
-		}
+		
 		for (int i = 0; i < MAXIMUM_PLAYER; ++i) {
 			if (clients[i].in_use == true) {
 				SendPacket(i, &packets);
@@ -466,18 +476,16 @@ void ServerFramework::WorkerThread() {
 				packets.y = clients[client_id].y;
 				packets.z = clients[client_id].z;
 
-				// 플레이어가 뒤는 상황
-				if (clients[client_id].is_running) {
+				if (clients[client_id].is_left_click) {
 					packets.player_status = 2;
 				}
-				// 걷는 상황
-				else if ((clients[client_id].is_move_foward || clients[client_id].is_move_left || clients[client_id].is_move_right || clients[client_id].is_move_backward) ){
-					packets.player_status = 1;
-				}
-				// 걷지도 뛰지도 않는 상황
 				else if (clients[client_id].is_move_backward == false && clients[client_id].is_move_foward == false &&
 					clients[client_id].is_move_left == false && clients[client_id].is_move_right == false) {
 					packets.player_status = 0;
+				}
+				// 걷는 상황
+				else if ((clients[client_id].is_move_foward || clients[client_id].is_move_left || clients[client_id].is_move_right || clients[client_id].is_move_backward)) {
+					packets.player_status = 1;
 				}
 				//packets.player_status = clients[client_id].is_running;
 				//printf("높이 : %f\n", clients[client_id].y);

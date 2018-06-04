@@ -317,6 +317,7 @@ void CGameFramework::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM
 		if (CShader::shootBullet == 0) {
 			CShader::shootBullet = 1;
 			sndPlaySound(L"../Assets/Sounds/RifleSound.wav", SND_ASYNC);	// 사운드
+			m_pPlayer[my_client_id]->ActiveShot();
 		}
 		else
 			CShader::shootBullet = 0;
@@ -334,6 +335,7 @@ void CGameFramework::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM
 
 	case WM_LBUTTONUP:
 		//server_mgr.SendPacket(CS_MOUSE_MOVE, m_pPlayer[my_client_id]->GetLook());
+		//m_pPlayer[my_client_id]->ActiveShot();
 		server_mgr.SendPacket(CS_LEFT_BUTTON_UP, m_pPlayer[my_client_id]->GetLook());
 		break;
 	case WM_RBUTTONUP:

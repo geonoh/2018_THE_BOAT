@@ -102,6 +102,7 @@ void ServerMgr::ProcessPacket(char* ptr) {
 		sc_vec_buff[packets->id].pos.x = packets->x;
 		sc_vec_buff[packets->id].pos.y = packets->y;
 		sc_vec_buff[packets->id].pos.z = packets->z;
+		client_hp[packets->id] = packets->hp;
 		printf("[SC_ENTER_PLAYER] : %d 플레이어 입장\n", packets->id);
 
 		break;
