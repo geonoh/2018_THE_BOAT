@@ -293,6 +293,11 @@ void CShader::Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamer
 	OnPrepareRender(pd3dCommandList);
 }
 
+void CShader::Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera, float hp)
+{
+	OnPrepareRender(pd3dCommandList);
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 CPlayerShader::CPlayerShader()
@@ -1764,7 +1769,7 @@ void CHpBarShader::BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandL
 	int xObjects = 1;
 	int yObjects = 1;
 	int zObjects = 1;
-	m_nTree = (xObjects * yObjects * zObjects);
+	m_nTree = 20;
 
 	CTexture *pTexture = new CTexture(1, RESOURCE_TEXTURE2D_ARRAY, 0);
 	pTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Image/HpBar/HpBar.dds", 0);
@@ -1784,20 +1789,23 @@ void CHpBarShader::BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandL
 	pCubeMaterial->SetTexture(pTexture);
 #endif
 
-	CHpBarMesh *pCubeMesh = new CHpBarMesh(pd3dDevice, pd3dCommandList, testHp, 30.0f, 1.0f);
+	CHpBarMesh *pCubeMesh[20];
+	
+	for(int i=0;i<20;++i)
+		pCubeMesh[i] = new CHpBarMesh(pd3dDevice, pd3dCommandList, i, 30.0f, 1.0f);
 
-	m_ppTree = new CRotatingObject*[m_nTree];
+	m_ppTree = new CRotatingObject*[20];
 
 	XMFLOAT3 xmf3RotateAxis, xmf3SurfaceNormal;
 	CRotatingObject *pRotatingObject = NULL;
-	for (int i = 0, x = 0; x < xObjects; x++)
+	for (int i = 0, x = 0; x < 20; x++)
 	{
 		for (int z = 0; z < zObjects; z++)
 		{
 			for (int y = 0; y < yObjects; y++)
 			{
 				pRotatingObject = new CRotatingObject();
-				pRotatingObject->SetMesh(0, pCubeMesh);
+				pRotatingObject->SetMesh(0, pCubeMesh[i]);
 #ifndef _WITH_BATCH_MATERIAL
 				pRotatingObject->SetMaterial(pCubeMaterial);
 #endif
@@ -1852,15 +1860,15 @@ void CHpBarShader::ReleaseUploadBuffers()
 #endif
 }
 
-void CHpBarShader::Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera)
+void CHpBarShader::Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera, float hp)
 {
 	CTexturedShader::Render(pd3dCommandList, pCamera);
 
 #ifdef _WITH_BATCH_MATERIAL
 	if (m_pMaterial) m_pMaterial->UpdateShaderVariables(pd3dCommandList);
 #endif
-
-	for (int j = 0; j < m_nTree; j++)
+	//printf("%f\n", hp);
+	for (int j = 0; j < hp/5; j++)
 	{
 		if (m_ppTree[j]) m_ppTree[j]->Render(pd3dCommandList, pCamera);
 	}

@@ -51,6 +51,7 @@ public:
 
 	virtual void OnPrepareRender(ID3D12GraphicsCommandList *pd3dCommandList);
 	virtual void Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera);
+	virtual void Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera, float hp);
 
 	virtual void SetPosition(int id, XMFLOAT3 input);
 
@@ -373,7 +374,7 @@ public:
 class CHpBarShader : public CTexturedShader
 {
 protected:
-	CRotatingObject * *m_ppTree = 0;
+	CRotatingObject					**m_ppTree = 0;
 	int								m_nTree = 0;
 	int								setRedDot = 0;
 	float							testHp = 100;
@@ -394,7 +395,7 @@ public:
 	virtual void ReleaseObjects();
 	virtual void AnimateObjects(float fTimeElapsed, CCamera *pCamera);
 	virtual void ReleaseUploadBuffers();
-	virtual void Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera);
+	virtual void Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera, float hp);
 	virtual void CreateShaderVariables(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList);
 	virtual void UpdateShaderVariables(ID3D12GraphicsCommandList *pd3dCommandList);
 	virtual void ReleaseShaderVariables();
