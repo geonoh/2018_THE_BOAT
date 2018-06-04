@@ -648,7 +648,8 @@ LRESULT CALLBACK CGameFramework::OnProcessingWindowMessage(HWND hWnd, UINT nMess
 				server_mgr.ReturnItemPosition();
 			}
 			// 플레이어 체력	(PlayerNum을 인자로 받음)
-			server_mgr.GetPlayerHP(1);
+			playerHp = server_mgr.GetPlayerHP(my_client_id);
+			//printf("%f", playerHp);
 			// 빌딩은 총 10개 0~9 로 접근 가능.
 			break;
 		case FD_CLOSE:
@@ -930,7 +931,8 @@ void CGameFramework::FrameAdvance()
 	
 	if(m_pCamera->GetMode() == SPACESHIP_CAMERA)
 		m_pScene->m_ppUIShaders[1]->Render(m_pd3dCommandList, m_pCamera);// UI렌더 바꿔야함.
-	m_pScene->m_ppUIShaders[2]->Render(m_pd3dCommandList, m_pCamera);
+	//printf("%f", playerHp);
+	m_pScene->m_ppUIShaders[2]->Render(m_pd3dCommandList, m_pCamera, playerHp);
 
 	d3dResourceBarrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
 	d3dResourceBarrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;
