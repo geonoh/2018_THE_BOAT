@@ -1022,7 +1022,6 @@ void CBulletShader::AnimateObjects(float fTimeElapsed, CCamera *pCamera)
 	{
 		m_ppBullet[j]->Animate(fTimeElapsed, pCamera);
 	}
-
 	/*if (shootBullet == 1)
 	{
 	m_ppBullet[BulletCount]->render = 1;

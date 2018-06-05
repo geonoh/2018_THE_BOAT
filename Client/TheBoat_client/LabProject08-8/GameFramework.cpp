@@ -834,7 +834,7 @@ void CGameFramework::AnimateObjects(CCamera *pCamera)
 	server_mgr.ReturnCollsionPosition(&is_collide);
 	if (is_collide)
 		collide_frame = 0;
-	if (collide_frame < 100) {
+	if (collide_frame < 15) {
 		m_pScene->m_ppShaders[3]->SetPosition(0, XMFLOAT3(server_mgr.ReturnCollsionPosition(&dummy_bool).x,
 			server_mgr.ReturnCollsionPosition(&dummy_bool).y + 70.f, server_mgr.ReturnCollsionPosition(&dummy_bool).z));
 		collide_frame++;
