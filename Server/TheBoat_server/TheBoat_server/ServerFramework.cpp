@@ -60,7 +60,7 @@ void ServerFramework::InitServer() {
 	if (retval == SOCKET_ERROR)
 		printf("listen 에러\n");
 
-	XMFLOAT3 xmf3Scale(8.0f, 1.f, 8.0f);
+	XMFLOAT3 xmf3Scale(8.0f, 2.f, 8.0f);
 	LPCTSTR file_name = _T("terrain18.raw");
 	height_map = new CHeightMapImage(file_name, 513, 513, xmf3Scale);
 
@@ -97,18 +97,51 @@ void ServerFramework::InitServer() {
 		}
 	}
 
+	XMFLOAT3 input_buffer[10];
+	XMFLOAT3 input_extents[10];
+
+	input_buffer[0] = XMFLOAT3{ 594.f,height_map->GetHeight(594.f,556.f) ,556.f };
+	input_buffer[1] = XMFLOAT3{ 922.f,height_map->GetHeight(922.f,519.f) ,519.f };
+	input_buffer[2] = XMFLOAT3{ 1152.f,height_map->GetHeight(1152.f,911.f) ,911.f };
+	input_buffer[3] = XMFLOAT3{ 2168.f,height_map->GetHeight(2168.f,741.f) ,741.f };
+	input_buffer[4] = XMFLOAT3{ 594.f,height_map->GetHeight(594.f,556.f) ,556.f };
+	input_buffer[5] = XMFLOAT3{ 739.f,height_map->GetHeight(739.f,3526.f) ,3526.f };
+
+	input_buffer[6] = XMFLOAT3{ 2516.f,height_map->GetHeight(2516.f,1589.f) ,1589.f };
+	input_buffer[7] = XMFLOAT3{ 3071.f,height_map->GetHeight(3071.f,1906.f) ,1906.f };
+	input_buffer[8] = XMFLOAT3{ 3251.f,height_map->GetHeight(3251.f,2721.f) ,2721.f };
+	input_buffer[9] = XMFLOAT3{ 2106.f,height_map->GetHeight(2106.f,3322.f) ,3322.f };
+
+	input_extents[0] = XMFLOAT3{ 100,100,100 };
+	input_extents[1] = XMFLOAT3{ 100,100,100 };
+	input_extents[2] = XMFLOAT3{ 100,100,100 };
+	input_extents[3] = XMFLOAT3{ 100,100,100 };
+	input_extents[4] = XMFLOAT3{ 100,100,100 };
+	input_extents[5] = XMFLOAT3{ 100,100,100 };
+	input_extents[6] = XMFLOAT3{ 100,100,100 };
+	input_extents[7] = XMFLOAT3{ 100,100,100 };
+	input_extents[8] = XMFLOAT3{ 100,100,100 };
+	input_extents[9] = XMFLOAT3{ 100,100,100 };
+
+
 	for (int i = 0; i < OBJECT_BUILDING; ++i) {
+		input_extents[0] = XMFLOAT3{ 100,100,100 };
 		building[i] = new Building;
-		XMFLOAT3 input_buffer = XMFLOAT3{ static_cast<float>(rand() % 4000), 0.f, static_cast<float>(rand() % 4000) };
-		XMFLOAT3 input_extents = XMFLOAT3{ static_cast<float>(rand() % 50 + 10),static_cast<float>(rand() % 30 + 200), static_cast<float>(rand() % 50 + 10) };
-		input_buffer.y = height_map->GetHeight(input_buffer.x, input_buffer.z);
-		building[i]->SetPosition(input_buffer, input_extents);
-		//building[i]->SetObbExtents(i)
-		//printf("[%d]건물 위치 [%f, %f, %f] \n", i,
-		//	building[i]->GetPosition().x,
-		//	building[i]->GetPosition().y,
-		//	building[i]->GetPosition().z);
+		building[i]->SetPosition(input_buffer[i], input_extents[i]);
 	}
+
+	//for (int i = 0; i < OBJECT_BUILDING; ++i) {
+	//	building[i] = new Building;
+	//	XMFLOAT3 input_buffer = XMFLOAT3{ static_cast<float>(rand() % 4000), 0.f, static_cast<float>(rand() % 4000) };
+	//	XMFLOAT3 input_extents = XMFLOAT3{ static_cast<float>(rand() % 50 + 10),static_cast<float>(rand() % 30 + 200), static_cast<float>(rand() % 50 + 10) };
+	//	input_buffer.y = height_map->GetHeight(input_buffer.x, input_buffer.z);
+	//	building[i]->SetPosition(input_buffer, input_extents);
+	//	//building[i]->SetObbExtents(i)
+	//	//printf("[%d]건물 위치 [%f, %f, %f] \n", i,
+	//	//	building[i]->GetPosition().x,
+	//	//	building[i]->GetPosition().y,
+	//	//	building[i]->GetPosition().z);
+	//}
 }
 
 void ServerFramework::AcceptPlayer() {
@@ -756,6 +789,8 @@ void ServerFramework::WorkerThread() {
 				//client_lock.unlock();
 				clients[i].SetOOBB(XMFLOAT3(clients[i].x, clients[i].y, clients[i].z), XMFLOAT3(OBB_SCALE_PLAYER_X, OBB_SCALE_PLAYER_Y, OBB_SCALE_PLAYER_Z), XMFLOAT4(0, 0, 0, 1));
 
+				//printf("[%d]Player Position : [%f, %f, %f]\n", i, clients[i].x, clients[i].y, clients[i].z);
+
 				//XMFLOAT4X4 danwi(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, clients[i].x, height_map->GetHeight(clients[i].x, clients[i].z), clients[i].z, 1);
 				//clients[i].bounding_box.Transform(clients[i].bounding_box,
 				//	DirectX::XMLoadFloat4x4(&danwi));
@@ -922,9 +957,7 @@ void ServerFramework::DisconnectPlayer(int cl_id) {
 }
 
 void ServerFramework::Update(duration<float>& elapsed_time) {
-
-	Sleep(1);   // 이거 붙여야 뒤쪽 이동할때 잘 가는데
-				// 이유를 모르겠네 도대체;
+	// 이유를 모르겠네 도대체;
 	ol_ex[4].command = SS_PLAYER_POS_UPDATE;
 	ol_ex[4].elapsed_time = elapsed_time.count();
 	PostQueuedCompletionStatus(iocp_handle, 0, 4, reinterpret_cast<WSAOVERLAPPED*>(&ol_ex[4]));

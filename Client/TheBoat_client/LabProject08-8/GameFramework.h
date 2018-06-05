@@ -19,7 +19,7 @@ private:
 
 	XMFLOAT3 sc_player_pos[4];
 	bool first_recv;
-	int recvd_client_id;
+	int recvd_client_id; 
 
 	bool player_ready = false;
 

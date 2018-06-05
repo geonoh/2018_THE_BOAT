@@ -57,7 +57,6 @@ class ServerFramework
 	// Building obejct´Â ÃÑ 10°³
 	//Object* object_mother;
 	Building* building[OBJECT_BUILDING];
-	
 
 public:
 	void InitServer();
