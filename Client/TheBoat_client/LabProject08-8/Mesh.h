@@ -262,8 +262,16 @@ public:
 class CUIMesh : public CMesh
 {
 public:
-	CUIMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, float fWidth, float fHeight, float fDepth);
+	CUIMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, float xStart, float xEnd, float yStart, float yEnd);
 	virtual ~CUIMesh();
+};
+
+//////////////////
+class CDotMesh : public CMesh
+{
+public:
+	CDotMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, float fWidth, float fHeight, float fDepth);
+	virtual ~CDotMesh();
 };
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -280,4 +288,18 @@ class CHpBarMesh : public CMesh
 public:
 	CHpBarMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, int index, float fHeight, float fDepth);
 	virtual ~CHpBarMesh();
+};
+
+class CItemUIMesh : public CMesh
+{
+public:
+	CItemUIMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, int index, float fHeight, float fDepth);
+	virtual ~CItemUIMesh();
+};
+
+class CItemBlackUIMesh : public CMesh
+{
+public:
+	CItemBlackUIMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, int index, float fHeight, float fDepth);
+	virtual ~CItemBlackUIMesh();
 };

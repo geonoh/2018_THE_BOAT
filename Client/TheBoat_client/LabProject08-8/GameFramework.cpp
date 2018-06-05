@@ -39,6 +39,8 @@ CGameFramework::CGameFramework()
 		m_pPlayer[i] = NULL;
 
 	_tcscpy_s(m_pszFrameRate, _T("THE BOAT   ("));
+
+	for (int i = 0; i < 4; ++i) itemUI[i] = false;
 }
 
 CGameFramework::~CGameFramework()
@@ -448,12 +450,20 @@ void CGameFramework::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPA
 				server_mgr.SendPacket(CS_KEY_PRESS_1);
 				is_pushed[CS_KEY_PRESS_1] = true;
 			}
+			itemUI[0] = !itemUI[0];
 			break;
 		case '2':
 			if (is_pushed[CS_KEY_PRESS_2] == false) {
 				server_mgr.SendPacket(CS_KEY_PRESS_2);
 				is_pushed[CS_KEY_PRESS_2] = true;
 			}
+			itemUI[1] = !itemUI[1];
+			break;
+		case '3':
+			itemUI[2] = !itemUI[2];
+			break;
+		case '4':
+			itemUI[3] = !itemUI[3];
 			break;
 		}
 
@@ -935,7 +945,13 @@ void CGameFramework::FrameAdvance()
 		m_pScene->m_ppUIShaders[1]->Render(m_pd3dCommandList, m_pCamera);// UI렌더 바꿔야함.
 	//printf("%f", playerHp);
 	m_pScene->m_ppUIShaders[2]->Render(m_pd3dCommandList, m_pCamera, playerHp);
-
+	m_pScene->m_ppUIShaders[3]->Render(m_pd3dCommandList, m_pCamera);//아이템 검은색
+	for (int i = 0; i < 4; ++i) {
+		if(itemUI[i] == true)
+			m_pScene->m_ppUIShaders[i + 4]->Render(m_pd3dCommandList, m_pCamera);
+		if(itemUI[3] == true)
+			m_pScene->m_ppUIShaders[8]->Render(m_pd3dCommandList, m_pCamera);
+	}
 	d3dResourceBarrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
 	d3dResourceBarrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;
 	d3dResourceBarrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;

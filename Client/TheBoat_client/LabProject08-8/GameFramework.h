@@ -71,6 +71,7 @@ public:
 	float						playerHp = 100;
 
 private:
+	bool						itemUI[4] = {};
 	HINSTANCE					m_hInstance;
 	HWND						m_hWnd; 
 
