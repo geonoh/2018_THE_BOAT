@@ -19,7 +19,7 @@ private:
 
 	XMFLOAT3 sc_player_pos[4];
 	bool first_recv;
-	int recvd_client_id;
+	int recvd_client_id; 
 
 	bool player_ready = false;
 
@@ -29,6 +29,10 @@ private:
 	//ºôµù
 	XMFLOAT3 building_pos[OBJECT_BUILDING];
 	XMFLOAT3 buliding_extents[OBJECT_BUILDING];
+
+	// ÃÑ¾Ë Ãæµ¹ÇÁ·¹ÀÓ
+	bool is_collide = false;
+	int collide_frame = 100;
 public:
 	static int my_client_id;
 	static XMFLOAT3 buildingPos[OBJECT_BUILDING];
@@ -64,8 +68,10 @@ public:
 
 	static CPlayer				*m_pPlayer[4];
 	static CCamera				*m_pCamera;
+	float						playerHp = 100;
 
 private:
+	bool						itemUI[4] = {};
 	HINSTANCE					m_hInstance;
 	HWND						m_hWnd; 
 

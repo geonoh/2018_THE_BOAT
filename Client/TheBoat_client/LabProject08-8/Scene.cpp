@@ -137,7 +137,7 @@ void CScene::BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *p
 	m_ppObjects[0]->Rotate(0.0f, 90.0f, 0.0f);
 #endif*/
 
-	XMFLOAT3 xmf3Scale(8.0f, 1.f, 8.0f);
+	XMFLOAT3 xmf3Scale(8.0f, 2.f, 8.0f);
 	XMFLOAT4 xmf4Color(1.0f, 1.0f, 1.0f, 0.0f);
 #ifdef _WITH_TERRAIN_PARTITION
 	m_pTerrain = new CHeightMapTerrain(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, _T("../Assets/Image/Terrain/HeightMap.raw"), 513, 513, 17, 17, xmf3Scale, xmf4Color);
@@ -182,7 +182,7 @@ void CScene::BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *p
 
 	// UI
 
-	m_nUIShaders = 3;
+	m_nUIShaders = 9;
 	m_ppUIShaders = new CShader*[m_nUIShaders];
 
 	CMiniMapShader *pMiniMapShader = new CMiniMapShader();
@@ -193,9 +193,41 @@ void CScene::BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *p
 	pHpBarShader->CreateShader(pd3dDevice, m_pd3dGraphicsRootSignature);
 	pHpBarShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pTerrain);
 
+	CItemUIShader *pItemUIShader = new CItemUIShader();
+	pItemUIShader->CreateShader(pd3dDevice, m_pd3dGraphicsRootSignature);
+	pItemUIShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pTerrain);
+
+	CItemUIShader_1 *pItemUIShader_1 = new CItemUIShader_1();
+	pItemUIShader_1->CreateShader(pd3dDevice, m_pd3dGraphicsRootSignature);
+	pItemUIShader_1->BuildObjects(pd3dDevice, pd3dCommandList, m_pTerrain);
+
+	CItemUIShader_2 *pItemUIShader_2 = new CItemUIShader_2();
+	pItemUIShader_2->CreateShader(pd3dDevice, m_pd3dGraphicsRootSignature);
+	pItemUIShader_2->BuildObjects(pd3dDevice, pd3dCommandList, m_pTerrain);
+
+	CItemUIShader_3 *pItemUIShader_3 = new CItemUIShader_3();
+	pItemUIShader_3->CreateShader(pd3dDevice, m_pd3dGraphicsRootSignature);
+	pItemUIShader_3->BuildObjects(pd3dDevice, pd3dCommandList, m_pTerrain);
+
+	CItemUIShader_4 *pItemUIShader_4 = new CItemUIShader_4();
+	pItemUIShader_4->CreateShader(pd3dDevice, m_pd3dGraphicsRootSignature);
+	pItemUIShader_4->BuildObjects(pd3dDevice, pd3dCommandList, m_pTerrain);
+
+	CItemEatUIShader *pItemEatUIShader = new CItemEatUIShader();
+	pItemEatUIShader->CreateShader(pd3dDevice, m_pd3dGraphicsRootSignature);
+	pItemEatUIShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pTerrain);
+
 	m_ppUIShaders[0] = pMiniMapShader;
 	m_ppUIShaders[1] = pTreeShader;
 	m_ppUIShaders[2] = pHpBarShader;
+	
+	m_ppUIShaders[3] = pItemUIShader;
+	m_ppUIShaders[4] = pItemUIShader_1;
+	m_ppUIShaders[5] = pItemUIShader_2;
+	m_ppUIShaders[6] = pItemUIShader_3;
+	m_ppUIShaders[7] = pItemUIShader_4;
+
+	m_ppUIShaders[8] = pItemEatUIShader;
 
 
 	BuildLightsAndMaterials();

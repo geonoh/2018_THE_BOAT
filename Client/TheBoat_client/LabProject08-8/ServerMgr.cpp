@@ -35,8 +35,13 @@ void ServerMgr::Initialize(HWND& hwnd) {
 	ServerAddr.sin_port = htons(SERVER_PORT);
 	// 아이피
 	ServerAddr.sin_addr.s_addr = inet_addr(server_ip.c_str());
+<<<<<<< HEAD
 	ServerAddr.sin_addr.s_addr = inet_addr("127.0.0.1");
 	//ServerAddr.sin_addr.s_addr = inet_addr("192.168.101.211");
+=======
+	//ServerAddr.sin_addr.s_addr = inet_addr("127.0.0.1");
+	//ServerAddr.sin_addr.s_addr = inet_addr("110.5.195.3");
+>>>>>>> 23cd74a7c202f97842b81b82ddf070ce0cc98821
 
 
 	int retval = WSAConnect(sock, (sockaddr *)&ServerAddr, sizeof(ServerAddr), NULL, NULL, NULL, NULL);
@@ -102,6 +107,7 @@ void ServerMgr::ProcessPacket(char* ptr) {
 		sc_vec_buff[packets->id].pos.x = packets->x;
 		sc_vec_buff[packets->id].pos.y = packets->y;
 		sc_vec_buff[packets->id].pos.z = packets->z;
+		client_hp[packets->id] = packets->hp;
 		printf("[SC_ENTER_PLAYER] : %d 플레이어 입장\n", packets->id);
 
 		break;
@@ -162,6 +168,7 @@ void ServerMgr::ProcessPacket(char* ptr) {
 		collision_pos.x = packets->x;
 		collision_pos.y = packets->y;
 		collision_pos.z = packets->z;
+		s_is_collide = true;
 		client_hp[packets->client_id] = packets->hp;
 		printf("%d 플레이어의 충돌지점 x : %f, y : %f, z : %f, 체력 : %f \n", packets->client_id, collision_pos.x,
 			collision_pos.y, collision_pos.z, client_hp[packets->client_id]);
@@ -221,7 +228,9 @@ XMFLOAT3 ServerMgr::ReturnItemPosition() {
 	return item_pos;
 }
 
-XMFLOAT3 ServerMgr::ReturnCollsionPosition() {
+XMFLOAT3 ServerMgr::ReturnCollsionPosition(bool* is_collide) {
+	*is_collide = s_is_collide;
+	s_is_collide = false;
 	return collision_pos;
 }
 

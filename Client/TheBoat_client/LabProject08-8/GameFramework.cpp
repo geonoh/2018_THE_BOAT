@@ -39,6 +39,8 @@ CGameFramework::CGameFramework()
 		m_pPlayer[i] = NULL;
 
 	_tcscpy_s(m_pszFrameRate, _T("THE BOAT   ("));
+
+	for (int i = 0; i < 4; ++i) itemUI[i] = false;
 }
 
 CGameFramework::~CGameFramework()
@@ -317,6 +319,7 @@ void CGameFramework::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM
 		if (CShader::shootBullet == 0) {
 			CShader::shootBullet = 1;
 			sndPlaySound(L"../Assets/Sounds/RifleSound.wav", SND_ASYNC);	// 사운드
+			m_pPlayer[my_client_id]->ActiveShot();
 		}
 		else
 			CShader::shootBullet = 0;
@@ -334,6 +337,7 @@ void CGameFramework::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM
 
 	case WM_LBUTTONUP:
 		//server_mgr.SendPacket(CS_MOUSE_MOVE, m_pPlayer[my_client_id]->GetLook());
+		//m_pPlayer[my_client_id]->ActiveShot();
 		server_mgr.SendPacket(CS_LEFT_BUTTON_UP, m_pPlayer[my_client_id]->GetLook());
 		break;
 	case WM_RBUTTONUP:
@@ -446,12 +450,20 @@ void CGameFramework::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPA
 				server_mgr.SendPacket(CS_KEY_PRESS_1);
 				is_pushed[CS_KEY_PRESS_1] = true;
 			}
+			itemUI[0] = !itemUI[0];
 			break;
 		case '2':
 			if (is_pushed[CS_KEY_PRESS_2] == false) {
 				server_mgr.SendPacket(CS_KEY_PRESS_2);
 				is_pushed[CS_KEY_PRESS_2] = true;
 			}
+			itemUI[1] = !itemUI[1];
+			break;
+		case '3':
+			itemUI[2] = !itemUI[2];
+			break;
+		case '4':
+			itemUI[3] = !itemUI[3];
 			break;
 		}
 
@@ -614,13 +626,13 @@ LRESULT CALLBACK CGameFramework::OnProcessingWindowMessage(HWND hWnd, UINT nMess
 					//	building_pos[i].y,
 					//	building_pos[i].z);
 
-					printf("[%d] 빌딩 [%f, %f, %f] 크기 : [%f, %f, %f] \n", i,
-						building_pos[i].x,
-						building_pos[i].y,
-						building_pos[i].z,
-						buliding_extents[i].x,
-						buliding_extents[i].y,
-						buliding_extents[i].z);
+					//printf("[%d] 빌딩 [%f, %f, %f] 크기 : [%f, %f, %f] \n", i,
+					//	building_pos[i].x,
+					//	building_pos[i].y,
+					//	building_pos[i].z,
+					//	buliding_extents[i].x,
+					//	buliding_extents[i].y,
+					//	buliding_extents[i].z);
 
 					buildingPos[i] = XMFLOAT3(building_pos[i].x, building_pos[i].y, building_pos[i].z);
 				}
@@ -636,7 +648,7 @@ LRESULT CALLBACK CGameFramework::OnProcessingWindowMessage(HWND hWnd, UINT nMess
 			
 			if (server_mgr.GetClientID() != my_client_id) {
 				m_pPlayer[server_mgr.GetClientID()]->GetKeyInput(server_mgr.ReturnPlayerPosStatus(server_mgr.GetClientID()).player_status);
-				printf("AA %d\n", server_mgr.ReturnPlayerPosStatus(server_mgr.GetClientID()).player_status);
+				//printf("AA %d\n", server_mgr.ReturnPlayerPosStatus(server_mgr.GetClientID()).player_status);
 			}
 			
 			m_pScene->m_ppShaders[2]->SetPosition(server_mgr.GetBullet().id,
@@ -648,7 +660,8 @@ LRESULT CALLBACK CGameFramework::OnProcessingWindowMessage(HWND hWnd, UINT nMess
 				server_mgr.ReturnItemPosition();
 			}
 			// 플레이어 체력	(PlayerNum을 인자로 받음)
-			server_mgr.GetPlayerHP(1);
+			playerHp = server_mgr.GetPlayerHP(my_client_id);
+			//printf("%f", playerHp);
 			// 빌딩은 총 10개 0~9 로 접근 가능.
 			break;
 		case FD_CLOSE:
@@ -826,14 +839,29 @@ void CGameFramework::AnimateObjects(CCamera *pCamera)
 	for (int i = 0; i < 4; ++i)
 		if (m_pPlayer) m_pPlayer[i]->Animate(fTimeElapsed);
 	if (m_pScene) m_pScene->AnimateObjects(fTimeElapsed, pCamera);
-	
-	//printf("%f", server_mgr.ReturnCollsionPosition().x);
-	if (server_mgr.ReturnCollsionPosition().x != 0.0) {
-		m_pScene->m_ppShaders[3]->SetPosition(0, XMFLOAT3(server_mgr.ReturnCollsionPosition().x,
-			server_mgr.ReturnCollsionPosition().y + 70.f, server_mgr.ReturnCollsionPosition().z));
-		//- 10 * m_pPlayer[my_client_id]->GetLook().z
-		//printf("좌표변경!");
+
+	bool dummy_bool;
+	server_mgr.ReturnCollsionPosition(&is_collide);
+	if (is_collide)
+		collide_frame = 0;
+	if (collide_frame < 15) {
+		m_pScene->m_ppShaders[3]->SetPosition(0, XMFLOAT3(server_mgr.ReturnCollsionPosition(&dummy_bool).x,
+			server_mgr.ReturnCollsionPosition(&dummy_bool).y + 70.f, server_mgr.ReturnCollsionPosition(&dummy_bool).z));
+		collide_frame++;
+		//printf("collide_frame : %d \n", collide_frame);
 	}
+	else {
+		m_pScene->m_ppShaders[3]->SetPosition(0, XMFLOAT3(-1000.f,
+			-1000.f, -1000.f));
+	}
+
+	//if ((server_mgr.ReturnCollsionPosition(&is_collide).x != 0.0)) {
+	//	m_pScene->m_ppShaders[3]->SetPosition(0, XMFLOAT3(server_mgr.ReturnCollsionPosition(&is_collide).x,
+	//		server_mgr.ReturnCollsionPosition(&is_collide).y + 70.f, server_mgr.ReturnCollsionPosition(&is_collide).z));
+	//	collide_frame++;
+	//	//- 10 * m_pPlayer[my_client_id]->GetLook().z
+	//	//printf("좌표변경!");
+	//}
 }
 
 void CGameFramework::WaitForGpuComplete()
@@ -915,8 +943,15 @@ void CGameFramework::FrameAdvance()
 	
 	if(m_pCamera->GetMode() == SPACESHIP_CAMERA)
 		m_pScene->m_ppUIShaders[1]->Render(m_pd3dCommandList, m_pCamera);// UI렌더 바꿔야함.
-	m_pScene->m_ppUIShaders[2]->Render(m_pd3dCommandList, m_pCamera);
-
+	//printf("%f", playerHp);
+	m_pScene->m_ppUIShaders[2]->Render(m_pd3dCommandList, m_pCamera, playerHp);
+	m_pScene->m_ppUIShaders[3]->Render(m_pd3dCommandList, m_pCamera);//아이템 검은색
+	for (int i = 0; i < 4; ++i) {
+		if(itemUI[i] == true)
+			m_pScene->m_ppUIShaders[i + 4]->Render(m_pd3dCommandList, m_pCamera);
+		if(itemUI[3] == true)
+			m_pScene->m_ppUIShaders[8]->Render(m_pd3dCommandList, m_pCamera);
+	}
 	d3dResourceBarrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
 	d3dResourceBarrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;
 	d3dResourceBarrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;

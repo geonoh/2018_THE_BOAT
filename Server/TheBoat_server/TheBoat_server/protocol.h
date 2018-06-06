@@ -10,12 +10,15 @@
 #define MAX_BULLET_SIZE			30
 
 // 본인 클라이언트 및 서버에서 사용
-#define RUN_SPEED				2.78f
+//#define RUN_SPEED				2.78f
+// 위치 테스트용
+#define RUN_SPEED				20.78f
 #define METER_PER_PIXEL			20
 #define WALK_SPEED				1.67f
 
 // Object 갯수 정리 
 #define OBJECT_BUILDING			10
+
 
 
 
@@ -92,6 +95,7 @@ struct SC_PACKET_ENTER_PLAYER {
 	WORD id;
 	float x, y, z;
 	// 건물 크기 보낼 때만 사용
+	float hp;
 	float size_x, size_y, size_z;
 };
 

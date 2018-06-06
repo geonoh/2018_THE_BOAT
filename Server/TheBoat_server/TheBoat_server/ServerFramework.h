@@ -58,7 +58,6 @@ class ServerFramework
 	//Object* object_mother;
 	Building* building[OBJECT_BUILDING];
 
-
 public:
 	void InitServer();
 	void AcceptPlayer();
