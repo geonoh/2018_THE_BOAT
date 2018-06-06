@@ -542,7 +542,7 @@ void CObjectsShader::BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsComman
 	pCubeMaterial->SetTexture(pTexture);
 	pCubeMaterial->SetReflection(1);
 #endif
-	CCubeMeshIlluminatedTextured *pCubeMesh = new CCubeMeshIlluminatedTextured(pd3dDevice, pd3dCommandList, 80.0f, 200.0f, 40.0f);
+	CCubeMeshIlluminatedTextured *pCubeMesh = new CCubeMeshIlluminatedTextured(pd3dDevice, pd3dCommandList, 7.5f, 7.5f, 7.5f);
 
 	m_ppObjects = new CGameObject*[m_nObjects];
 

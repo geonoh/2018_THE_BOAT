@@ -36,7 +36,7 @@ void ServerMgr::Initialize(HWND& hwnd) {
 	// æ∆¿Ã««
 	ServerAddr.sin_addr.s_addr = inet_addr(server_ip.c_str());
 	ServerAddr.sin_addr.s_addr = inet_addr("127.0.0.1");
-	//ServerAddr.sin_addr.s_addr = inet_addr("110.5.195.3");
+	//ServerAddr.sin_addr.s_addr = inet_addr("192.168.101.211");
 
 
 	int retval = WSAConnect(sock, (sockaddr *)&ServerAddr, sizeof(ServerAddr), NULL, NULL, NULL, NULL);
