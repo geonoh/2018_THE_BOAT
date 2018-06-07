@@ -35,13 +35,13 @@ void ServerMgr::Initialize(HWND& hwnd) {
 	ServerAddr.sin_port = htons(SERVER_PORT);
 	// æ∆¿Ã««
 	ServerAddr.sin_addr.s_addr = inet_addr(server_ip.c_str());
-<<<<<<< HEAD
+
 	ServerAddr.sin_addr.s_addr = inet_addr("127.0.0.1");
 	//ServerAddr.sin_addr.s_addr = inet_addr("192.168.101.211");
-=======
+
 	//ServerAddr.sin_addr.s_addr = inet_addr("127.0.0.1");
 	//ServerAddr.sin_addr.s_addr = inet_addr("110.5.195.3");
->>>>>>> 23cd74a7c202f97842b81b82ddf070ce0cc98821
+
 
 
 	int retval = WSAConnect(sock, (sockaddr *)&ServerAddr, sizeof(ServerAddr), NULL, NULL, NULL, NULL);
@@ -257,7 +257,10 @@ void ServerMgr::SendPacket(int type) {
 		packet_buffer->type = CS_KEY_PRESS_LEFT;
 		retval = WSASend(sock, &send_wsabuf, 1, &iobytes, 0, NULL, NULL);
 		break;
-
+	case CS_KEY_PRESS_CROUCH:
+		packet_buffer->type = CS_KEY_PRESS_CROUCH;
+		retval = WSASend(sock, &send_wsabuf, 1, &iobytes, 0, NULL, NULL);
+		break;
 	case CS_KEY_PRESS_SHIFT:
 		packet_buffer->type = CS_KEY_PRESS_SHIFT;
 		retval = WSASend(sock, &send_wsabuf, 1, &iobytes, 0, NULL, NULL);
@@ -290,6 +293,10 @@ void ServerMgr::SendPacket(int type) {
 		break;
 	case CS_KEY_RELEASE_LEFT:
 		packet_buffer->type = CS_KEY_RELEASE_LEFT;
+		retval = WSASend(sock, &send_wsabuf, 1, &iobytes, 0, NULL, NULL);
+		break;
+	case CS_KEY_RELEASE_CROUCH:
+		packet_buffer->type = CS_KEY_RELEASE_CROUCH;
 		retval = WSASend(sock, &send_wsabuf, 1, &iobytes, 0, NULL, NULL);
 		break;
 
@@ -376,7 +383,11 @@ void ServerMgr::SendPacket(int type, XMFLOAT3& xmvector) {
 		packet_buffer->look_vec = xmvector;
 		retval = WSASend(sock, &send_wsabuf, 1, &iobytes, 0, NULL, NULL);
 		break;
-
+	case CS_KEY_PRESS_CROUCH:
+		packet_buffer->type = CS_KEY_PRESS_CROUCH;
+		packet_buffer->look_vec = xmvector;
+		retval = WSASend(sock, &send_wsabuf, 1, &iobytes, 0, NULL, NULL);
+		break;
 	case CS_KEY_PRESS_SHIFT:
 		packet_buffer->type = CS_KEY_PRESS_SHIFT;
 		retval = WSASend(sock, &send_wsabuf, 1, &iobytes, 0, NULL, NULL);
@@ -411,7 +422,10 @@ void ServerMgr::SendPacket(int type, XMFLOAT3& xmvector) {
 		packet_buffer->type = CS_KEY_RELEASE_LEFT;
 		retval = WSASend(sock, &send_wsabuf, 1, &iobytes, 0, NULL, NULL);
 		break;
-
+	case CS_KEY_RELEASE_CROUCH:
+		packet_buffer->type = CS_KEY_RELEASE_CROUCH;
+		retval = WSASend(sock, &send_wsabuf, 1, &iobytes, 0, NULL, NULL);
+		break;
 	case CS_KEY_RELEASE_SHIFT:
 		packet_buffer->type = CS_KEY_RELEASE_SHIFT;
 		retval = WSASend(sock, &send_wsabuf, 1, &iobytes, 0, NULL, NULL);

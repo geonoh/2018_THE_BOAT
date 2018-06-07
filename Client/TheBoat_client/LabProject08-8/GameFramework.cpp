@@ -376,6 +376,7 @@ void CGameFramework::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPA
 		if (wParam == VK_SHIFT) {
 			if (is_pushed[CS_KEY_PRESS_SHIFT] == false) {
 				printf("[WM_KEYUP] : Shift 키 입력\n");
+				m_pPlayer[my_client_id]->GetKeyInput(1);
 				server_mgr.SendPacket(CS_KEY_PRESS_SHIFT);
 				is_pushed[CS_KEY_PRESS_SHIFT] = true;
 			}
@@ -406,7 +407,7 @@ void CGameFramework::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPA
 		case 'W':
 			if (is_pushed[CS_KEY_PRESS_UP] == false) {
 				//server_mgr.SendPacket(CS_KEY_PRESS_UP);
-				m_pPlayer[my_client_id]->GetKeyInput(1);
+				m_pPlayer[my_client_id]->GetKeyInput(3);
 				server_mgr.SendPacket(CS_KEY_PRESS_UP, m_pPlayer[my_client_id]->GetLook());
 				//printf("Look Vector : %lf, %lf, %lf\n", m_pPlayer[my_client_id]->GetLook().x, m_pPlayer[my_client_id]->GetLook().y, m_pPlayer[my_client_id]->GetLook().z);
 				//printf("w를 눌렀는데 my_client_id는 이거임  %d  \n", my_client_id);
@@ -418,7 +419,7 @@ void CGameFramework::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPA
 		case 'A':
 			if (is_pushed[CS_KEY_PRESS_LEFT] == false) {
 				//server_mgr.SendPacket(CS_KEY_PRESS_LEFT);
-				m_pPlayer[my_client_id]->GetKeyInput(1);
+				m_pPlayer[my_client_id]->GetKeyInput(6);
 				server_mgr.SendPacket(CS_KEY_PRESS_LEFT, m_pPlayer[my_client_id]->GetLook());
 
 				is_pushed[CS_KEY_PRESS_LEFT] = true;
@@ -428,7 +429,7 @@ void CGameFramework::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPA
 		case 'S':
 			if (is_pushed[CS_KEY_PRESS_DOWN] == false) {
 				//server_mgr.SendPacket(CS_KEY_PRESS_DOWN);
-				m_pPlayer[my_client_id]->GetKeyInput(1);
+				m_pPlayer[my_client_id]->GetKeyInput(4);
 				server_mgr.SendPacket(CS_KEY_PRESS_DOWN, m_pPlayer[my_client_id]->GetLook());
 
 				is_pushed[CS_KEY_PRESS_DOWN] = true;
@@ -438,13 +439,20 @@ void CGameFramework::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPA
 		case 'D':
 			if (is_pushed[CS_KEY_PRESS_RIGHT] == false) {
 				//server_mgr.SendPacket(CS_KEY_PRESS_RIGHT);
-				m_pPlayer[my_client_id]->GetKeyInput(1);
+				m_pPlayer[my_client_id]->GetKeyInput(5);
 				server_mgr.SendPacket(CS_KEY_PRESS_RIGHT, m_pPlayer[my_client_id]->GetLook());
 
 				is_pushed[CS_KEY_PRESS_RIGHT] = true;
 			}
 			break;
-
+		case 'c':
+		case 'C':
+			if (is_pushed[CS_KEY_PRESS_CROUCH] == false) {
+				m_pPlayer[my_client_id]->GetKeyInput(7);
+				server_mgr.SendPacket(CS_KEY_PRESS_CROUCH, m_pPlayer[my_client_id]->GetLook());
+				is_pushed[CS_KEY_PRESS_CROUCH] = true;
+			}
+			break;
 		case '1':
 			if (is_pushed[CS_KEY_PRESS_1] == false) {
 				server_mgr.SendPacket(CS_KEY_PRESS_1);
@@ -476,6 +484,10 @@ void CGameFramework::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPA
 		}
 		else if (wParam == VK_SHIFT) {
 			printf("[WM_KEYUP] : Shift 키 놓음\n");
+			if(is_pushed[CS_KEY_PRESS_UP] == false)
+				m_pPlayer[my_client_id]->GetKeyInput(0);
+			else
+				m_pPlayer[my_client_id]->GetKeyInput(3);
 			server_mgr.SendPacket(CS_KEY_RELEASE_SHIFT);
 			is_pushed[CS_KEY_PRESS_SHIFT] = false;
 
@@ -523,7 +535,15 @@ void CGameFramework::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPA
 				is_pushed[CS_KEY_PRESS_RIGHT] = false;
 			}
 			break;
-
+		case 'c':
+		case 'C':
+			if (is_pushed[CS_KEY_PRESS_CROUCH] == true) {
+				printf("[WM_KEYDOWN] : c,C키 놓음 \n");
+				m_pPlayer[my_client_id]->GetKeyInput(0);
+				server_mgr.SendPacket(CS_KEY_RELEASE_CROUCH);
+				is_pushed[CS_KEY_PRESS_CROUCH] = false;
+			}
+			break;
 		case '1':
 			if (is_pushed[CS_KEY_PRESS_1] == true) {
 				printf("[WM_KEYDOWN] : 1키 놓음 \n");

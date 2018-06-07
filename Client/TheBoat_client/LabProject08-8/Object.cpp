@@ -457,9 +457,14 @@ void CGameObject::LoadFrameHierarchyFromFile(ID3D12Device *pd3dDevice, ID3D12Gra
 	CMesh *pMesh1 = NULL;
 	LoadMD5Model(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, L"../Assets/Model/Soldier_Rifle.MD5MESH", NewMD5Model, meshSRV, textureNameArray, pMesh1);
 	SetMesh(1, pMesh1);
-	LoadMD5Anim(L"../Assets/Model/Soldier_Idle.MD5ANIM", NewMD5Model);
+	LoadMD5Anim(L"../Assets/Model/1241.MD5ANIM", NewMD5Model);
 	LoadMD5Anim(L"../Assets/Model/Soldier_Run.MD5ANIM", NewMD5Model);
 	LoadMD5Anim(L"../Assets/Model/Soldier_Shot.MD5ANIM", NewMD5Model);
+	LoadMD5Anim(L"../Assets/Model/Soldier_WalkFront.MD5ANIM", NewMD5Model);
+	LoadMD5Anim(L"../Assets/Model/Soldier_WalkBack.MD5ANIM", NewMD5Model);
+	LoadMD5Anim(L"../Assets/Model/Soldier_WalkRight.MD5ANIM", NewMD5Model);
+	LoadMD5Anim(L"../Assets/Model/Soldier_WalkLeft.MD5ANIM", NewMD5Model);
+	LoadMD5Anim(L"../Assets/Model/Soldier_Crouch.MD5ANIM", NewMD5Model);
 	//LoadMD5Anim(L"../Assets/Model/WarriorAttack.MD5ANIM", NewMD5Model);
 	if (m_ppMeshes[0])
 		printf("mesh0\n");

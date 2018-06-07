@@ -10,10 +10,10 @@
 #define MAX_BULLET_SIZE			30
 
 // 본인 클라이언트 및 서버에서 사용
-//#define RUN_SPEED				2.78f
+#define RUN_SPEED				2.78f
 // 위치 테스트용
-#define RUN_SPEED				20.78f
-#define METER_PER_PIXEL			20
+//#define RUN_SPEED				26.88f
+#define METER_PER_PIXEL			0.243f
 #define WALK_SPEED				1.67f
 
 // Object 갯수 정리 
@@ -70,6 +70,8 @@
 #define CS_LEFT_BUTTON_UP			19
 #define CS_RIGHT_BUTTON_UP			20
 #define CS_MOUSE_MOVE				21
+#define CS_KEY_PRESS_CROUCH			22
+#define CS_KEY_RELEASE_CROUCH		23
 
 #define CS_PLAYER_READY		100
 #define CS_PLAYER_READY_CANCLE 101
